@@ -10,6 +10,7 @@ Languages supported:
 JavaScript code to use with Tampermonkey, Greasemonkey, Violentmonkey, etc to hide certain parts of FB.
 
 Files in the "greasyfork-release" folder are the versions released to Greasy Fork for other people to use.
+https://greasyfork.org/en/scripts/431970-facebook-ad-block-v3
 
 Files in the "beta" folder are the versions still in development and don't hide anything - they highlight which items that would be hidden when hide code is enabled.
 
