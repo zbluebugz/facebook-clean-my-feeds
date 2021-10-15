@@ -70,7 +70,7 @@ Comments:
 
     // hide or highlight the selected posts
     let HIDE_STYLE = (!true) ? 'display:none !important' : 'border:5px dotted orange !important';
-
+ 
     // how often to run this script (milliseconds)
     const CHECK_RATE_ACTIVE_MS = 100; // an active news/groups/videos feed
     const CHECK_RATE_NAP_MS = 600; // a somewhat active, no fresh posts
