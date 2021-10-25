@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         facebook - ad block v3 (beta)
-// @version      3.11beta
+// @version      3.11a_beta
 // @description  Hides sponsored posts in FB's news-feed (Sept 2021)
 // @author       zbluebugz
 // @match        https://*.facebook.com/*
