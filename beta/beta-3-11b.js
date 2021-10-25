@@ -331,8 +331,11 @@
     function checkOneOffs() {
         // check for "posts" at top of feed, but not in the feed stream.
         if (CREATE_ROOM.enabled) {
-            let createRoom = document.querySelector('div[data-pagelet="VideoChatHomeUnitNoDDD"]:not([adbpr])');
+            let createRoom = document.querySelector('div[data-pagelet="VideoChatHomeUnitNoDDD"]:not([adbpr]), div[data-pagelet="VideoChatHomeUnit"]:not([adbpr])');
             if (createRoom) {
+                createRoom.setAttribute('adbpr', '');
+                // get the room's wrapper and hide the room at that level.
+                createRoom = createRoom.parentElement.parentElement;
                 createRoom.setAttribute('adbpr', '');
                 hide(createRoom);
             }
