@@ -3,14 +3,14 @@
 // @description  Hide Sponsored and Suggested posts in FB News Feed, Groups Feed and Watch Videos Feed
 // @version      3.11f beta
 // @author       zbluebugz (https://github.com/zbluebugz/)
-// @match        https://*.facebook.com/*
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-ad-block/issues
-// @grant        none
+// @match        https://*.facebook.com/*
+// @grant        GM_addStyle
+// @license      MIT; https://opensource.org/licenses/MIT
 // @run-at       document-body
 // ==/UserScript==
 /*
--idel
     v3.01 :: 05/09/2021: First round.
     v3.02 :: 06/09/2021: Detected a couple of slight variations in how sponsored posts are created.
     v3.03 :: 14/09/2021: Code tweaked.
@@ -26,10 +26,10 @@
     v3.11 :: 25/10/2021: Rewrite
                          Changed timings to MutationsObserver.
                          Adjusted sponsored word detection block
-                         Added extra Suggestion keywords
+                         Added extra Suggestions keywords
                          Added detection for Groups Feed, Videos Feed (Watch), MarketPlace Feed
                          Added German (incomplete)
-                         Added option to display post is hidden text
+                         Added option to display 'post is hidden' text
 
 */
 
@@ -268,6 +268,7 @@
 
     // *** Marketplace
     // - hide the sponored ads in the marketplace?
+    // -- no keywords required - uses SPONSORED_KEYWORD
     const HIDE_MARKETPLACE_ADS = {
         hideThis: true
     };
@@ -282,12 +283,11 @@
 
     // *** News Feed :: Info boxes that appear between the post and comments
     // - hide the info box, not the post.
+    // -- e.g. coronavirus, climate science.
     const INFO_BOXES = {
         hideThis: true,
-        paths: ['/climatescienceinfo/']
+        paths: ['/climatescienceinfo/', '/coronavirus_info/']
     }
-
-
 
     // *** Untested - very, very rare to see this one ***
     // Sponsored paid for ... (not "Paid partnership")
@@ -376,37 +376,98 @@
         }
     }
 
-    // hide or highlight the selected posts
-    let HIDE_STYLE = !DEBUG ? 'display:none !important' : 'border:5px dotted orange !important';
-    let PINKIFY_STYLE = 'border: 5px dotted pink !important';
-    let MSG_STYLE = 'margin: 1.5rem 1rem !important; font-style: italic;';
+    // styles for hiding or highlighting the selected posts
+    // - generate class names (first letter must be an alphabet)
+    const generateClassName = () => {
+        let firstChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let str = firstChars.charAt(Math.floor(Math.random() * firstChars.length));
+        for (let i = 0; i < 12; i++) {
+            str += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return str;
+    };
+    let CLASS_HIDE = generateClassName();
+    let CLASS_PINKIFY = generateClassName();
+    let CLASS_MSG = generateClassName();
+    // - style rules ...
+    let HIDE_STYLE = '.' + CLASS_HIDE + (!DEBUG ? ' {display:none !important;}' : ' {border: 5px dotted orange !important;}') ;
+    let PINKIFY_STYLE = '.' + CLASS_PINKIFY + ' {border: 5px dotted pink !important;}';
+    let MSG_STYLE = '.' + CLASS_MSG + ' {margin: 1.5rem 1rem !important; font-style: italic;}';
+    // - insert styles (as class)
+    GM_addStyle(HIDE_STYLE + ' ' + PINKIFY_STYLE + ' ' + MSG_STYLE);
 
     // other variables
     // -- track how many times checkNonFeedPosts() has been called in this session
     let nonFeedTries = 0;
     // -- "remember" the URL address used in this session - used for detecting if page has changed.
     let prevURL = '';
-    // -- how many posts were just hidden, without seeing a good post
+    // -- how many consecutive posts were hidden
     let hiddenCount = 0;
+    // -- msgbox displaying how many posts were hidden (when VERBOSITY.level = 2)
     let hiddenEl;
+    // Verbosity stuff
+    let nfpLevel = (VERBOSITY.level > 0) ? 1 : 0; // non-feed posts
+    let fpLevel = (VERBOSITY.level > 0) ? VERBOSITY.level : 0; // feed posts
+
+
 
     // utility functions
     // - hide a post
     function hide(post, verbosityInfo) {
         if (verbosityInfo > 0) {
-            if (VERBOSITY.level === 1) {
+            if (verbosityInfo === 1) {
                 createSingleMsg(post);
             }
-            else if (VERBOSITY.level === 2) {
+            else {
                 createCompactMsg(post, verbosityInfo);
             }
         }
-        //console.info('-- hiding:', el.textContent);
-        post.setAttribute('style', HIDE_STYLE);
+
+        post.classList.add(CLASS_HIDE);
     };
     // - apply a pink border around a post / element.
     function pinkify(el) {
-        el.setAttribute('style', PINKIFY_STYLE);
+        el.addClass(CLASS_PINKIFY);
+    }
+    // Verbosity's functions - indicate that a post has been hidden
+    // - one for each post hidden.
+    function createSingleMsg(post) {
+        let elMsg = document.createElement('div');
+        elMsg.setAttribute('adbpr', '');
+        //elMsg.setAttribute('style', MSG_STYLE);
+        elMsg.classList.add(CLASS_MSG);
+        elMsg.textContent = VERBOSITY.keywords[language][0] + post.getAttribute('adbpr');
+        post.insertAdjacentElement('afterend', elMsg);
+    }
+    // - one for 1+ posts hidden (consecutive posts)
+    function createCompactMsg(post) {
+        if ((!hiddenEl) || (hiddenCount === 0)) {
+            let elMsg = document.createElement('div');
+            elMsg.setAttribute('adbpr', '');
+            elMsg.classList.add(CLASS_MSG);
+            post.insertAdjacentElement('afterend', elMsg);
+            hiddenEl = elMsg;
+        }
+        hiddenCount++;
+        if (hiddenCount < 2) {
+            hiddenEl.textContent = VERBOSITY.keywords[language][0] + post.getAttribute('adbpr');
+        }
+        else {
+            hiddenEl.textContent = hiddenCount + VERBOSITY.keywords[language][1];
+        }
+        //if (verbosityInfo === 1) {
+        //    hiddenCount = 0;
+        //}
+    }
+    // - post already hidden - perhaps by an addon/extension?
+    function createAlreadyHiddendMsg(post) {
+        let elMsg = document.createElement('div');
+        elMsg.setAttribute('adbpr', '');
+        elMsg.classList.add(CLASS_MSG);
+        elMsg.textContent = VERBOSITY.keywords[language][2];
+        post.insertAdjacentElement('afterend', elMsg);
+        hiddenCount = 0;
     }
     // - get textContent of a post
     // -- return an array of text values.
@@ -421,45 +482,6 @@
         }
         return arrayTextValues.slice(0,13);
     }
-    // Verbosity's functions - indicate that a post has been hidden
-    // - one for each post hidden.
-    function createSingleMsg(post) {
-        let elMsg = document.createElement('div');
-        elMsg.setAttribute('adbpr', '-');
-        elMsg.setAttribute('style', MSG_STYLE);
-        elMsg.textContent = VERBOSITY.keywords[language][0] + post.getAttribute('adbpr');
-        post.insertAdjacentElement('afterend', elMsg);
-    }
-    // - one for 1+ posts hidden (consecutive posts)
-    function createCompactMsg(post, verbosityInfo) {
-        if ((!hiddenEl) || (verbosityInfo === 1)|| (hiddenCount === 0)) {
-            let elMsg = document.createElement('div');
-            elMsg.setAttribute('adbpr', '-');
-            elMsg.setAttribute('style', MSG_STYLE);
-            post.insertAdjacentElement('afterend', elMsg);
-            hiddenEl = elMsg;
-        }
-        hiddenCount++;
-        if (hiddenCount < 2) {
-            hiddenEl.textContent = hiddenCount + VERBOSITY.keywords[language][0] + post.getAttribute('adbpr');
-        }
-        else {
-            hiddenEl.textContent = hiddenCount + VERBOSITY.keywords[language][1];
-        }
-        if (verbosityInfo === 1) {
-            hiddenCount = 0;
-        }
-    }
-    // - post already hidden - perhaps by an addon/extension?
-    function createAlreadyHiddendMsg(post) {
-        let elMsg = document.createElement('div');
-        elMsg.setAttribute('adbpr', '-');
-        elMsg.setAttribute('style', MSG_STYLE);
-        elMsg.textContent = VERBOSITY.keywords[language][2];
-        post.insertAdjacentElement('afterend', elMsg);
-        hiddenCount = 0;
-    }
-
 
     // core functions
 
@@ -473,7 +495,7 @@
                 // get the room's wrapper and hide the room at that level.
                 createRoom = createRoom.parentElement.parentElement;
                 createRoom.setAttribute('adbpr', '');
-                hide(createRoom);
+                hide(createRoom, 0);
             }
         };
 
@@ -490,13 +512,13 @@
                         let ptext = getTextContent(posts[i]);
                         if ((ptext[0] === undefined) || (ptext[0] === '')) {
                             // empties - skip
-                            posts[i].setAttribute('adbpr', '-- empty');
+                            posts[i].setAttribute('adbpr', '-- empty (0)');
                         }
                         else {
                             // console.info('-- ptext:', ptext[0]);
                             if (nfSuggestions.indexOf(ptext[0]) >= 0) {
                                 posts[i].setAttribute('adbpr', ptext[0]);
-                                hide(posts[i], 1);
+                                hide(posts[i], nfpLevel);
                             }
                         }
                     }
@@ -534,14 +556,14 @@
                 // sometimes fb manage to insert a post just before MO kicks in...
                 posts = Array.from(document.querySelectorAll('div[role="feed"] > div:not([adbpr]'));
                 gfLoc = 2;
-                console.info('--- picked up some post(s):', posts);
+                //console.info('--- picked up some post(s):', posts);
             }
             if (posts.length) {
                 for (let i = 0; i < posts.length; i++) {
                     let ptext = getTextContent(posts[i]);
                     if ((ptext[0] === undefined) || (ptext[0] === '')) {
                         // empties - skip
-                        posts[i].setAttribute('adbpr', '-- empty');
+                        posts[i].setAttribute('adbpr', '-- empty (1)');
                     }
                     else {
                         // console.info('-- fbadb :: suggestions.indexOf('+ptext[0]+'):', gfSuggestions.indexOf(ptext[0]));
@@ -550,11 +572,11 @@
                             if (gfLoc === 1) {
                                 // outside feed.
                                 hiddenCount = 0; // reset.
-                                hide(posts[i], 1);
+                                hide(posts[i], nfpLevel);
                             }
                             else {
                                 // normal feed.
-                                hide(posts[i], 2);
+                                hide(posts[i], fpLevel);
                             }
                         }
                         else {
@@ -563,7 +585,7 @@
                             //console.info('-- ptext:', ptext);
                             //console.info('-- gfSugggestions:', gfSuggestions);
                             //console.info('-- indexOf('+ptext[0]+'):', gfSuggestions.indexOf(ptext[0]));
-                            posts[i].setAttribute('adbpr', '-- empty');
+                            // posts[i].setAttribute('adbpr', '-- empty (2)');
                         }
                     }
                 }
@@ -643,7 +665,7 @@
                         //console.info('-- fbadb :: in suggestions: ', postTexts[x], suggX);
                         if (suggX >= 0) {
                             post.setAttribute('adbpr', suggestions[suggX]);
-                            hide(post, 2);
+                            hide(post, fpLevel);
                             isHidden = true;
                             break;
                         }
@@ -652,7 +674,7 @@
                 else {
                     // empty post ...
                     // console.info('-- fbadb :: skipping:', postTexts[0]);
-                    post.setAttribute('adbpr', '-- empty');
+                    post.setAttribute('adbpr', '-- empty (3)');
                     isHidden = true; // stop processing this post.
                     return true;
                 }
@@ -730,7 +752,7 @@
                     if ((daText.length > 0) && (SPONSORED_WORD === daText)) {
                         post.setAttribute('adbpr', SPONSORED_WORD);
                         isHidden = true;
-                        hide(post, 2);
+                        hide(post, fpLevel);
                         break;
                     }
                 };
@@ -765,7 +787,7 @@
                         }
                         else
                         {
-                            hide(post, 2)
+                            hide(post, fpLevel)
                         }
                         break;
                     }
@@ -875,9 +897,10 @@
         try {
             runMO();
         }
-        catch (e) {
+        catch (err) {
             // catch those pesky errors ...
-            console.warn('-- fbadb ::', e);
+            console.warn('-- fbadb :: an error occured:' + err.name + ', details: ' + err.message);
+            return null;
         }
     }
     runIt();
