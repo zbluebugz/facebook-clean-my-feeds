@@ -1,6 +1,6 @@
 # facebook-ad-block
 
-Mainly hides ads and certain suggested posts in FB's News Feed, Groups Feed, Watch (Videos) Feed and Marketplace.
+Mainly hides ads and certain suggested posts in FB's News Feed, Groups Feed, Watch (Videos) Feed and Marketplace. Also filters out videos using partial text match.
 
 Languages supported:
 - English
