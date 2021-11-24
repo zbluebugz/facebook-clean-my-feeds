@@ -1,11 +1,12 @@
 # facebook-ad-block
 
-Mainly hides ads and certain promotional posts in FB's News Feed.
+Mainly hides ads and certain suggested posts in FB's News Feed, Groups Feed, Watch (Videos) Feed and Marketplace.
 
 Languages supported:
 - English
 - Portuguese
 - German (beta and not all items)
+- French (beta and not all items)
 
 JavaScript code to use with Tampermonkey, Greasemonkey, Violentmonkey, etc to hide certain parts of FB.
 
