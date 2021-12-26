@@ -403,7 +403,7 @@
             'de': 'Neu für dich',
             'fr': 'Nouveautés',
             'es': 'Novedades para ti',
-            'cs': 'New for you', // --- needs translation
+            'cs': 'Novinky pro vás',
         }
     };
 
@@ -429,8 +429,8 @@
             'pt': 'Novidades para ti',
             'de': 'Neu für dich',
             'fr': 'Nouveautés',
-            'es': 'New for you', // --- needs translation
-            'cs': 'New for you', // --- needs translation
+            'es': 'Novedades para ti',
+            'cs': 'Novinky pro vás',
         }
     };
 
