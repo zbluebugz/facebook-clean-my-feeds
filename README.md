@@ -21,3 +21,6 @@ Versions 3.01 - 3.11:
 
 Versions 3.12+: 
 - Change options via the Clean My Feeds button in FB.
+
+
+NB: Original name: "facebook - ad block"
