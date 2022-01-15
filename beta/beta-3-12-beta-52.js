@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.12-beta-51
+// @version      3.12-beta-52
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -823,7 +823,7 @@
         // count of checks made for non-feed posts
         nfpLoopCount: 0,
         // max checks for non-feed posts
-        nfpLoopCountLimit: 96,
+        nfpLoopCountLimit: 128,
 
         // indicate if stories was found and stop looking for it
         storiesFound: false,
