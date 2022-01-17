@@ -32,9 +32,8 @@
             Added option to save/export options
             Added Espanol and Čeština(Czech) (incomplete)
             Added option to hide "Take a survey" and "FB 2 Meta" info boxes.
-            Added option to hide Stories
 
-    Attribution: Mop & bucket icon
+    Mop & bucket icon attribution:
     - made by Freepik (https://www.freepik.com) @ flaticon (https://www.flaticon.com/)
     - page: https://www.flaticon.com/premium-icon/mop_2383747
 
@@ -1478,7 +1477,7 @@
                 // -- radios
                 rbs = md.querySelectorAll('input[type="radio"]:checked');
                 rbs.forEach(rb => {
-                    VARS.Options[rbs.name] = rbs.value;
+                    VARS.Options[rb.name] = rb.value;
                 });
                 // -- text input
                 inputs = Array.from(md.querySelectorAll('input[type="input]'));
@@ -1568,9 +1567,9 @@
             reader.onload = (file) => {
                 try {
                     let fileContent = JSON.parse(file.target.result);
-                    if (fileContent.hasOwnProperty('NF_SPONSORED') && 
-                        fileContent.hasOwnProperty('GF_SPONSORED') && 
-                        fileContent.hasOwnProperty('VF_SPONSORED') && 
+                    if (fileContent.hasOwnProperty('NF_SPONSORED') &&
+                        fileContent.hasOwnProperty('GF_SPONSORED') &&
+                        fileContent.hasOwnProperty('VF_SPONSORED') &&
                         fileContent.hasOwnProperty('MP_SPONSORED')
                         ) {
                         VARS.Options = fileContent;
@@ -2109,7 +2108,7 @@
                                 hiding = true;
                                 hide(post, VARS.suggestions[suggestionIndex]);
                                 break;
-                            } 
+                            }
                             else if (isSponsored(post)) {
                                 // - if not suggested, check for sponsoredWord
                                 VARS.echoCount++;
@@ -2126,7 +2125,7 @@
                                     hide(post, VARS.blockTextMatch[blockedIndex]);
                                     break;
                                 }
-                            }                           
+                            }
                             if (!hiding) {
                                 // -- info boxes that appear between post article and comments.
                                 doMoppingInfoBoxes(post);
@@ -2284,7 +2283,7 @@
                                         doMoppingOthers();
                                     }
                                     if (VARS.storiesFound && VARS.crFound && VARS.rrFound && VARS.f2mFound && VARS.surveyFound) {
-                                        VARS.nfpLoopCount = VARS.nfpLoopCountLimit + 1;    
+                                        VARS.nfpLoopCount = VARS.nfpLoopCountLimit + 1;
                                     }
                                     else {
                                         VARS.nfpLoopCount++;
