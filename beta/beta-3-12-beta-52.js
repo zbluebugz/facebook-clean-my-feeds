@@ -33,7 +33,7 @@
             Added Espanol and Čeština(Czech) (incomplete)
             Added option to hide "Take a survey" and "FB 2 Meta" info boxes.
 
-    Mop & bucket icon attribution:
+    Attribution: Mop & bucket icon:
     - made by Freepik (https://www.freepik.com) @ flaticon (https://www.flaticon.com/)
     - page: https://www.flaticon.com/premium-icon/mop_2383747
 
