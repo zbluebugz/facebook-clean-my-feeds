@@ -1653,7 +1653,7 @@
                 VARS.blockTextMatch = VARS.Filters.VF_BLOCKED_TEXT;
                 VARS.blockTextMatchLC = VARS.Filters.VF_BLOCKED_TEXT_LC ;
             }
-            else if ((VARS.prevPathname.indexOf('/marketplace/') >=0) || (VARS.prevPathname.indexOf('/marketplace?') >=0)) {
+            else if (VARS.prevPathname.indexOf('/marketplace') >=0) {
                 VARS.isMP = true;
                 VARS.QS = VARS.marketplaceQS;
                 VARS.suggestions = [];
@@ -1678,8 +1678,8 @@
                         VARS.mpType = 'category'
                     }
                     else {
-                        // - unknown marketplace page
-                        VARS.isMP = false;
+                        // - page is slow to be loaded, treat as std page
+                        VARS.mpType = 'std';
                     }
                 }
                 if (VARS.isMP && VARS.prevPathname.indexOf('/item/') >=0) {
