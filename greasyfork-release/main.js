@@ -14,7 +14,7 @@
 // ==/UserScript==
 /*
         v3.13 :: April 2021:
-            Updated Sponsored detection code (FB changed it again)
+            Updated Sponsored detection code (FB changed it)
             Added "Reels and short videos" to News feed block list
             Tweaked some minor bits
 
