@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.13
+// @version      3.14
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,8 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+        v3.14 :: May 2021:
+            Updated Sponsored detection code (FB changed it)
         v3.13 :: April 2021:
             Updated Sponsored detection code (FB changed it)
             Added "Reels and short videos" to News feed block list
@@ -1904,6 +1906,7 @@
                 }
                 else {
                     // Apr 2022, fb using flex model
+                    // May 2022, fb using flex model + position & display
                     // - characters start off in random order, then flex's order to rearrange them ...
                     // - wrapper is the flex container ...
 
@@ -1924,7 +1927,7 @@
                     for (let cX = 0, cL = nsp.childElementCount; cX < cL; cX++) {
                         if (nsp.children[cX].tagName === 'SPAN' || nsp.children[cX].tagName === 'B') {
                             csr = window.getComputedStyle(nsp.children[cX]);
-                            if ((csr.order !== '') && parseInt(csr.order) > 0) {
+                            if ((csr.order !== '') && (parseInt(csr.order) > 0) && (csr.position === 'relative') && (csr.display === 'block')) {
                                 arrTxt[parseInt(csr.order)] = nsp.children[cX].textContent;
                             }
                         }
