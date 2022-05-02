@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.14
+// @version      3.15
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,14 +13,16 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
-        v3.14 :: May 2021:
+        v3.15 :: May 2022
+            Updated Sponsored detection code (Chrome)
+        v3.14 :: May 2022:
             Updated Sponsored detection code (FB changed it)
-        v3.13 :: April 2021:
+        v3.13 :: April 2022:
             Updated Sponsored detection code (FB changed it)
             Added "Reels and short videos" to News feed block list
             Tweaked some minor bits
 
-        v3.12 :: January 2021:
+        v3.12 :: January 2022:
             Added a dialog box for users to toggle options
             Added option to hide News and Groups posts based on text (partial match)
             Added option to save/export options
@@ -1835,12 +1837,23 @@
         // within this post, find the SPAN element(s) having aria-label = Sponsored
         // - usually only one is found
         let alSpans = Array.from(post.querySelectorAll('span[aria-label="' + VARS.sponsoredWord + '"]'));
-        let ss = 1; // sponsored structure (1 = uses aria-label, 2 = uses a tag., 3 subset of 2 and uses Flex model.
+        let ss = 1; // sponsored structure (1 = uses aria-label, 2 = uses a tag, 3 similar to 2 with Flex model.
         if (alSpans.length === 0) {
             // not found, try another structure: A and aria-label structure;
             alSpans = Array.from(post.querySelectorAll('a[href="#"][aria-label="label"], a[aria-label="' + VARS.sponsoredWord + '"]'));
-            ss = 2;
+            if (alSpans.length > 0 ) {
+                ss = 2;
+            }
+            else {
+                // try another structure ... (Chrome)
+                // - span for some languages, b for some languages ...
+                alSpans = Array.from(post.querySelectorAll('a[role="link"] > span > span > span, a[role="link"] > span > span > b'))
+                if (alSpans.length > 0 ) {
+                    ss = 3;
+                }
+            }
         }
+        // console.info(log + 'alSpans:', alSpans.length, ss);
         // is the word "Sponsored" visible?
         // - nb: not all posts have either of the above structures
         let daText = '';
@@ -1852,20 +1865,31 @@
                 // uses the span[arial-label="sponsored] structure
                 nsp = sp.nextSibling;
             }
-            else {
-                // ss = 2
+            else if (ss === 2) {
                 // - uses the a[href=# aria-label=label] or a[aria-label=sponsoredWord] structure
                 //  - A tag is nested with 2 SPANs then either B or SPAN tag wrapper with lots of B/SPAN tags.
                 //  - grab the B/SPAN tag (wrapper)
                 nsp = sp.firstChild.firstChild.firstChild;
-                // Apr 2022 - fb changed pattern
+                // Apr / May 2022 - fb changed pattern
                 // - uses flex and flex-order to re-arrange letters
                 csr = window.getComputedStyle(nsp);
                 if (csr.display === 'flex') {
                     ss = 3;
                 }
             }
-            //console.info(log + 'sponsored structure:', ss);
+            else {
+                // ss = 3
+                // uses the a[role="link"] > span > span > span structure (mainly chrome)
+                nsp = sp; // sp is the wrapper ...
+                // Apr / May 2022 - fb changed pattern
+                // - uses flex and flex-order to re-arrange letters
+                csr = window.getComputedStyle(nsp);
+                if (csr.display !== 'flex') {
+                    // not yet using flex ...
+                    ss = 2;
+                }
+            }
+            // console.info(log + 'sponsored structure:', ss);
             // note that 'nsp' is a "parent" ...
             // .. sometimes it has a textNode (as firstChild) ...
             // ... there are several SPAN/B tags having single letters
@@ -1936,7 +1960,7 @@
                     daText += arrTxt.filter(t=> t.length>0).join('');
                 }
             }
-            //console.info(log + 'is Sponsored post:', '>' + daText + '<', nsp);
+            // console.info(log + 'is Sponsored post:', '>' + daText + '<', nsp);
             // do we hide this post?
             return ((daText.length > 0) && (VARS.sponsoredWord === daText));
         }
