@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.15
+// @version      3.16
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,34 +13,36 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
-        v3.15 :: May 2022
-            Updated Sponsored detection code (Chrome)
-        v3.14 :: May 2022:
-            Updated Sponsored detection code (FB changed it)
-        v3.13 :: April 2022:
-            Updated Sponsored detection code (FB changed it)
-            Added "Reels and short videos" to News feed block list
-            Tweaked some minor bits
+    V3.16 :: May 2022
+        Added Sponsored * Paid for ___ detection code
+    v3.15 :: May 2022
+        Updated Sponsored detection code (Chrome)
+    v3.14 :: May 2022:
+        Updated Sponsored detection code (FB changed it)
+    v3.13 :: April 2022:
+        Updated Sponsored detection code (FB changed it)
+        Added "Reels and short videos" to News feed block list
+        Tweaked some minor bits
 
-        v3.12 :: January 2022:
-            Added a dialog box for users to toggle options
-            Added option to hide News and Groups posts based on text (partial match)
-            Added option to save/export options
-            Added Espanol and Čeština(Czech) (incomplete)
-            Added option to hide "Take a survey" and "FB 2 Meta" info boxes.
+    v3.12 :: January 2022:
+        Added a dialog box for users to toggle options
+        Added option to hide News and Groups posts based on text (partial match)
+        Added option to save/export options
+        Added Espanol and Čeština(Czech) (incomplete)
+        Added option to hide "Take a survey" and "FB 2 Meta" info boxes.
 
-        v3.11 :: 20/11/2021:
-            Rewrite
-            Changed timings to MutationsObserver.
-            Adjusted sponsored word detection block
-            Adjusted suggestions text detection block
-            Added extra Suggestions keywords
-            Added detection for Groups Feed, Videos Feed (Watch), MarketPlace Feed
-            Added option to hide Information Boxes (e.g. Covid Information, Global Climate Info)
-            Added right rail(column) hide sponsored block
-            Added German and French (incomplete)
-            Added option to display 'post is hidden' text
-            Added option to hide videos based on text (partial match)
+    v3.11 :: 20/11/2021:
+        Rewrite
+        Changed timings to MutationsObserver.
+        Adjusted sponsored word detection block
+        Adjusted suggestions text detection block
+        Added extra Suggestions keywords
+        Added detection for Groups Feed, Videos Feed (Watch), MarketPlace Feed
+        Added option to hide Information Boxes (e.g. Covid Information, Global Climate Info)
+        Added right rail(column) hide sponsored block
+        Added German and French (incomplete)
+        Added option to display 'post is hidden' text
+        Added option to hide videos based on text (partial match)
 
 
     Attribution: Mop & bucket icon:
@@ -190,7 +192,6 @@
             'cs': 'Suggested Events', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
-
         },
         // - Events you may like
         NF_EVENTS_YOU_MAY_LIKE : {
@@ -202,7 +203,6 @@
             'cs': 'Events you may like', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
-
         },
 /*
         // - Suggested live gaming video
@@ -260,6 +260,17 @@
             'cs': 'Sekvence a krátká videa',
             'isSuggestion': true,
             'defaultEnabled': false,
+        },
+        // Sponsored · Paid for by ______
+        NF_SPONSORED_PAID : {
+            'en': 'Sponsored · Paid for by ______',
+            'pt': 'Patrocinado · Financiado por ______',
+            'de': 'Gesponsert · Finanziert von ______',
+            'fr': 'Sponsorisé · Financé par ______',
+            'es': 'Publicidad · Pagado por ______',
+            'cs': 'Sponzorováno · Platí za to ______',
+            'isSuggestion': false,
+            'defaultEnabled': true
         },
 
         // *** Groups Feed :: Hide some Suggested posts
@@ -751,6 +762,7 @@
         // - Sponsored word
         sponsoredWord: [],
         sponsoredWordMP: [],
+        sponsoredPaidForWords: [],
         // - Suggestions
         // -- "current" feed
         suggestions : [],
@@ -805,6 +817,8 @@
                         'div[data-pagelet="VideoChatHomeUnitNoDDD"]:not([' + postAtt + '])',
         // - stories
         storiesQS: 'div[data-pagelet="Stories"]:not([' + postAtt + '])',
+        // sponsored - paid for
+        sponsoredPaidForQS: '[role="button"]',
 
         // - Feed toggles
         isNF : false,
@@ -874,6 +888,7 @@
             // - sponsored word
             VARS.sponsoredWord = KeyWords.SPONSORED[VARS.language];
             VARS.sponsoredWordMP = KeyWords.MP_SPONSORED[VARS.language];
+            VARS.sponsoredPaidForWords = KeyWords.NF_SPONSORED_PAID[VARS.language].replaceAll('_','').trim();
             // ...
             let result = getUserOptions()
             .then(() => {
@@ -1096,15 +1111,16 @@
                 }
             }
         }
+        let key = "NF_SPONSORED_PAID";
+        if (!VARS.Options.hasOwnProperty(key)) { VARS.Options[key] = KeyWords[key].defaultEnabled; changed = true; }
 
         // -- all other options.
-        let key = "OTHER_CREATE_ROOM";
+        key = "OTHER_CREATE_ROOM";
         if (!VARS.Options.hasOwnProperty(key)) { VARS.Options[key] = KeyWords[key].defaultEnabled; changed = true; }
         key = "OTHER_RIGHT_RAIL_SPONSORED";
         if (!VARS.Options.hasOwnProperty(key)) { VARS.Options[key] = KeyWords[key].defaultEnabled; changed = true; }
         key = "OTHER_STORIES";
         if (!VARS.Options.hasOwnProperty(key)) { VARS.Options[key] = KeyWords[key].defaultEnabled; changed = true; }
-
 
         if (!VARS.Options.hasOwnProperty('NF_BLOCKED_ENABLED')) { VARS.Options.NF_BLOCKED_ENABLED = true; changed = true; }
         if (!VARS.Options.hasOwnProperty('NF_BLOCKED_TEXT')) { VARS.Options.NF_BLOCKED_TEXT = ''; changed = true; }
@@ -1126,7 +1142,7 @@
                 return true;
             })
             .catch((err) => {
-                console.log(log + 'getUserOptions() > changed > saving - failed, Error:', err);
+                console.info(log + 'getUserOptions() > changed > saving - failed, Error:', err);
                 return false;
             });
             if (VARS.Options.VERBOSITY_DEBUG) {
@@ -1259,7 +1275,6 @@
             hdr.appendChild(btn);
             dlg.appendChild(hdr);
 
-
             // content container
             cnt = document.createElement('div');
             cnt.classList.add('content');
@@ -1275,6 +1290,7 @@
                     fs.appendChild(createCB('cbNF', key));
                 }
             }
+            fs.appendChild(createCB('cbNF', 'NF_SPONSORED_PAID'));
             cnt.appendChild(fs);
 
             // -- Groups Feed options
@@ -1994,6 +2010,23 @@
         }
         return blockedIndex;
     }
+    function isSponsoredPaidFor(post) {
+        // - check for 'Sponsored · Paid for by ______'
+        if (VARS.Options.NF_SPONSORED_PAID === true) {
+            // look for certain elements
+            let els = Array.from(post.querySelectorAll(VARS.sponsoredPaidForQS));
+            // scan the first few elements for the keyword ...
+            if (els.length > 0) {
+                let eL = Math.min(5, els.length);
+                for (let i = 0; i < eL; i++ ) {
+                    let etxt = els[i].textContent;
+                    if (etxt.indexOf(VARS.sponsoredPaidForWords) >= 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
 
     function doMoppingStories() {
         if (VARS.Options.OTHER_STORIES) {
@@ -2092,14 +2125,13 @@
             }
         }
     }
-    //let ocount = 0;
+
     function doMoppingOthers() {
         // hide fb is meta and survey boxes
         let mainFeed = document.querySelector('div[role="feed"]');
         if (mainFeed) {
             let parentEl = mainFeed.parentElement.parentElement;
             if (parentEl.tagName !== 'BODY') {
-                //console.info(log+'dMO:', 'parent is not body');
                 // - [role="feed"] must exists
                 // -- if parentElement is BODY, skip this round ...
                 // -- not all elements have been created - 'div[role="feed"]' one of the first few ...
@@ -2111,22 +2143,18 @@
                         linkEl.setAttribute(postAtt, linkEl.innerHTML.length);
                         boxEl.setAttribute(postAtt, boxEl.innerHTML.length);
                         hide(boxEl, KeyWords.OTHER_FB_RENAMED[VARS.language]); // - fb removes the hidden message, so skip that bit.
-                        //boxEl.setAttribute(postAtt + '-rule', KeyWords.OTHER_FB_RENAMED[VARS.language]);
                     }
                     VARS.f2mFound = true;
                 }
                 //console.info(log+'vSF:', VARS.surveyFound, VARS.surveyFound === false, VARS.otherLoopCount);
                 if (VARS.surveyFound === false) {
-                    //console.info(log+'vSF-link:', VARS.surveyFound);
                     let linkEl = parentEl.querySelector('a[href*="/survey/"]:not([' + postAtt + '])');
-                    //console.info(log+'sf-link:', linkEl);
                     if (linkEl) {
                         // -- grab the container (7 parent nodes up)
                         let boxEl = linkEl.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
                         linkEl.setAttribute(postAtt, linkEl.innerHTML.length);
                         boxEl.setAttribute(postAtt, boxEl.innerHTML.length);
                         hide(boxEl, KeyWords.OTHER_SURVEY[VARS.language]); // - fb removes the hidden message, so skip that bit.
-                        //boxEl.setAttribute(postAtt + '-rule', KeyWords.OTHER_SURVEY[VARS.language]);
                     }
                     //VARS.surveyFound = true; - disabled 25/03/2022 - fb recreated after being hidden.
                 }
@@ -2135,8 +2163,6 @@
                     VARS.surveyFound = true;
                     VARS.f2mFound = true;
                 }
-                //ocount++;
-                //console.info(log+'doMoppingOthers :: ocount:', ocount);
             }
         }
     }
@@ -2197,6 +2223,14 @@
                                 VARS.echoCount++;
                                 hiding = true;
                                 hide(post, VARS.sponsoredWord);
+                                break;
+                            }
+                            else if (VARS.isNF && isSponsoredPaidFor(post)) {
+                                // - (news feed only)
+                                // - if not suggested, sponsored, check for sponsored paid for ...
+                                VARS.echoCount++;
+                                hiding = true;
+                                hide(post, VARS.sponsoredPaidForWords);
                                 break;
                             }
                             if (!hiding && VARS.blockText) {
@@ -2362,7 +2396,6 @@
                                             doMoppingRightRail();
                                         }
                                     }
-                                    //console.info(log+'bMut:',(VARS.f2mFound === false), (VARS.surveyFound === false), VARS.nfpLoopCount, VARS.nfpLoopCountLimit);
                                     if ((VARS.f2mFound === false) || (VARS.surveyFound === false)){
                                         doMoppingOthers();
                                     }
