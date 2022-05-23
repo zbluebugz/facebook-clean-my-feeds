@@ -1,6 +1,6 @@
-# facebook - Clean My Feeds
+# FB - Clean My Feeds
 
-Mainly hides sponsored and certain suggested posts in FB's News Feed, Groups Feed, Watch (Videos) Feed and Marketplace. Also filters out posts and videos using partial text match.
+Mainly hides sponsored and certain suggested posts in Facebook's News Feed, Groups Feed, Watch (Videos) Feed and Marketplace. Also filters out posts and videos using partial text match.
 
 Languages supported:
 - English
@@ -9,6 +9,7 @@ Languages supported:
 - Français (France)
 - Espanol (Spain)
 - Čeština (Czech)
+- Tiếng Việt (Vietnam)
 
 JavaScript code to use with Tampermonkey, Greasemonkey, Violentmonkey, etc to hide certain parts of FB.
 
@@ -20,7 +21,7 @@ Versions 3.01 - 3.11:
 - Change options via the Script manager.
 
 Versions 3.12+: 
-- Change options via the Clean My Feeds button in FB.
+- Change options via the Clean My Feeds button in Facebook.
 
 
 NB: Original name: "facebook - ad block"
