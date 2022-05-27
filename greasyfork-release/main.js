@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.17
+// @version      3.18c
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,14 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.18 :: May 2022
+        Bug fix for Sponsored post detection code (non Flex branch)
+        Added Italian (incomplete)
+        Other language updates
+        News Feed - third column - option to hide: "Groups / Suggested for you" box
+        News Feed - option to hide "Recommended post"
+        Search Feed - All & Posts: hide Sponsored posts
+        Minor code & UI tweaks
     v3.17 :: May 2022
         Updated detection code for: Sponsored posts in Marketplace & Videos; (FB changed it)
         Updated detection code for: Create Room, Sponsored block (news feed, third column), Stories (FB changed it)
@@ -55,8 +63,9 @@
     - made by Freepik (https://www.freepik.com) @ flaticon (https://www.flaticon.com/)
     - page: https://www.flaticon.com/premium-icon/mop_2383747
 
-    To do:
-    - complete language translation
+    To do :::
+    - complete language translation (based on FB's wording/spelling)
+    - investigate Private/Icognito/InPrivate Mode (idb doesn't work)
 
     Instructions on how to use:
     - In FB, top right corner or bottom left corner, click on the "Clean my feeds" icon (mop + bucket)
@@ -98,7 +107,7 @@
     const KeyWords = {
         // *** Which languages have been setup:
         // - 'en' is default.
-        LANGUAGES : ['en', 'pt', 'de', 'fr', 'es', 'cs','vi'],
+        LANGUAGES : ['en', 'pt', 'de', 'fr', 'es', 'cs','vi', 'it'],
 
         SPONSORED : {
             // English
@@ -111,12 +120,14 @@
             'fr': 'Sponsorisé',
             // Espanol (Spain)
             'es': 'Publicidad',
-            // Čeština (Czech)
+            // Čeština (Czechia)
             'cs': 'Sponzorováno',
             // Tiếng Việt (Vietnam)
             'vi': 'Được tài trợ',
+            // Italino (Italy)
+            'it': 'Sponsorizzato',
         },
-        // marketplace 'sponsored' word ... somtime fb has a different spelling
+        // marketplace 'sponsored' word ... somtimes fb has a different spelling
         MP_SPONSORED : {
             'en': 'Sponsored',
             'pt': 'Patrocinado',
@@ -125,6 +136,7 @@
             'es': 'Publicidad',
             'cs': 'Sponzorováno',
             'vi': 'Được tài trợ',
+            'it': 'Sponsorizzata',
         },
         // *** Verbosity:
         VERBOSITY : {
@@ -135,6 +147,7 @@
             'es': ['1 publicación oculta. Regla: ', ' publicaciones ocultas'],
             'cs': ['1 příspěvek byl skryt. Pravidlo: ', ' příspěvků skrytých'],
             'vi': ['1 bài bị ẩn. Quy tắc: ', ' bài viết ẩn'],
+            'it': ['1 post nascosto Regola: ', ' post nascosti'],
         },
 
         // *** Instructions for adding a Suggestion keywords ***
@@ -146,16 +159,43 @@
         // 4) NB: Placement of keyword determines the display order.
         // *** --- ***
 
-        // *** News Feed :: Suggested posts
+        // *** News Feed ::
+        // - Stories
+        NF_STORIES : {
+            'en': 'Stories',
+            'pt': 'Histórias',
+            'de': 'Stories',
+            'fr': 'Stories',
+            'es': 'Historias',
+            'cs': 'Příběhy',
+            'vi': 'Những câu chuyện',
+            'it': 'Storia',
+            'isSuggestion': false,
+            'defaultEnabled': false,
+        },
+        // - create room
+        NF_CREATE_ROOM : {
+            'en': 'Create room',
+            'pt': 'Criar sala',
+            'de': 'Room erstellen',
+            'fr': 'Créer un salon',
+            'es': 'Crear sala',
+            'cs': 'Vytvořit místnost',
+            'vi': 'Tạo phòng họp mặt',
+            'it': 'Crea stanza',
+            'isSuggestion': false,
+            'defaultEnabled': false,
+        },
         // - People you may know
         NF_PEOPLE_YOU_MAY_KNOW : {
             'en': 'People you may know',
             'pt': 'Pessoas que talvez conheças',
             'de': 'Personen, die du kennen könntest',
-            'fr': 'Connaissez-vous...', // (Do you know...)
+            'fr': 'Connaissez-vous...',
             'es': 'Personas que quizá conozcas',
             'cs': 'Koho možná znáte',
             'vi': 'Những người bạn có thể biết',
+            'it': 'Persone che potresti conoscere',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -168,9 +208,23 @@
             'fr': 'Partenariat rémunéré',
             'es': 'Colaboración pagada', // (Paid collaboration)
             'cs': 'Placené partnerství',
-            'vi': 'Paid partnership', // --- needs translation
+            'vi': 'Mối quan hệ tài trợ',
+            'it': 'Partnership pubblicizzata',
             'isSuggestion': true,
             'defaultEnabled': true,
+        },
+        // Sponsored · Paid for by ______
+        NF_SPONSORED_PAID : {
+            'en': 'Sponsored · Paid for by ______',
+            'pt': 'Patrocinado · Financiado por ______',
+            'de': 'Gesponsert · Finanziert von ______',
+            'fr': 'Sponsorisé · Financé par ______',
+            'es': 'Publicidad · Pagado por ______',
+            'cs': 'Sponzorováno · Platí za to ______',
+            'vi': 'Sponsored · Paid for by ______', // --- needs translation
+            'it': 'Sponsored · Paid for by ______', // --- needs translation ('Sponsorizzato · Pagato da ______' ?)
+            'isSuggestion': false,
+            'defaultEnabled': true
         },
         // - Suggested for you
         NF_SUGGESTED_FOR_YOU : {
@@ -180,7 +234,22 @@
             'fr': 'Suggestions pour vous',
             'es': 'Sugerencias para ti',
             'cs': 'Návrhy pro vás',
+            'vi': 'Gợi ý cho bạn',
             'vi': 'Suggested for you', // --- needs translation
+            'it': 'Suggeriti per te', // --- (correct translation?)
+            'isSuggestion': true,
+            'defaultEnabled': false,
+        },
+        // - Recommended post (usually appears on fresh accounts)
+        NF_RECOMMENDED_POST : {
+            'en': 'Recommended post',
+            'pt': 'Publicação recomendada',
+            'de': 'Empfohlener Beitrag',
+            'fr': 'Publication recommandée',
+            'es': 'Publicación recomendada',
+            'cs': 'Doporučený příspěvek',
+            'vi': 'Bài viết đề xuất',
+            'it': 'Post suggerito',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -193,6 +262,7 @@
             'es': 'Páginas sugeridas',
             'cs': 'Navrhované stránky',
             'vi': 'Suggested Pages', // --- needs translation
+            'it': 'Suggested Pages', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -205,6 +275,7 @@
             'es': 'Suggested Events', // --- needs translation
             'cs': 'Suggested Events', // --- needs translation
             'vi': 'Suggested Events', // --- needs translation
+            'it': 'Suggested Events', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -217,6 +288,7 @@
             'es': 'Eventos que te pueden gustar',
             'cs': 'Events you may like', // --- needs translation
             'vi': 'Events you may like', // --- needs translation
+            'it': 'Events you may like', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -229,6 +301,7 @@
             'es': 'Videos just for you', // --- needs translation
             'cs': 'Videos just for you', // --- needs translation
             'vi': 'Videos just for you', // --- needs translation
+            'it': 'Videos just for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -241,6 +314,7 @@
             'es': 'Page you could subscribe to', // --- needs translation
             'cs': 'Page you could subscribe to', // --- needs translation
             'vi': 'Page you could subscribe to', // --- needs translation
+            'it': 'Page you could subscribe to', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -254,25 +328,38 @@
             'es': 'Reels y vídeos cortos',
             'cs': 'Sekvence a krátká videa',
             'vi': 'Reels và video ngắn',
+            'it': 'Reel e video brevi',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // Sponsored · Paid for by ______
-        NF_SPONSORED_PAID : {
-            'en': 'Sponsored · Paid for by ______',
-            'pt': 'Patrocinado · Financiado por ______',
-            'de': 'Gesponsert · Finanziert von ______',
-            'fr': 'Sponsorisé · Financé par ______',
-            'es': 'Publicidad · Pagado por ______',
-            'cs': 'Sponzorováno · Platí za to ______',
-            'vi': 'Sponsored · Paid for by ______', // --- needs translation
-            'isSuggestion': false,
-            'defaultEnabled': true
+        // -- Sponsored box in right-hand column
+        NF_THIRD_COLUMN_SPONSORED : {
+            'en': 'Sponsored box (right-hand column)',
+            'pt': 'Caixa patrocinada (coluna da direita)',
+            'de': 'Gesponserte Box (rechte Spalte)',
+            'fr': 'Encadré sponsorisé (colonne de droite)',
+            'es': 'Cuadro patrocinado (columna de la derecha)',
+            'cs': 'Sponzorovaný box (pravý sloupec)',
+            'vi': 'Hộp tài trợ (cột bên phải))',
+            'it': 'Casella sponsorizzato (colonna di destra)',
+            'defaultEnabled': true,
+        },
+        // -- Suggested for you
+        NF_THIRD_COLUMN_SUGGESTED_FOR_YOU : {
+            'en': 'Suggested for you (right-hand column)',
+            'pt': 'Sugestões para ti (coluna da direita)',
+            'de': 'Vorschläge für dich (rechte Spalte)',
+            'fr': 'Suggestions pour vous (colonne de droite)',
+            'es': 'Sugerencias para ti (columna de la derecha)',
+            'cs': 'Návrhy pro vás (pravý sloupec)',
+            'vi': 'Gợi ý cho bạn (cột bên phải))',
+            'it': 'Suggeriti per te (colonna di destra)',
+            'defaultEnabled': false,
         },
 
-        // *** Groups Feed :: Hide some Suggested posts
+        // *** Groups Feed ::
         // -- nb: some of these rules overlap each other
-        // -- "Join" and "Join Group" is listed in most non-subscribed group posts,
+        // -- "Join" and "Join Group" are listed in most non-subscribed group posts,
         //    if both of these keywords are enabled, then the other keywords are "redundant"
         // - New for you
         // -- usually shows up at top of feed.
@@ -284,31 +371,7 @@
             'es': 'Novedades para ti',
             'cs': 'Novinky pro vás',
             'vi': 'New for you', // --- needs translation
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        // - Paid partnership
-        // -- page you follow is "sponsoring" another page's post (e.g. job)
-        GF_PAID_PARTNERSHIP : {
-            'en': 'Paid partnership',
-            'pt': 'Parceria paga',
-            'de': 'Bezahlte Werbepartnerschaft', // (Paid advertising partnership)
-            'fr': 'Partenariat rémunéré',
-            'es': 'Colaboración pagada', // (Paid collaboration)
-            'cs': 'Placené partnerství',
-            'vi': 'Paid partnership', // --- needs translation
-            'isSuggestion': true,
-            'defaultEnabled': true,
-        },
-        // - Suggested groups (box of groups - may need to use the view/see more keyword)
-        GF_SUGGESTED_GROUPS : {
-            'en': 'Suggested groups',
-            'pt': 'Grupos sugeridos',
-            'de': 'Vorgeschlagene Gruppen',
-            'fr': 'Groupes suggérés',
-            'es': 'Grupos sugeridos',
-            'cs': 'Suggested groups', // --- needs translation
-            'vi': 'Nhóm gợi ý',
+            'it': 'New for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -321,11 +384,40 @@
             'es': 'Sugerencias para ti',
             'cs': 'Návrhy pro vás',
             'vi': 'Gợi ý cho bạn',
+            'it': 'Suggeriti per te', // --- needs translation (correct?)
+            'isSuggestion': true,
+            'defaultEnabled': false,
+        },
+        // - Paid partnership
+        // -- a page you follow is "sponsoring" another page's post (e.g. job)
+        GF_PAID_PARTNERSHIP : {
+            'en': 'Paid partnership',
+            'pt': 'Parceria paga',
+            'de': 'Bezahlte Werbepartnerschaft', // (Paid advertising partnership)
+            'fr': 'Partenariat rémunéré',
+            'es': 'Colaboración pagada', // (Paid collaboration)
+            'cs': 'Placené partnerství',
+            'vi': 'Mối quan hệ tài trợ',
+            'it': 'Partnership pubblicizzata',
+            'isSuggestion': true,
+            'defaultEnabled': true,
+        },
+        // - Suggested groups 
+        // -- box of groups - may need to use the view/see more keyword
+        GF_SUGGESTED_GROUPS : {
+            'en': 'Suggested groups',
+            'pt': 'Grupos sugeridos',
+            'de': 'Vorgeschlagene Gruppen',
+            'fr': 'Groupes suggérés',
+            'es': 'Grupos sugeridos',
+            'cs': 'Navrhované skupiny',
+            'vi': 'Nhóm gợi ý',
+            'it': 'Gruppi suggeriti',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
         // - Suggested post from a public group
-        // -- (lots of posts from groups not subscribed too)
+        // -- lots of posts from groups not subscribed too
         GF_SUGGESTED_POST_PUBLIC_GROUP : {
             'en': 'Suggested post from a public group',
             'pt': 'Publicação sugerida de um grupo público',
@@ -334,11 +426,13 @@
             'es': 'Publicación sugerida de un grupo público',
             'cs': 'Navrhovaný příspěvek z veřejné skupiny', // proposed contribution from public group
             'vi': 'Bài viết gợi ý từ nhóm công khai',
+            'it': 'Post suggerito di un gruppo pubblico',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
         // - Post from public group
-        // -- (lots of posts from groups not subscribed too)
+        // -- lots of posts from groups not subscribed too
+        /* May 2022 - disabled.
         GF_POST_PUBLIC_GROUP : {
             'en': 'Post from public group',
             'pt': 'Postagem de grupo público',
@@ -347,9 +441,11 @@
             'es': 'Post from public group', // --- needs translation
             'cs': 'Post from public group', // --- needs translation
             'vi': 'Post from public group', // --- needs translation
+            'it': 'Post from public group', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
+        */
         // - From a group that your friend is in
         GF_FROM_A_GROUP_YOUR_FRIEND_IS_IN : {
             'en': 'From a group that your friend is in',
@@ -359,6 +455,7 @@
             'es': 'De un grupo al que tu amigo pertenece',
             'cs': 'Ze skupiny, kde je váš přítel',
             'vi': 'From a group that your friend is in', // --- needs translation
+            'it': 'From a group that your friend is in', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -372,6 +469,7 @@
             'es': 'Friends\' groups', // --- needs translation
             'cs': 'Friends\' groups', // --- needs translation
             'vi': 'Friends\' groups', // --- needs translation
+            'it': 'Friends\' groups', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -384,10 +482,11 @@
             'es': 'Popular near you', // --- needs translation
             'cs': 'Popular near you', // --- needs translation
             'vi': 'Popular near you', // --- needs translation
+            'it': 'Popular near you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - See More Groups - from post's heading "More like XYZ" (where XYZ is a group you've joined)
+        // - See More Groups - from post's heading "More like XYZ" / "Others similar to XYZ" (where XYZ is a group you've joined)
         // -- nb: some non-subscribed group posts also have this keyword.
         GF_SEE_MORE_GROUPS : {
             'en': 'See More Groups',
@@ -397,6 +496,7 @@
             'es': 'Ver más grupos',
             'cs': 'Zobrazit další skupiny',
             'vi': 'Xem thêm nhóm',
+            'it': 'Vedi altri gruppi',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -409,6 +509,7 @@
             'es': 'Porque has visto una publicación similar',
             'cs': 'Protože jste se díval na podobný příspěvek',
             'vi': 'Xem thêm bài viết tương tự',
+            'it': 'Because you viewed a similar post',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -421,6 +522,7 @@
             'es': 'Because you viewed a similar group', // --- needs translation
             'cs': 'Protože jste zobrazil podobnou skupinu',
             'vi': 'Vì bạn đã xem một nhóm tương tự',
+            'it': 'Because you viewed a similar group', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -433,6 +535,7 @@
             'es': 'Based on your recent activity', // --- needs translation
             'cs': 'Based on your recent activity', // --- needs translation
             'vi': 'Based on your recent activity', // --- needs translation
+            'it': 'Based on your recent activity', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -447,10 +550,11 @@
             'es': 'Unirte al grupo',
             'cs': 'Přidat se ke skupině',
             'vi': 'Tham gia nhóm',
+            'it': 'Iscriviti al gruppo',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - "Join" button/link
+        // - "Join" / "Sign up" / "Subscribe" button/link
         // -- one of two generic join a group
         // -- (bit like a catch-all rule)
         GF_JOIN_GROUP_2 : {
@@ -461,6 +565,7 @@
             'es': 'Unirte',
             'cs': 'Přidat se',
             'vi': 'Tham gia',
+            'it': 'Iscriviti',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -475,7 +580,8 @@
             'fr': 'Partenariat rémunéré',
             'es': 'Colaboración pagada', // (Paid collaboration)
             'cs': 'Placené partnerství',
-            'vi': 'Paid partnership', // --- needs translation
+            'vi': 'Mối quan hệ tài trợ',
+            'it': 'Partnership pubblicizzata',
             'isSuggestion': true,
             'defaultEnabled': true,
         },
@@ -487,6 +593,7 @@
             'es': 'Novedades para ti',
             'cs': 'Novinky pro vás',
             'vi': 'New for you', // --- needs translation
+            'it': 'New for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -497,45 +604,13 @@
             'fr': 'EN DIRECT',
             'es': 'ESTRENO',
             'cs': 'ŽIVĚ',
-            'vi': 'LIVE', // --- needs translation
+            'vi': 'TRỰC TIẾP',
+            'it': 'IN DIRETTA',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
 
         // *** Miscellaneous/Other items
-        // -- create room
-        OTHER_CREATE_ROOM : {
-            'en': 'Create room',
-            'pt': 'Criar sala',
-            'de': 'Room erstellen',
-            'fr': 'Créer un salon',
-            'es': 'Crear sala',
-            'cs': 'Vytvořit místnost',
-            'vi': 'Tạo phòng họp mặt',
-            'defaultEnabled': false,
-        },
-        // -- sponsored box in right-hand column
-        OTHER_THIRD_COLUMN_SPONSORED : {
-            'en': 'Sponsored box (right-hand column)',
-            'pt': 'Caixa patrocinada (coluna da direita)',
-            'de': 'Gesponserte Box (rechte Spalte)',
-            'fr': 'Encadré sponsorisé (colonne de droite)',
-            'es': 'Cuadro patrocinado (columna de la derecha)',
-            'cs': 'Sponzorovaný box (pravý sloupec)',
-            'vi': 'Hộp tài trợ (cột bên phải))',
-            'defaultEnabled': true,
-        },
-        // -- Stories (top of News Feed)
-        OTHER_STORIES : {
-            'en': 'Stories',
-            'pt': 'Histórias',
-            'de': 'Stories',
-            'fr': 'Stories',
-            'es': 'Historias', 
-            'cs': 'Příběhy',
-            'vi': 'Những câu chuyện',
-            'defaultEnabled': false,
-        },
         // -- info box - coronavirus
         OTHER_INFO_BOX_CORONAVIRUS : {
             'en': 'Coronavirus (information box)',
@@ -545,6 +620,7 @@
             'es': 'Coronavirus (cuadro de información)',
             'cs': 'Coronavirus (informační box)',
             'vi': 'Virus corona (hộp thông tin)',
+            'it': 'Coronavirus (casella informativa)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/', // -- the partial path name to match.
@@ -558,6 +634,7 @@
             'es': 'Ciencia del clima (cuadro de información)',
             'cs': 'Klimatická věda (informační box)',
             'vi': 'Khoa học khí hậu (hộp thông tin)',
+            'it': 'Scienza del clima (casella informativa)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
@@ -571,6 +648,7 @@
             'es': 'Suscribir  (cuadro de información)',
             'cs': 'Odebírat (informační box)',
             'vi': 'Đăng kí (hộp thông tin)',
+            'it': 'Iscriviti (casella informativa)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/support/',
@@ -584,6 +662,7 @@
             'es': 'Consulte los detalles de la encuesta',
             'cs': 'Viz Podrobnosti průzkumu',
             'vi': 'Xem chi tiết khảo sát',
+            'it': 'Vedi i dettagli del sondaggio',
             'pathMatch': '/survey/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
@@ -597,6 +676,7 @@
             'es': 'La compañía de Facebook ahora se llama Meta',
             'cs': 'Facebooková společnost se nyní jmenuje Meta',
             'vi': 'Công ty Facebook bây giờ được gọi là Meta',
+            'it': 'La società di Facebook si chiama ora Meta',
             'urlMatch': 'about.facebook.com/meta/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
@@ -612,6 +692,7 @@
             'es': 'Limpia mis feeds',
             'cs': 'Vyčistěte mé kanály',
             'vi': 'Làm sạch nguồn cấp dữ liệu của tôi',
+            'it': 'Pulisci i miei feed',
         },
         DLG_NF : {
             'en': 'News Feed',
@@ -621,6 +702,7 @@
             'es': 'Feed de noticias',
             'cs': 'Informační kanál',
             'vi': 'Nguồn cấp tin tức',
+            'it': 'Feed di notizie', // news section
         },
         DLG_GF : {
             'en': 'Groups Feed',
@@ -630,6 +712,7 @@
             'es': 'Feed de grupos',
             'cs': 'Skupinový kanál',
             'vi': 'Nguồn cấp dữ liệu Nhóm',
+            'it': 'Feed di gruppo',
         },
         DLG_VF : {
             'en': 'Videos Feed',
@@ -639,6 +722,7 @@
             'es': 'Feed de vídeos',
             'cs': 'Video kanál',
             'vi': 'Nguồn cấp dữ liệu video',
+            'it': 'Feed di video',
         },
         DLG_MP : {
             'en': 'Marketplace Feed',
@@ -648,6 +732,7 @@
             'es': 'Feed de Marketplace',
             'cs': 'Marketplace kanál',
             'vi': 'Nguồn cấp dữ liệu Marketplace',
+            'it': 'Feed id Marketplace',
         },
         DLG_OTHER : {
             'en': 'Miscellaneous items',
@@ -657,6 +742,7 @@
             'es': 'Artículos diversos',
             'cs': 'Různé položky',
             'vi': 'Những thứ linh tinh',
+            'it': 'Articoli vari',
         },
         DLG_NF_BLOCK : {
             'en': 'News Feed - text filter',
@@ -666,6 +752,7 @@
             'es': 'Feed de noticias: filtro de texto',
             'cs': 'Informační kanál - textový filtr',
             'vi': 'Nguồn cấp tin tức - bộ lọc văn bản',
+            'it': 'Feed di notizie - filtro di testo',
         },
         DLG_GF_BLOCK : {
             'en': 'Groups Feed - text filter',
@@ -675,6 +762,7 @@
             'es': 'Feed de grupos: filtro de texto',
             'cs': 'Skupinový kanál - textový filtr',
             'vi': 'Nguồn cấp dữ liệu Nhóm - bộ lọc văn bản',
+            'it': 'Feed di gruppo - filtro di testo',
         },
         DLG_VF_BLOCK : {
             'en': 'Videos Feed - text filter',
@@ -684,6 +772,7 @@
             'es': 'Feed de videos - filtro de texto',
             'cs': 'Video kanál - textový filtr',
             'vi': 'Nguồn cấp dữ liệu video - bộ lọc văn bản',
+            'it': 'Feed di video - filtro di testo',
         },
         DLG_BLOCK_NEW_LINE : {
             'en': '(separate words or phrases with a line break)',
@@ -693,6 +782,7 @@
             'es': '(palabras o frases separadas con saltos de línea)',
             'cs': '(oddělte slova nebo fráze na nový řádek)',
             'vi': '(tách các từ hoặc cụm từ bằng dấu ngắt dòng)',
+            'it': '(separare parole o frasi con un\'interruzione di riga)',
         },
         NF_BLOCKED_ENABLED : {
             'en': 'Enabled',
@@ -702,6 +792,7 @@
             'es': 'Habilitadas',
             'cs': 'Zapnuto',
             'vi': 'Đã kích hoạt',
+            'it': 'Abilita opzione',
         },
         GF_BLOCKED_ENABLED : {
             'en': 'Enabled',
@@ -711,6 +802,7 @@
             'es': 'Habilitadas',
             'cs': 'Zapnuto',
             'vi': 'Đã kích hoạt',
+            'it': 'Abilita opzione',
         },
         VF_BLOCKED_ENABLED : {
             'en': 'Enabled',
@@ -720,6 +812,7 @@
             'es': 'Habilitadas',
             'cs': 'Zapnuto',
             'vi': 'Đã kích hoạt',
+            'it': 'Abilita opzione',
         },
         DLG_VERBOSITY : {
             'en': 'Verbosity',
@@ -728,7 +821,8 @@
             'fr': 'Verbosité',
             'es': 'Verbosidad',
             'cs': 'Výřečnost',
-            'vi': 'Tính dài dòng'
+            'vi': 'Tính dài dòng',
+            'it': 'Verbosità',
         },
         DLG_VERBOSITY_MESSAGE : {
             'en': 'Display a message if a post is hidden',
@@ -738,6 +832,7 @@
             'es': 'Mostrar un mensaje si una publicación está oculta',
             'cs': 'Zobrazit zprávu, pokud je příspěvek skrytý',
             'vi': 'Hiển thị một tin nhắn nếu một bài đăng bị ẩn',
+            'it': 'Visualizza un messaggio se un post è nascosto',
         },
         VERBOSITY_NO_MESSAGE : {
             'en': 'no message',
@@ -746,7 +841,8 @@
             'fr': 'pas de message',
             'es': 'Sin mensaje',
             'cs': 'žádná zpráva',
-            'vi': 'không có tin nhắn'
+            'vi': 'không có tin nhắn',
+            'it': 'Nessun messaggio',
         },
         VERBOSITY_COLOUR : {
             'en': 'Text colour',
@@ -756,6 +852,7 @@
             'es': 'Color del texto',
             'cs': 'Barva textu',
             'vi': 'Màu văn bản',
+            'it': 'Colore del testo',
         },
         VERBOSITY_BG_COLOUR : {
             'en': 'Background colour',
@@ -765,15 +862,17 @@
             'es': 'Color de fondo',
             'cs': 'Barva pozadí',
             'vi': 'Màu nền',
+            'it': 'Colore di sfondo',
         },
         VERBOSITY_DEBUG : {
-            'en': 'Highlight "hidden" posts"',
+            'en': 'Highlight "hidden" posts',
             'pt': 'Destacar postagens "ocultas"',
             'de': 'Markieren Sie "versteckte" Beiträge',
             'fr': 'Mettez en surbrillance les messages « cachés »',
             'es': 'Destacar publicaciones "ocultas"',
             'cs': 'Zvýrazněte „skryté“ příspěvky',
             'vi': 'Đánh dấu các bài đăng "ẩn"',
+            'it': 'Evidenzia i post "nascosti"',
         },
         // CMF's customisations
         CMF_CUSTOMISATIONS : {
@@ -784,6 +883,7 @@
             'es': 'Personalizaciones',
             'cs': 'Přizpůsobení',
             'vi': 'Các tùy chỉnh',
+            'it': 'Personalizzazioni',
         },
         CMF_BTN_LOCATION : {
             'en': 'Location of Clean my feeds\' button',
@@ -793,6 +893,7 @@
             'es': 'Ubicación del botón Limpia mis feeds',
             'cs': 'Umístění tlačítka Vyčistěte mé kanály',
             'vi': 'Vị trí của nút Làm sạch nguồn cấp dữ liệu của tôi',
+            'it': 'Posizione del pulsante Pulisci i miei feed',
         },
         CMF_BTN_OPTION : {
             'en': ['bottom left', 'top right'],
@@ -802,6 +903,7 @@
             'es': ['abajo a la izquierda', 'arriba a la derecha'],
             'cs': ['vlevo dole', 'vpravo nahoře'],
             'vi': ['dưới cùng bên trái', 'trên cùng bên phải'],
+            'it': ['in basso a sinistra', 'in alto a destra'],
             'defaultValue': 0,
         },
         CMF_DIALOG_LOCATION : {
@@ -812,6 +914,7 @@
             'es': 'Ubicación del cuadro de diálogo Limpia mis feeds',
             'cs': 'Umístění dialogového okna Vyčistěte mé kanály',
             'vi': 'Vị trí của hộp thoại Làm sạch nguồn cấp dữ liệu của tôi',
+            'it': 'Posizione della finestra di dialogo Pulisci i miei feed',
         },
         CMF_DIALOG_OPTION : {
             'en': ['left side', 'right side'],
@@ -821,6 +924,7 @@
             'es': ['lado izquierdo', 'lado derecho'],
             'cs': ['levá strana', 'pravá strana'],
             'vi': ['bên trái', 'bên phải'],
+            'it': ['lato sinistro', 'lato destro'],
             'defaultValue': 0,
         },
         CMF_BORDER_COLOUR : {
@@ -831,6 +935,7 @@
             'es': 'Color de borde',
             'cs': 'Barva ohraničení',
             'vi': 'Màu viền',
+            'it': 'Colore del bordo',
         },
         CMF_BORDER_OPTION : {
             'defaultValue': 'orangered',
@@ -843,6 +948,7 @@
             'es': 'Consejos',
             'cs': 'Tipy',
             'vi': 'Thủ thuật',
+            'it': 'Suggerimenti',
         },
         DLG_TIPS_CONTENT : {
             'en': 'Clearing your browser\'s cache will reset your settings to their default values.\n\nUse the "Export" and "Import" buttons to backup and restore your customised settings.',
@@ -852,6 +958,7 @@
             'es': 'Limpiar la memoria caché de su navegador restablecerá la configuración a sus valores predeterminados.\n\nUtilice los botones "Exportar" e "Importar" para hacer una copia de seguridad y restaurar su configuración personalizada.',
             'cs': 'Vymazáním mezipaměti prohlížeče obnovíte výchozí hodnoty nastavení.\n\nPomocí tlačítek "Export" a "Import" zálohujte a obnovte svá přizpůsobená nastavení.',
             'vi': 'Xóa bộ nhớ cache của trình duyệt sẽ đặt lại cài đặt của bạn về các giá trị mặc định của chúng. Sử dụng các nút "Xuất" và "Nhập" để sao lưu và khôi phục cài đặt tùy chỉnh của bạn.',
+            'it': 'La cancellazione della cache del browser ripristinerà le impostazioni ai valori predefiniti.\n\nUtilizza i pulsanti "Esporta" e "Importa" per eseguire il backup e ripristinare le impostazioni personalizzate.',
         },
         DLG_BUTTONS : {
             'en': ['Save', 'Close', 'Export', 'Import'],
@@ -861,7 +968,7 @@
             'es': ['Guardar', 'Cerrar', 'Exportar', 'Importar'],
             'cs': ['Zachránit', 'Zavřít', 'Export', 'Import'],
             'vi': ['Lưu', 'Đóng', 'Xuất', 'Nhập'],
-
+            'it': ['Salva', 'Chiudi', 'Esportare', 'Importare'],
         },
     };
     // *** *** end of language components *** ***
@@ -911,7 +1018,7 @@
         postBlocksQS: ':scope > div > div > div > div > div > div > div > div > div > div > div > div > div',
         // - groups feed intro posts - exclude procseed post(s)
         // --- two variations in stucture
-        groupsNonFeedsQS: `div[role="main"] > div > div > div > div:nth-of-type(2) > div:not([${postAtt}]) , 
+        groupsNonFeedsQS: `div[role="main"] > div > div > div > div:nth-of-type(2) > div:not([${postAtt}]) ,
                           div[role="main"] div[role="main"] > div > div > div > div:first-of-type > div > div:first-of-type > div:not([${postAtt}])`,
         // - non regular feed post blocks
         nonRegularPostBlocksQS: ':scope > div > div > div > div > div > div > div:first-of-type',
@@ -928,15 +1035,22 @@
         // - marketplace - exclude boxes already processed (May 2022 ->).
         marketplaceQS2: `div[role="main"] a[href^="/ads/"]:not([${postAtt}])`,
         // - third column - sponsored box - set by addCSS()
-        thirdColQS: '',
+        thirdColQS1: '',
+        // - third column - groups suggested for you - set by addCSS() (May 2022 ->)
+        thirdColQS2: '',
         // - create room (pre May 2022)
         createRoomQS1: `div[data-pagelet="VideoChatHomeUnit"]:not([${postAtt}]) , div[data-pagelet="VideoChatHomeUnitNoDDD"]:not([${postAtt}])`,
         // - create room (May 2022 ->)
         createRoomQS2: `div:not([${postAtt}]) > div > div > div > div[data-visualcompletion="ignore-dynamic"][class=""] i[data-visualcompletion="css-img"]`,
         // - stories - (May 2022 ->)
-        storiesQS: '[id="ssrb_stories_start"]',
-        // sponsored - paid for
+        storiesQS1: '[id="ssrb_stories_start"]',
+        // - stories - (May 2022 ->) - becareful, may hide main feed if stories slow to show (hence [aria-label] attribute) ...
+        storiesQS2: `div[role="main"] > div > div > div > div:nth-of-type(2):not([${postAtt}]) > div[aria-label]`,
+        // - sponsored - paid for
         sponsoredPaidForQS: '[role="button"]',
+
+        // - search page, "all" (top)
+        searchTopQS: 'div[role="feed"] > div',
 
         // - Feed toggles
         isNF : false,
@@ -944,6 +1058,7 @@
         isVF : false,
         isMP : false,
         isAF : false,
+        isSF : false,
 
         // marketplace feed type (std | category)
         mpType: '',
@@ -990,8 +1105,8 @@
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl : null,
         // - script's logo
-        logoHTML: '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32"><g id="Layer" fill="currentColor">' + 
-        '<path id="Layer" fill-rule="evenodd" class="s0" d="m51 3.2c0.7 1.1 0.7 1-1.6 9.2-1.4 5-2.1 7.4-2.3 7.6-0.1 0.1-0.3 0.2-0.6 0.2-0.4 0-0.9-0.4-0.9-0.7 0-0.1 1-3.5 2-7.4 1.2-4 2-7.3 2-7.5 0-0.4-0.6-1-0.9-1-0.2 0-0.5 0.2-0.7 0.3-0.3 0.3-0.7 1.8-5.5 19.2l-5.3 18.9 0.9 0.5c0.5 0.3 0.9 0.5 0.9 0.5 0 0 1.3-4.4 2.8-9.8 1.5-5.3 2.8-10 2.8-10.3 0.2-0.5 0.3-0.7 0.6-0.9 0.3-0.1 0.4-0.1 0.8 0 0.2 0.2 0.4 0.3 0.4 0.5 0.1 0.2-0.4 2.2-1.5 6.1-0.9 3.2-1.6 5.8-1.6 5.9 0 0 0.5 0.1 1.3 0.1 1.9 0 2.7 0.4 3.2 1.5 0.3 0.6 0.3 2.7 0 3.4-0.3 0.9-1.2 1.4-2 1.4-0.3 0-0.5 0.1-0.5 0.1 0 0.2-2.3 20.2-2.3 20.4-0.2 0.8 0.7 0.7-14.1 0.7-15.3 0-14.3 0.1-15.3-1-0.8-0.8-1.1-1.5-1-2.9 0.2-3.6 2.7-6.7 6.3-7.8 0.4-0.2 0.9-0.3 1-0.3 0.6 0 0.6 0.1 0.1-4.5-0.3-2.4-0.5-4.4-0.5-4.5-0.1-0.1-0.3-0.1-0.7-0.2-0.6 0-1.1-0.3-1.6-1-0.3-0.4-0.3-0.5-0.4-1.8 0-1.7 0.1-2.1 0.6-2.7 0.7-0.6 1-0.7 2.5-0.8h1.3v-2.9c0-3.1 0-3.4 0.6-3.6 0.2-0.1 2.4-0.1 7.1-0.1 6.5 0.1 6.9 0.1 7.1 0.3 0.2 0.2 0.2 0.3 0.2 3.3v3h0.6l0.6-0.1 4.3-15.3c2.4-8.5 4.4-15.6 4.5-15.9 0.4-0.6 0.9-1 1.5-1.3 1.2-0.4 2.6 0.1 3.3 1.2zm-26.6 26.6h-0.7c-0.3 0-0.6 0-0.7 0 0 0.1-0.1 1.2-0.1 2.5v2.3h1.5zm3.4 0h-0.7c-0.5 0-0.9 0-0.9 0.1 0 0-0.1 1.1-0.1 2.4v2.3h1.8v-2.4zm3.4 0h-1.6v4.8h1.6zm3.2 0h-1.3v4.8h1.3zm-6.4 6.6c-7.9 0-9 0-9.2 0.2-0.3 0.2-0.3 0.3-0.3 1.3 0 0.7 0.1 1.1 0.2 1.2 0.1 0.1 2.3 0.1 7.3 0.1 6.9 0.1 7.2 0.1 7.5 0.3 0.3 0.3 0.3 1 0 1.3-0.2 0.2-0.8 0.2-6.3 0.2h-6l0.1 0.5c0 0.3 0.2 2.3 0.5 4.5l0.4 4h0.4c0.6 0 1.5-0.3 2-0.7 0.3-0.3 0.7-0.8 0.9-1.3 0.6-1.1 1.3-2 2.1-2.7 1.1-0.9 2.8-1.5 4-1.5h0.6l0.7-1.1c0.6-1 0.8-1.2 1.3-1.5 0.4-0.2 0.6-0.2 0.9-0.2 0.4 0.1 0.5 0.1 0.5-0.1 0.1-0.1 0.3-1.1 0.6-2.1 0.3-1.1 0.6-2.1 0.6-2.2 0.1-0.2-0.4-0.2-8.8-0.2zm16.' + 
+        logoHTML: '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32"><g id="Layer" fill="currentColor">' +
+        '<path id="Layer" fill-rule="evenodd" class="s0" d="m51 3.2c0.7 1.1 0.7 1-1.6 9.2-1.4 5-2.1 7.4-2.3 7.6-0.1 0.1-0.3 0.2-0.6 0.2-0.4 0-0.9-0.4-0.9-0.7 0-0.1 1-3.5 2-7.4 1.2-4 2-7.3 2-7.5 0-0.4-0.6-1-0.9-1-0.2 0-0.5 0.2-0.7 0.3-0.3 0.3-0.7 1.8-5.5 19.2l-5.3 18.9 0.9 0.5c0.5 0.3 0.9 0.5 0.9 0.5 0 0 1.3-4.4 2.8-9.8 1.5-5.3 2.8-10 2.8-10.3 0.2-0.5 0.3-0.7 0.6-0.9 0.3-0.1 0.4-0.1 0.8 0 0.2 0.2 0.4 0.3 0.4 0.5 0.1 0.2-0.4 2.2-1.5 6.1-0.9 3.2-1.6 5.8-1.6 5.9 0 0 0.5 0.1 1.3 0.1 1.9 0 2.7 0.4 3.2 1.5 0.3 0.6 0.3 2.7 0 3.4-0.3 0.9-1.2 1.4-2 1.4-0.3 0-0.5 0.1-0.5 0.1 0 0.2-2.3 20.2-2.3 20.4-0.2 0.8 0.7 0.7-14.1 0.7-15.3 0-14.3 0.1-15.3-1-0.8-0.8-1.1-1.5-1-2.9 0.2-3.6 2.7-6.7 6.3-7.8 0.4-0.2 0.9-0.3 1-0.3 0.6 0 0.6 0.1 0.1-4.5-0.3-2.4-0.5-4.4-0.5-4.5-0.1-0.1-0.3-0.1-0.7-0.2-0.6 0-1.1-0.3-1.6-1-0.3-0.4-0.3-0.5-0.4-1.8 0-1.7 0.1-2.1 0.6-2.7 0.7-0.6 1-0.7 2.5-0.8h1.3v-2.9c0-3.1 0-3.4 0.6-3.6 0.2-0.1 2.4-0.1 7.1-0.1 6.5 0.1 6.9 0.1 7.1 0.3 0.2 0.2 0.2 0.3 0.2 3.3v3h0.6l0.6-0.1 4.3-15.3c2.4-8.5 4.4-15.6 4.5-15.9 0.4-0.6 0.9-1 1.5-1.3 1.2-0.4 2.6 0.1 3.3 1.2zm-26.6 26.6h-0.7c-0.3 0-0.6 0-0.7 0 0 0.1-0.1 1.2-0.1 2.5v2.3h1.5zm3.4 0h-0.7c-0.5 0-0.9 0-0.9 0.1 0 0-0.1 1.1-0.1 2.4v2.3h1.8v-2.4zm3.4 0h-1.6v4.8h1.6zm3.2 0h-1.3v4.8h1.3zm-6.4 6.6c-7.9 0-9 0-9.2 0.2-0.3 0.2-0.3 0.3-0.3 1.3 0 0.7 0.1 1.1 0.2 1.2 0.1 0.1 2.3 0.1 7.3 0.1 6.9 0.1 7.2 0.1 7.5 0.3 0.3 0.3 0.3 1 0 1.3-0.2 0.2-0.8 0.2-6.3 0.2h-6l0.1 0.5c0 0.3 0.2 2.3 0.5 4.5l0.4 4h0.4c0.6 0 1.5-0.3 2-0.7 0.3-0.3 0.7-0.8 0.9-1.3 0.6-1.1 1.3-2 2.1-2.7 1.1-0.9 2.8-1.5 4-1.5h0.6l0.7-1.1c0.6-1 0.8-1.2 1.3-1.5 0.4-0.2 0.6-0.2 0.9-0.2 0.4 0.1 0.5 0.1 0.5-0.1 0.1-0.1 0.3-1.1 0.6-2.1 0.3-1.1 0.6-2.1 0.6-2.2 0.1-0.2-0.4-0.2-8.8-0.2zm16.' +
         '2 0h-1.5l-0.4 1.3c-0.2 0.8-0.4 1.4-0.4 1.5 0 0 0.9 0 2 0 2.3 0 2.3 0.1 2.3-1.4 0-0.9-0.1-1-0.3-1.2-0.2-0.2-0.6-0.2-1.7-0.2zm-2.8 4.7c0 0.1-0.2 0.8-0.5 1.6-0.2 1-0.3 1.4-0.2 1.5 0 0 0.3 0.2 0.6 0.4 0.4 0.4 0.4 0.5 0.5 1.2 0 0.6 0 0.7-0.8 2-0.7 1.1-0.8 1.3-1.3 1.6l-0.5 0.2v1.8c0 1.3-0.1 2-0.2 2.5-0.1 0.4-0.2 0.8-0.2 0.8 0 0 0.7 0.1 1.5 0.1 1.2 0 1.6-0.1 1.6-0.2 0-0.1 0.4-3.1 0.8-6.8 0.4-3.6 0.7-6.7 0.7-6.7-0.1-0.2-1.9-0.1-2 0zm-6.3 1.8c-0.2-0.1-0.3 0-0.9 1-0.2 0.4-0.4 0.8-0.3 0.8 0 0.1 1.1 0.7 2.3 1.5 1.3 0.7 2.4 1.4 2.5 1.5 0.3 0.1 0.3 0.1 0.8-0.8 0.3-0.6 0.6-1 0.5-1 0 0-1.1-0.7-2.4-1.5-1.3-0.8-2.4-1.4-2.5-1.5zm-4.5 2.8c-1.6 0.5-2.7 1.5-3.5 3.1-0.6 1.2-1.3 2-2.4 2.5-0.9 0.4-0.9 0.4-2.9 0.5-2.8 0.1-3.9 0.6-5.4 2.1-0.8 0.8-1 1.1-1.4 1.9-1 2.2-0.9 4 0.2 4.4 0.7 0.3 0.8 0.3 1-0.5 0.8-2.4 2.7-4.5 5.1-5.5 1.1-0.4 1.6-0.5 3.2-0.6 2-0.2 2.8-0.7 3.4-2.2 0.3-0.5 0.6-1.2 0.8-1.6 0.8-1.3 2.4-2.5 3.8-2.9 0.4-0.1 0.8-0.2 0.8-0.2q0.2-0.1-0.3-0.4c-0.3-0.2-0.6-0.4-0.6-0.5-0.1-0.3-1.1-0.3-1.8-0.1zm3.2 2.7c-0.9 0.2-2 0.8-2.8 1.5-0.7 0.6-0.8 0.9-1.6 2.6-0.7 1.5-2.2 2.5-3.9 2.7-3.4 0.4-4.3 0.8-5.8 2.2-0.7 0.8-1 1.2-1.4 1.9l-0.5 1 0.9 0.1c0.9 0 0.9 0 1.2-0.4q2.7-3.2 7.3-3.2c2.2 0 2.9-0.5 3.9-2.3 0.3-0.5 0.7-1.2 0.9-1.5 1-1.2 3-2.3 4.6-2.4l0.8-0.1-0.1-0.5c-0.1-0.8-0.3-1.2-0.9-1.4-0.7-0.2-1.9-0.3-2.6-0.2zm3.6 3.9h-0.4c-0.5 0-1.6 0.3-2.3 0.7-0.7 0.5-1.6 1.5-2.2 2.6-1.1 2.1-2.5 2.9-5.2 2.9-0.6 0-1.6 0.1-2 0.2-1 0.2-2.3 0.8-2.9 1.3l-0.4 0.4h4.1c4.6-0.1 4.7-0.1 6.5-1 0.9-0.5 1.3-0.7 2.2-1.6 1.4-1.4 2.2-3 2.5-4.9zm4.3 4.2h-1.9-1.8l-0.5 0.8c-0.6 0.9-1.5 1.9-2.4 2.6l-0.6 0.5h3.4c2.6 0 3.4 0 3.4-0.1 0-0.1 0.1-1 0.2-2z"/>' +
         '</g></svg>'
     };
@@ -1092,8 +1207,8 @@
         // - left / right done in fn addExtraCSS().
         css = `position:fixed; top:0.15rem; bottom:0.15rem; display:flex; flex-direction:column; width:30rem; padding:0 1rem; z-index:5; color: var(--primary-text); border:2px solid ${bcolour}; border-radius:1rem; opacity:0;`;
         styleEl.appendChild(document.createTextNode(`.fb-cmf {${css}}`));
-        styleEl.appendChild(document.createTextNode('.__fb-light-mode .fb-cmf {background-color: #fefefa;}'));
-        styleEl.appendChild(document.createTextNode('.__fb-dark-mode .fb-cmf {background-color:var(--web-wash);}'));
+        styleEl.appendChild(document.createTextNode('.__fb-light-mode .fb-cmf {background-color: #fefefa !important;}'));
+        styleEl.appendChild(document.createTextNode('.__fb-dark-mode .fb-cmf {background-color:var(--web-wash) !important;}'));
 
         // -- header
         css = 'display:flex; justify-content: space-between;';
@@ -1158,7 +1273,9 @@
 
         // - set the right-rail query selector - excludes the hide class.
         // -- first rule is May 2022 ->, second is pre May 2022.
-        VARS.thirdColQS = `div[role="complementary"] > div:first-of-type:not(.${VARS.cssHide}) > div > div > div > div > span, div[data-pagelet="RightRail"] > div:first-of-type:not(.${VARS.cssHide}) > span`;
+        VARS.thirdColQS1 = `div[role="complementary"] > div:first-of-type:not(.${VARS.cssHide}) > div > div > div > div > span, div[data-pagelet="RightRail"] > div:first-of-type:not(.${VARS.cssHide}) > span`;
+        // -- groups - suggested for you, May 2022 ->
+        VARS.thirdColQS2 = `div[role="complementary"] > div:first-of-type:not(.${VARS.cssHide}) > div > div > div > div > div`;
     }
     function addExtraCSS() {
         // - extra CSS styles
@@ -1250,6 +1367,39 @@
         if (!VARS.Options.hasOwnProperty('VF_SPONSORED')) { VARS.Options.VF_SPONSORED = true; changed = true; }
         if (!VARS.Options.hasOwnProperty('MP_SPONSORED')) { VARS.Options.MP_SPONSORED = true; changed = true; }
 
+        // -- rename keys
+        let okey = 'OTHER_STORIES';
+        let nkey = 'NF_STORIES';
+        if (VARS.Options.hasOwnProperty(okey)) {
+            VARS.Options[nkey] = VARS.Options[okey];
+            delete VARS.Options[okey];
+        }
+        if (!VARS.Options.hasOwnProperty(nkey)) { VARS.Options[nkey] = KeyWords[nkey].defaultEnabled; changed = true; }
+
+        okey = 'OTHER_CREATE_ROOM';
+        nkey = 'NF_CREATE_ROOM';
+        if (VARS.Options.hasOwnProperty(okey)) {
+            VARS.Options[nkey] = VARS.Options[okey];
+            delete VARS.Options[okey];
+        }
+        if (!VARS.Options.hasOwnProperty(nkey)) { VARS.Options[nkey] = KeyWords[nkey].defaultEnabled; changed = true; }
+
+        okey = 'OTHER_THIRD_COLUMN_SPONSORED';
+        nkey = 'NF_THIRD_COLUMN_SPONSORED';
+        if (VARS.Options.hasOwnProperty(okey)) {
+            VARS.Options[nkey] = VARS.Options[okey];
+            delete VARS.Options[okey];
+        }
+        if (!VARS.Options.hasOwnProperty(nkey)) { VARS.Options[nkey] = KeyWords[nkey].defaultEnabled; changed = true; }
+
+        okey = 'OTHER_THIRD_COLUMN_SUGGESTED_FOR_YOU';
+        nkey = 'NF_THIRD_COLUMN_SUGGESTED_FOR_YOU';
+        if (VARS.Options.hasOwnProperty(okey)) {
+            VARS.Options[nkey] = VARS.Options[okey];
+            delete VARS.Options[okey];
+        }
+        if (!VARS.Options.hasOwnProperty(nkey)) { VARS.Options[nkey] = KeyWords[nkey].defaultEnabled; changed = true; }
+
         // -- which suggestions / info boxes / top of NF feed items have been enabled?
         VARS.infoBoxes = false;
         VARS.infoBoxesPaths = [];
@@ -1293,13 +1443,6 @@
         if (!VARS.Options.hasOwnProperty(key)) { VARS.Options[key] = KeyWords[key].defaultEnabled; changed = true; }
 
         // -- all other options.
-        key = "OTHER_CREATE_ROOM";
-        if (!VARS.Options.hasOwnProperty(key)) { VARS.Options[key] = KeyWords[key].defaultEnabled; changed = true; }
-        key = "OTHER_THIRD_COLUMN_SPONSORED";
-        if (!VARS.Options.hasOwnProperty(key)) { VARS.Options[key] = KeyWords[key].defaultEnabled; changed = true; }
-        key = "OTHER_STORIES";
-        if (!VARS.Options.hasOwnProperty(key)) { VARS.Options[key] = KeyWords[key].defaultEnabled; changed = true; }
-
         if (!VARS.Options.hasOwnProperty('NF_BLOCKED_ENABLED')) { VARS.Options.NF_BLOCKED_ENABLED = true; changed = true; }
         if (!VARS.Options.hasOwnProperty('NF_BLOCKED_TEXT')) { VARS.Options.NF_BLOCKED_TEXT = ''; changed = true; }
         if (!VARS.Options.hasOwnProperty('GF_BLOCKED_ENABLED')) { VARS.Options.GF_BLOCKED_ENABLED = true; changed = true; }
@@ -1337,9 +1480,10 @@
             }
         }
 
-        // - right-rail found flag - default is false;
-        //   (set to true to stop mopping up RR)
-        VARS.tcFound = !(VARS.Options.OTHER_THIRD_COLUMN_SPONSORED);
+        // - third column - sponsored -found flag - default is false;
+        //   (set to true to stop mopping up third-col)
+        VARS.tcFound_Sponsored = !(VARS.Options.NF_THIRD_COLUMN_SPONSORED);
+        VARS.tcFound_Suggested4U = !(VARS.Options.NF_THIRD_COLUMN_SUGGESTED_FOR_YOU);
 
         // - split the blocks of texts
         splitBlocksOfTexts();
@@ -1450,7 +1594,7 @@
             hdr1 = document.createElement('div');
             hdr1.className = 'fb-cmf-icon';
             hdr1.innerHTML = VARS.logoHTML;
-            
+
             hdr2 = document.createElement('div');
             hdr2.className = 'fb-cmf-title';
             htxt = document.createElement('div');
@@ -1488,12 +1632,16 @@
             l.textContent = KeyWords.DLG_NF[VARS.language];
             fs.appendChild(l);
             fs.appendChild(createCB('cbNF', 'NF_SPONSORED', true));
+            fs.appendChild(createCB('cbNF', 'NF_STORIES', false));
+            fs.appendChild(createCB('cbNF', 'NF_CREATE_ROOM', false));
             for (const key in KeyWords) {
                 if (key.slice(0,3) === 'NF_' && KeyWords[key].isSuggestion) {
                     fs.appendChild(createCB('cbNF', key));
                 }
             }
             fs.appendChild(createCB('cbNF', 'NF_SPONSORED_PAID'));
+            fs.appendChild(createCB('cbNF', 'NF_THIRD_COLUMN_SPONSORED', false));
+            fs.appendChild(createCB('cbNF', 'NF_THIRD_COLUMN_SUGGESTED_FOR_YOU', false));
             cnt.appendChild(fs);
 
             // -- Groups Feed options
@@ -1536,10 +1684,7 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_OTHER[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createCB('cbOther', 'OTHER_STORIES'));
-            fs.appendChild(createCB('cbOther', 'OTHER_CREATE_ROOM'));
-            fs.appendChild(createCB('cbOther', 'OTHER_THIRD_COLUMN_SPONSORED'));
-            for (const key in KeyWords) {
+             for (const key in KeyWords) {
                 if (KeyWords[key].isInfoBox) {
                     fs.appendChild(createCB('cbOther', key));
                 }
@@ -1745,31 +1890,30 @@
                     });
                     VARS.Options[ta.name] = txts.join('¦¦');
                 });
-
-                //console.info(`${log}saveUserOptions() : Options:`, VARS.Options);
             }
-            else {
-                // -- source: file (imported)
-                // -- clear out items that are not valid.
-                let md = document.getElementById('fbcmf');
-                let inputs = Array.from(md.querySelectorAll('input:not([type="file"]), textarea'));
-                let validNames = [];
-                inputs.forEach(inp => {
-                    validNames.push( (inp.type === 'checkbox') ? inp.value : inp.name);
-                });
-                for (let key in VARS.Options) {
-                    if (validNames.indexOf(key) < 0) {
-                        //console.info(`${log}SUO : deleting key:`, key);
-                        delete VARS.Options[key];
+
+            // -- clear out items that are not valid.
+            let md = document.getElementById('fbcmf');
+            let inputs = Array.from(md.querySelectorAll('input:not([type="file"]), textarea'));
+            let validNames = [];
+            inputs.forEach(inp => {
+                validNames.push( (inp.type === 'checkbox') ? inp.value : inp.name);
+            });
+            for (let key in VARS.Options) {
+                if (validNames.indexOf(key) < 0) {
+                    if (VARS.Options.VERBOSITY_DEBUG) {
+                        console.info(`${log}SUO : deleting key:`, key);
                     }
+                    delete VARS.Options[key];
                 }
             }
+
             // -- save options
             let result = await set(DBVARS.DBKey, JSON.stringify(VARS.Options), DBVARS.ostore)
             .then(() => {
-                if (VARS.Options.VERBOSITY_DEBUG) {
-                    console.info(`${log}saveUserOptions() > set() -> Saved, Options:`, VARS.Options);
-                }
+                // if (VARS.Options.VERBOSITY_DEBUG) {
+                //     console.info(`${log}saveUserOptions() > set() -> Saved, Options:`, VARS.Options);
+                // }
                 // -- refresh options and split blocks of texts
                 let result2 = getUserOptions()
                 .then(() => {
@@ -1790,6 +1934,7 @@
                 addCSS();
                 addExtraCSS();
             }
+            document.querySelector('#fbcmf .fileResults').innerText = `Last Saved @ ${(new Date).toTimeString().slice(0,8)}`;
         }
 
         function exportUserOptions() {
@@ -1875,6 +2020,7 @@
             VARS.isGF = false;
             VARS.isVF = false;
             VARS.isMP = false;
+            VARS.isSF = false;
             if (VARS.prevPathname === '/') {
                 VARS.isNF = true;
                 VARS.QS = VARS.newsFeedQS;
@@ -1941,6 +2087,15 @@
                 }
                 // console.info(`${log}setFeedSettings() : isMP, mpType, mpItem:`, VARS.isMP, VARS.mpType, VARS.mpItem);
             }
+            else if (['/search/top/', '/search/top', '/search/posts/', '/search/posts'].indexOf(VARS.prevPathname) >=0) {
+                // -- search results page : "All" and "Posts"
+                VARS.isSF = true;
+                VARS.QS = VARS.searchTopQS;
+                VARS.suggestions = [];
+                VARS.blockText = false;
+                VARS.blockTextMatch = [];
+                VARS.blockTextMatchLC = [];
+            }
             else {
                 VARS.QS = '';
                 VARS.suggestions = [];
@@ -1948,7 +2103,7 @@
                 VARS.blockTextMatch = [];
                 VARS.blockTextMatchLC = [];
             }
-            VARS.isAF = (VARS.isNF || VARS.isGF || VARS.isVF || VARS.isMP);
+            VARS.isAF = (VARS.isNF || VARS.isGF || VARS.isVF || VARS.isMP || VARS.isSF);
 
             if (VARS.isAF) {
                 if (VARS.btnToggleEl) VARS.btnToggleEl.classList.add('show');
@@ -1962,12 +2117,13 @@
             // - reset non-feed-posts count
             VARS.nfpLoopCount = 0;
             // - reset stories found flag
-            VARS.storiesFound = (VARS.Options.OTHER_STORIES === false);
+            VARS.storiesFound = (VARS.Options.NF_STORIES === false);
             // - reset create-room found flag
-            VARS.crFound = (VARS.Options.OTHER_CREATE_ROOM === false);
-            // - reset right-rail found flag
-            // (set to true to stop mopping up the RR)
-            VARS.tcFound = (VARS.Options.OTHER_THIRD_COLUMN_SPONSORED === false);
+            VARS.crFound = (VARS.Options.NF_CREATE_ROOM === false);
+            // - reset third-column found flags
+            // (set to true to stop mopping up the tc)
+            VARS.tcFound_Sponsored = (VARS.Options.NF_THIRD_COLUMN_SPONSORED === false);
+            VARS.tcFound_Suggested4U = (VARS.Options.NF_THIRD_COLUMN_SUGGESTED_FOR_YOU === false);
 
             // - reset f2m and survey found flags
             VARS.f2mFound = (VARS.Options.OTHER_FB_RENAMED === false);
@@ -1975,7 +2131,7 @@
             // console.info(`${log}SF:`, VARS.surveyFound);
             VARS.otherLoopCount = 0;
 
-            // console.info(`${log}setFeedSettings() : VARS:`, VARS.isAF, VARS.isNF, VARS.isGF, VARS.isVF, VARS.isMP);
+            // console.info(`${log}setFeedSettings() : VARS:`, VARS.isAF, VARS.isNF, VARS.isGF, VARS.isVF, VARS.isMP, VARS.isSF);
             return true;
         }
         else {
@@ -2092,7 +2248,7 @@
 
         let daText = '';
 
-        // -- try the SPAN structure (w Flex) 
+        // -- try the SPAN structure (w Flex)
         let elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > span[style], span > span > span > a[href*="/ads/"] > span > span[class] > span[style]');
         if (elWrapper) {
             // -- found a regular post structure
@@ -2120,8 +2276,8 @@
             // -- try the B structure (no Flex)
             elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > b[class], span > span > span > a[href*="/ads/"] > span > span[class] > b[class]');
             if (elWrapper) {
-                // -- found a regular post structure (Portugese)
-                let daText = '';
+                // -- found a regular post structure (Portugese, Italian)
+                daText = '';
                 elWrapper.childNodes.forEach((cn) => {
                     if (cn.nodeType === Node.ELEMENT_NODE) {
                         let cs = window.getComputedStyle(cn);
@@ -2150,6 +2306,7 @@
         let suggestionIndex = -1;
         for (let p = 0, ptL = ptexts.length; p < ptL; p++) {
             suggestionIndex = VARS.suggestions.indexOf(ptexts[p]);
+            // console.info(log + 'isSuggested:', suggestionIndex, p, ptexts, VARS.suggestions, post);
             if (suggestionIndex >= 0) {
                 break;
             }
@@ -2205,20 +2362,35 @@
     }
 
     function doMoppingStories() {
-        if (VARS.Options.OTHER_STORIES) {
-            let stories = Array.from(document.querySelectorAll(VARS.storiesQS));
+        if (VARS.Options.NF_STORIES) {
+            // let stories = Array.from(document.querySelectorAll(VARS.storiesQS1));
+            // if (stories.length > 0) {
+            //     for (let i = 0; i < stories.length; i++) {
+            //         let sbox = stories[i].nextElementSibling;
+            //         if (sbox.nodeName === 'DIV') {
+            //             if (!sbox.hasAttribute(postAtt)) {
+            //                 let astories = sbox.querySelector('a[href^="/stories/"]');
+            //                 if (astories) {
+            //                     sbox.setAttribute(postAtt, sbox.innerHTML.length);
+            //                     VARS.storiesFound = true;
+            //                     hide(sbox, '');
+            //                     sbox.setAttribute(`${postAtt}-rule`, KeyWords.NF_STORIES[VARS.language]);
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+            let stories = Array.from(document.querySelectorAll(VARS.storiesQS2));
             if (stories.length > 0) {
                 for (let i = 0; i < stories.length; i++) {
-                    let sbox = stories[i].nextElementSibling;
-                    if (sbox.nodeName === 'DIV') {
-                        if (!sbox.hasAttribute(postAtt)) {
-                            let astories = sbox.querySelector('a[href^="/stories/"]');
-                            if (astories) {
-                                sbox.setAttribute(postAtt, sbox.innerHTML.length);
-                                VARS.storiesFound = true;
-                                hide(sbox, '');
-                                sbox.setAttribute(`${postAtt}-rule`, KeyWords.OTHER_STORIES[VARS.language]);
-                            }
+                    let sbox = stories[i].parentElement;
+                    if (!sbox.hasAttribute(postAtt)) {
+                        let slink = sbox.querySelector('a[href^="/stories/"]');
+                        if (slink) {
+                            sbox.setAttribute(postAtt, sbox.innerHTML.length);
+                            VARS.storiesFound = true;
+                            hide(sbox, '');
+                            sbox.setAttribute(`${postAtt}-rule`, KeyWords.NF_STORIES[VARS.language]);
                         }
                     }
                 }
@@ -2226,7 +2398,7 @@
         }
     }
     function doMoppingCreateRoom() {
-        if (VARS.Options.OTHER_CREATE_ROOM) {
+        if (VARS.Options.NF_CREATE_ROOM) {
             let createRoom = Array.from(document.querySelectorAll(VARS.createRoomQS1));
             if (createRoom.length > 0) {
                 // pre May 2022
@@ -2237,7 +2409,7 @@
                     // - stop checking for create room element
                     VARS.crFound = true;
                     hide(createRoom[i], '');
-                    createRoom[i].setAttribute(`${postAtt}-rule`, KeyWords.OTHER_CREATE_ROOM[VARS.language]);
+                    createRoom[i].setAttribute(`${postAtt}-rule`, KeyWords.NF_CREATE_ROOM[VARS.language]);
                     break;
                 }
             }
@@ -2251,7 +2423,7 @@
                         // - stop checking for create room element
                         VARS.crFound = true;
                         hide(createRoomWrapper, '');
-                        createRoomWrapper.setAttribute(`${postAtt}-rule`, KeyWords.OTHER_CREATE_ROOM[VARS.language]);
+                        createRoomWrapper.setAttribute(`${postAtt}-rule`, KeyWords.NF_CREATE_ROOM[VARS.language]);
                         break;
                     }
                 }
@@ -2259,20 +2431,40 @@
         }
     }
     let tcCountFound = 0;
-    function doMoppingThirdColumn() {
-        // - hide the third column / right rail sponsored box.
-        let tcbox = document.querySelector(VARS.thirdColQS);
-        if (tcbox) {
-            if (!tcbox.classList.contains(VARS.cssHide)) {
-                let ptexts = scanTreeForText(tcbox);
-                // console.info(`${log}tcbox tc:`, ptexts);
-                if (ptexts.indexOf(VARS.sponsoredWord) >= 0) {
-                    VARS.echoCount = 0;
-                    hide(tcbox, VARS.sponsoredWord);
-                    // make it stop checking third-col.
-                    tcCountFound++;
-                    if (tcCountFound > 1) {
-                        VARS.tcFound = true;
+    function doMoppingThirdColumn(tcEntry, tcbox) {
+        // - third column, sponsored box.
+        if (tcEntry === 1) {
+            if (tcbox) {
+                if (!tcbox.classList.contains(VARS.cssHide)) {
+                    let ptexts = scanTreeForText(tcbox);
+                    // console.info(`${log}tcbox tc:`, ptexts);
+                    if (ptexts.indexOf(VARS.sponsoredWord) >= 0) {
+                        VARS.echoCount = 0;
+                        hide(tcbox, VARS.sponsoredWord);
+                        // make it stop checking third-col.
+                        tcCountFound++;
+                        if (tcCountFound > 3) {
+                            VARS.tcFound_Sponsored = true;
+                        }
+                    }
+                }
+            }
+        }
+        // - third column, groups suggested for you (news feed)
+        else if (tcEntry === 2) {
+            if (tcbox) {
+                if (!tcbox.classList.contains(VARS.cssHide)) {
+                    let ptexts = scanTreeForText(tcbox);
+                    // console.info(`${log}tcbox scanTreeForText():`, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language], ptexts);
+                    let pidx = ptexts.indexOf(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]) ;
+                    if (pidx === 0 || pidx === 1) {
+                        VARS.echoCount = 0;
+                        hide(tcbox, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]);
+                        // make it stop checking third-col.
+                        tcCountFound++;
+                        if (tcCountFound > 3) {
+                            VARS.tcFound_Suggested4U = true;
+                        }
                     }
                 }
             }
@@ -2367,7 +2559,7 @@
     }
 
     function doMopping() {
-        // News/Groups/Videos Feed
+        // News/Groups/Videos/Search Feed
         let posts = Array.from(document.querySelectorAll(VARS.QS));
         if (posts.length) {
             // - consecutive hidden posts count
@@ -2447,6 +2639,14 @@
                             if (!hiding) {
                                 // -- info boxes that appear between post article and comments.
                                 doMoppingInfoBoxes(post);
+                            }
+                        }
+                        else if (VARS.isSF) {
+                            if (isSponsored(post)) {
+                                VARS.echoCount++;
+                                hiding = true;
+                                hide(post, VARS.sponsoredWord);
+                                break;
                             }
                         }
                     }
@@ -2613,16 +2813,20 @@
                                 if (VARS.crFound === false) {
                                     doMoppingCreateRoom();
                                 }
-                                if (VARS.tcFound === false) {
-                                    let tcbox = document.querySelector(VARS.thirdColQS);
+                                if ((VARS.tcFound_Sponsored === false) || (VARS.tcFound_Suggested4U === false)) {
+                                    let tcbox = document.querySelector(VARS.thirdColQS1);
                                     if (tcbox && tcbox.innerHTML.length > 64) {
-                                        doMoppingThirdColumn();
+                                        doMoppingThirdColumn(1, tcbox);
+                                    }
+                                    tcbox = document.querySelector(VARS.thirdColQS2);
+                                    if (tcbox && tcbox.innerHTML.length > 64) {
+                                        doMoppingThirdColumn(2, tcbox);
                                     }
                                 }
                                 if ((VARS.f2mFound === false) || (VARS.surveyFound === false)){
                                     doMoppingOthers();
                                 }
-                                if (VARS.storiesFound && VARS.crFound && VARS.tcFound && VARS.f2mFound && VARS.surveyFound) {
+                                if (VARS.storiesFound && VARS.crFound && (VARS.tcFound_Sponsored || VARS.tcFound_Suggested4U) && VARS.f2mFound && VARS.surveyFound) {
                                     VARS.nfpLoopCount = VARS.nfpLoopCountLimit + 1;
                                 }
                                 else {
@@ -2648,6 +2852,10 @@
                             }
                             else if (VARS.isMP) {
                                 doMoppingMP();
+                                break;
+                            }
+                            else if (VARS.isSF) {
+                                doMopping();
                                 break;
                             }
                         }
