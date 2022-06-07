@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.18
+// @version      3.19
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,11 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.19 :: June 2022
+        Added Latviešu
+        Added Dutch
+        Added Polish
+        Minor code tweaks
     v3.18 :: May 2022
         Bug fix for Sponsored post detection code (non Flex branch)
         Added Italian (incomplete)
@@ -62,10 +67,13 @@
     Attribution: Mop & bucket icon:
     - made by Freepik (https://www.freepik.com) @ flaticon (https://www.flaticon.com/)
     - page: https://www.flaticon.com/premium-icon/mop_2383747
-
+ 
     To do :::
     - complete language translation (based on FB's wording/spelling)
     - investigate Private/Icognito/InPrivate Mode (idb doesn't work)
+
+    - block sponsored ads on /commerce/ pages
+      (via Group post selling something)
 
     Instructions on how to use:
     - In FB, top right corner or bottom left corner, click on the "Clean my feeds" icon (mop + bucket)
@@ -105,9 +113,12 @@
 
     // *** *** Language components *** ***
     const KeyWords = {
+        // Keywords - use FB's wording.
+        // - if unknown, use EN's words and add "// --- needs translation"
+
         // *** Which languages have been setup:
         // - 'en' is default.
-        LANGUAGES : ['en', 'pt', 'de', 'fr', 'es', 'cs','vi', 'it'],
+        LANGUAGES : ['en', 'pt', 'de', 'fr', 'es', 'cs', 'vi', 'it', 'lv', 'pl', 'nl'],
 
         SPONSORED : {
             // English
@@ -126,6 +137,12 @@
             'vi': 'Được tài trợ',
             // Italino (Italy)
             'it': 'Sponsorizzato',
+            // Latviešu (Latvia)
+            'lv': 'Apmaksāta reklāma',
+            // Polski (Poland)
+            'pl': 'Sponsorowane',
+            // Nederlands (Netherlands)
+            'nl': 'Gesponsord',
         },
         // marketplace 'sponsored' word ... somtimes fb has a different spelling
         MP_SPONSORED : {
@@ -137,6 +154,9 @@
             'cs': 'Sponzorováno',
             'vi': 'Được tài trợ',
             'it': 'Sponsorizzata',
+            'lv': 'Apmaksāta reklāma',
+            'pl': 'Sponsorowane',
+            'nl': 'Gesponsord',
         },
         // *** Verbosity:
         VERBOSITY : {
@@ -148,16 +168,11 @@
             'cs': ['1 příspěvek byl skryt. Pravidlo: ', ' příspěvků skrytých'],
             'vi': ['1 bài bị ẩn. Quy tắc: ', ' bài viết ẩn'],
             'it': ['1 post nascosto Regola: ', ' post nascosti'],
+            'lv': ['1 ziņa ir paslēpta. Noteikums: ', ' ziņas ir paslēptas'],
+            'pl': ['Ukryto 1 post. Reguła: ', ' posty ukryte'],
+            'nl': ['1 post verborgen. Regel: ', ' posts verborgen'],
         },
 
-        // *** Instructions for adding a Suggestion keywords ***
-        // 1) Create keyword under relevant feed
-        // 2) Enter all language entries (must use FB wording).
-        //    - If unknown, use EN's word(s) and add "// -- need translation" comment
-        //    - Also set isSuggestion & defaultEnabled.
-        // 3) The code will then do the rest ...
-        // 4) NB: Placement of keyword determines the display order.
-        // *** --- ***
 
         // *** News Feed ::
         // - Stories
@@ -170,6 +185,9 @@
             'cs': 'Příběhy',
             'vi': 'Những câu chuyện',
             'it': 'Storia',
+            'lv': 'Stāsti',
+            'pl': 'Historie',
+            'nl': 'Verhalen',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -183,6 +201,9 @@
             'cs': 'Vytvořit místnost',
             'vi': 'Tạo phòng họp mặt',
             'it': 'Crea stanza',
+            'lv': 'Izveidot istabu',
+            'pl': 'Utwórz pokój',
+            'nl': 'Ruimte maken',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -196,6 +217,9 @@
             'cs': 'Koho možná znáte',
             'vi': 'Những người bạn có thể biết',
             'it': 'Persone che potresti conoscere',
+            'lv': 'Cilvēki, kurus tu varētu pazīt',
+            'pl': 'Osoby, które możesz znać',
+            'nl': 'Mensen die je misschien kent',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -204,16 +228,19 @@
         NF_PAID_PARTNERSHIP : {
             'en': 'Paid partnership',
             'pt': 'Parceria paga',
-            'de': 'Bezahlte Werbepartnerschaft', // (Paid advertising partnership)
+            'de': 'Bezahlte Werbepartnerschaft',
             'fr': 'Partenariat rémunéré',
-            'es': 'Colaboración pagada', // (Paid collaboration)
+            'es': 'Colaboración pagada',
             'cs': 'Placené partnerství',
             'vi': 'Mối quan hệ tài trợ',
             'it': 'Partnership pubblicizzata',
+            'lv': 'Apmaksāta sadarbība',
+            'pl': 'Post sponsorowany',
+            'nl': 'Betaald partnerschap',
             'isSuggestion': true,
             'defaultEnabled': true,
         },
-        // Sponsored · Paid for by ______
+        // Sponsored · Paid for by ______  (paid advertising)
         NF_SPONSORED_PAID : {
             'en': 'Sponsored · Paid for by ______',
             'pt': 'Patrocinado · Financiado por ______',
@@ -223,6 +250,9 @@
             'cs': 'Sponzorováno · Platí za to ______',
             'vi': 'Sponsored · Paid for by ______', // --- needs translation
             'it': 'Sponsored · Paid for by ______', // --- needs translation ('Sponsorizzato · Pagato da ______' ?)
+            'lv': 'Apmaksāta reklāma · Apmaksā ______',
+            'pl': 'Sponsorowane · Opłacona przez ______',
+            'nl': 'Gesponsord · Betaald door ______',
             'isSuggestion': false,
             'defaultEnabled': true
         },
@@ -235,8 +265,10 @@
             'es': 'Sugerencias para ti',
             'cs': 'Návrhy pro vás',
             'vi': 'Gợi ý cho bạn',
-            'vi': 'Suggested for you', // --- needs translation
-            'it': 'Suggeriti per te', // --- (correct translation?)
+            'it': 'Suggeriti per te', // --- correct translation?
+            'lv': 'Ieteikts tev',
+            'pl': 'Propozycje dla Ciebie', // 'Proponowane dla Ciebie', ?
+            'nl': 'Suggested for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -250,6 +282,9 @@
             'cs': 'Doporučený příspěvek',
             'vi': 'Bài viết đề xuất',
             'it': 'Post suggerito',
+            'lv': 'Ieteikts ieraksts',
+            'pl': 'Polecany post',
+            'nl': 'Aanbevolen bericht',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -263,6 +298,9 @@
             'cs': 'Navrhované stránky',
             'vi': 'Suggested Pages', // --- needs translation
             'it': 'Suggested Pages', // --- needs translation
+            'lv': 'Suggested Pages', // --- needs translation
+            'pl': 'Suggested Pages', // --- needs translation
+            'nl': 'Suggested Pages', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -270,12 +308,15 @@
         NF_SUGGESTED_EVENTS : {
             'en': 'Suggested Events',
             'pt': 'Eventos Sugeridos',
-            'de': 'Suggested Events', // --- needs translation
-            'fr': 'Suggested Events', // --- needs translation
+            'de': 'Vorgeschlagene Veranstaltungen',
+            'fr': 'Évènements suggérés',
             'es': 'Suggested Events', // --- needs translation
             'cs': 'Suggested Events', // --- needs translation
             'vi': 'Suggested Events', // --- needs translation
             'it': 'Suggested Events', // --- needs translation
+            'lv': 'Suggested Events', // --- needs translation
+            'pl': 'Proponowane wydarzenia',
+            'nl': 'Voorgestelde evenementen',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -285,40 +326,19 @@
             'pt': 'Events you may like', // --- needs translation
             'de': 'Events you may like', // --- needs translation
             'fr': 'Évènements qui pourraient vous intéresser', // (Events that may/might interest you )
-            'es': 'Eventos que te pueden gustar',
+            'es': ['Eventos que te pueden gustar', 'Eventos que quizá te gusten'], // Events that you may|might like
             'cs': 'Events you may like', // --- needs translation
             'vi': 'Events you may like', // --- needs translation
             'it': 'Events you may like', // --- needs translation
+            'lv': 'Events you may like', // --- needs translation
+            'pl': 'Events you may like', // --- needs translation
+            'nl': 'Events you may like', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Videos just for you
-        NF_VIDEOS_JUST_FOR_YOU : {
-            'en': 'Videos just for you',
-            'pt': 'Vídeos só para ti',
-            'de': 'Videos just for you', // --- needs translation
-            'fr': 'Videos just for you', // --- needs translation
-            'es': 'Videos just for you', // --- needs translation
-            'cs': 'Videos just for you', // --- needs translation
-            'vi': 'Videos just for you', // --- needs translation
-            'it': 'Videos just for you', // --- needs translation
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        // - Page you could subscribe to
-        NF_PAGE_SUBSCRIBE_TO : {
-            'en': 'Page you could subscribe to', // --- needs translation (not seen in EN, but seen in DE)
-            'pt': 'Page you could subscribe to', // --- needs translation
-            'de': 'Seite, die du abonnieren könntest',
-            'fr': 'Page you could subscribe to', // --- needs translation
-            'es': 'Page you could subscribe to', // --- needs translation
-            'cs': 'Page you could subscribe to', // --- needs translation
-            'vi': 'Page you could subscribe to', // --- needs translation
-            'it': 'Page you could subscribe to', // --- needs translation
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        // Reels and short videos
+        // - June 2022: removed News Feed's "Videos just for you" & "Page you could subscribe to"
+
+        // - Reels and short videos
         NF_REELS_SHORT_VIDEOS : {
             'en': 'Reels and short videos',
             //'pt': 'Vídeos do Reels e vídeos curtos',
@@ -329,10 +349,13 @@
             'cs': 'Sekvence a krátká videa',
             'vi': 'Reels và video ngắn',
             'it': 'Reel e video brevi',
+            'lv': 'Reels un īsi videoklipi',
+            'pl': 'Rolki i krótkie filmy',
+            'nl': 'Reels en korte video\'s',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // -- Sponsored box in right-hand column
+        // - Sponsored box in right-hand column
         NF_THIRD_COLUMN_SPONSORED : {
             'en': 'Sponsored box (right-hand column)',
             'pt': 'Caixa patrocinada (coluna da direita)',
@@ -342,9 +365,12 @@
             'cs': 'Sponzorovaný box (pravý sloupec)',
             'vi': 'Hộp tài trợ (cột bên phải))',
             'it': 'Casella sponsorizzato (colonna di destra)',
+            'lv': 'Sponsorētā kaste (labā kolonna)',
+            'pl': 'Boks sponsorowany (prawa kolumna)',
+            'nl': 'Gesponsorde doos (rechterkolom)',
             'defaultEnabled': true,
         },
-        // -- Suggested for you
+        // - Suggested for you
         NF_THIRD_COLUMN_SUGGESTED_FOR_YOU : {
             'en': 'Suggested for you (right-hand column)',
             'pt': 'Sugestões para ti (coluna da direita)',
@@ -354,6 +380,9 @@
             'cs': 'Návrhy pro vás (pravý sloupec)',
             'vi': 'Gợi ý cho bạn (cột bên phải))',
             'it': 'Suggeriti per te (colonna di destra)',
+            'lv': 'Ieteikts tev (labā kolonna)',
+            'pl': 'Propozycje dla Ciebie (prawa kolumna)',
+            'nl': 'Voorgesteld voor jou (rechterkolom)',
             'defaultEnabled': false,
         },
 
@@ -372,19 +401,25 @@
             'cs': 'Novinky pro vás',
             'vi': 'New for you', // --- needs translation
             'it': 'New for you', // --- needs translation
+            'lv': 'New for you', // --- needs translation
+            'pl': 'New for you', // --- needs translation
+            'nl': 'New for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Suggested for you (Groups you might be interested in.)
+        // - Suggested for you / Groups you might be interested in.
         GF_SUGGESTED_FOR_YOU_GROUPS : {
             'en': 'Suggested for you',
             'pt': 'Sugestões para ti',
             'de': 'Vorschläge für dich',
-            'fr': 'Suggestions pour vous',
+            'fr': ['Suggestions pour vous', 'Groupes qui pourraient vous intéresser.'],
             'es': 'Sugerencias para ti',
             'cs': 'Návrhy pro vás',
             'vi': 'Gợi ý cho bạn',
-            'it': 'Suggeriti per te', // --- needs translation (correct?)
+            'it': 'Suggeriti per te', // ??
+            'lv': 'Iesakām',
+            'pl': 'Proponowane dla Ciebie',
+            'nl': 'Voorgesteld voor jou',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -399,10 +434,13 @@
             'cs': 'Placené partnerství',
             'vi': 'Mối quan hệ tài trợ',
             'it': 'Partnership pubblicizzata',
+            'lv': 'Apmaksāta sadarbība', // (Paid cooperation)
+            'pl': 'Post sponsorowany', // (Sponsored post)
+            'nl': 'Betaald partnerschap',
             'isSuggestion': true,
             'defaultEnabled': true,
         },
-        // - Suggested groups 
+        // - Suggested groups
         // -- box of groups - may need to use the view/see more keyword
         GF_SUGGESTED_GROUPS : {
             'en': 'Suggested groups',
@@ -413,76 +451,9 @@
             'cs': 'Navrhované skupiny',
             'vi': 'Nhóm gợi ý',
             'it': 'Gruppi suggeriti',
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        // - Suggested post from a public group
-        // -- lots of posts from groups not subscribed too
-        GF_SUGGESTED_POST_PUBLIC_GROUP : {
-            'en': 'Suggested post from a public group',
-            'pt': 'Publicação sugerida de um grupo público',
-            'de': 'Vorgeschlagener Beitrag aus einer öffentlichen Gruppe',
-            'fr': 'Publication suggérée d’un groupe public',
-            'es': 'Publicación sugerida de un grupo público',
-            'cs': 'Navrhovaný příspěvek z veřejné skupiny', // proposed contribution from public group
-            'vi': 'Bài viết gợi ý từ nhóm công khai',
-            'it': 'Post suggerito di un gruppo pubblico',
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        // - Post from public group
-        // -- lots of posts from groups not subscribed too
-        /* May 2022 - disabled.
-        GF_POST_PUBLIC_GROUP : {
-            'en': 'Post from public group',
-            'pt': 'Postagem de grupo público',
-            'de': 'Post from public group', // --- needs translation
-            'fr': 'Post from public group', // --- needs translation
-            'es': 'Post from public group', // --- needs translation
-            'cs': 'Post from public group', // --- needs translation
-            'vi': 'Post from public group', // --- needs translation
-            'it': 'Post from public group', // --- needs translation
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        */
-        // - From a group that your friend is in
-        GF_FROM_A_GROUP_YOUR_FRIEND_IS_IN : {
-            'en': 'From a group that your friend is in',
-            'pt': 'De um grupo em que o teu amigo/a é membro',
-            'de': 'Aus einer Gruppe, in der dein/e Freund/in ist',
-            'fr': 'D’un groupe dont votre ami(e) est membre',
-            'es': 'De un grupo al que tu amigo pertenece',
-            'cs': 'Ze skupiny, kde je váš přítel',
-            'vi': 'From a group that your friend is in', // --- needs translation
-            'it': 'From a group that your friend is in', // --- needs translation
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        // - Friends' groups
-        // -- usually shows up at top of feed.
-        GF_FRIENDS_GROUPS : {
-            'en': 'Friends\' groups',
-            'pt': 'Grupos dos amigos',
-            'de': 'Gruppen von Freunden',
-            'fr': 'Friends\' groups', // --- needs translation
-            'es': 'Friends\' groups', // --- needs translation
-            'cs': 'Friends\' groups', // --- needs translation
-            'vi': 'Friends\' groups', // --- needs translation
-            'it': 'Friends\' groups', // --- needs translation
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        // - Popular near you / in your area
-        GF_POPULAR_NEAR_YOU : {
-            'en': 'Popular near you',
-            'pt': 'Populares perto de ti',
-            'de': 'Beliebt in deiner Nähe',
-            'fr': 'Popular near you', // --- needs translation
-            'es': 'Popular near you', // --- needs translation
-            'cs': 'Popular near you', // --- needs translation
-            'vi': 'Popular near you', // --- needs translation
-            'it': 'Popular near you', // --- needs translation
+            'lv': 'Ieteiktās grupas',
+            'pl': 'Proponowane grupy',
+            'nl': 'Voorgestelde groepen',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -497,6 +468,26 @@
             'cs': 'Zobrazit další skupiny',
             'vi': 'Xem thêm nhóm',
             'it': 'Vedi altri gruppi',
+            'lv': 'Skatīt vairāk grupu',
+            'pl': 'Wyświetl więcej grup',
+            'nl': 'Meer groepen bekijken',
+            'isSuggestion': true,
+            'defaultEnabled': false,
+        },
+        // - Suggested post from a public group
+        // -- lots of posts from groups not subscribed too
+        GF_SUGGESTED_POST_PUBLIC_GROUP : {
+            'en': ['Suggested post from a public group', 'Post from public group'],
+            'pt': ['Publicação sugerida de um grupo público', 'Postagem de grupo público'],
+            'de': 'Vorgeschlagener Beitrag aus einer öffentlichen Gruppe',
+            'fr': 'Publication suggérée d’un groupe public',
+            'es': 'Publicación sugerida de un grupo público',
+            'cs': 'Navrhovaný příspěvek z veřejné skupiny', // proposed contribution from public group
+            'vi': 'Bài viết gợi ý từ nhóm công khai',
+            'it': 'Post suggerito di un gruppo pubblico',
+            'lv': 'Ieteikts ieraksts no publiskas grupas',
+            'pl': 'Proponowany post z grupy publicznej',
+            'nl': 'Voorgesteld bericht van een openbare groep',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -508,64 +499,110 @@
             'fr': 'Parce que vous avez consulté une publication similaire',
             'es': 'Porque has visto una publicación similar',
             'cs': 'Protože jste se díval na podobný příspěvek',
-            'vi': 'Xem thêm bài viết tương tự',
-            'it': 'Because you viewed a similar post',
+            'vi': ['Xem thêm bài viết tương tự', 'Vì bạn đã xem một bài viết tương tự'],
+            'it': 'Perché hai visualizzato un post simile',
+            'lv': 'Jo tu skatīji līdzīgu ierakstu',
+            'pl': 'Ponieważ wyświetliłaś podobny post',
+            'nl': 'Because you viewed a similar post', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
         // - Because you viewed a similar group
         GF_BECAUSE_YOU_VIEWED_A_SIMILAR_GROUP : {
             'en': 'Because you viewed a similar group',
-            'pt': 'Because you viewed a similar group', // --- needs translation
-            'de': 'Because you viewed a similar group', // --- needs translation
-            'fr': 'Because you viewed a similar group', // --- needs translation
-            'es': 'Because you viewed a similar group', // --- needs translation
+            'pt': 'Porque viste um grupo semelhante',
+            'de': 'Weil du dir eine ähnliche Gruppe angesehen hast',
+            'fr': 'Parce que vous avez consulté un groupe similaire',
+            'es': 'Porque has visto un grupo similar',
             'cs': 'Protože jste zobrazil podobnou skupinu',
             'vi': 'Vì bạn đã xem một nhóm tương tự',
-            'it': 'Because you viewed a similar group', // --- needs translation
+            'it': 'Perché hai visualizzato un gruppo simile',
+            'lv': 'Jo tu apskatīji līdzīgu grupu',
+            'pl': ['Ponieważ wyświetliłaś podobną grupę', 'Ponieważ wyświetliłeś podobną grupę'],
+            'nl': 'Omdat je een vergelijkbare groep hebt bekeken',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
         // - Based on your recent activity
         GF_YOUR_RECENT_ACTIVITY: {
             'en': 'Based on your recent activity',
-            'pt': 'Based on your recent activity', // --- needs translation
-            'de': 'Based on your recent activity', // --- needs translation
-            'fr': 'Based on your recent activity', // --- needs translation
-            'es': 'Based on your recent activity', // --- needs translation
-            'cs': 'Based on your recent activity', // --- needs translation
-            'vi': 'Based on your recent activity', // --- needs translation
-            'it': 'Based on your recent activity', // --- needs translation
+            'pt': 'Com base na tua atividade recente',
+            'de': 'Basierend auf deinen neuesten Aktivitäten',
+            'fr': 'D’après votre activité récente',
+            'es': 'Según tu actividad reciente',
+            'cs': 'Na základě vaší nedávné aktivity',
+            'vi': 'Dựa trên hoạt động gần đây của bạn',
+            'it': 'In base alla tua attività recente',
+            'lv': 'Pamatojoties uz tavām nesenajām darbībām',
+            'pl': 'Na podstawie Twojej ostatniej aktywności',
+            'nl': 'Gebaseerd op je recente activiteit',
+            'isSuggestion': true,
+            'defaultEnabled': false,
+        },
+        // - From a group that your friend is in
+        GF_FROM_A_GROUP_YOUR_FRIEND_IS_IN : {
+            'en': 'From a group that your friend is in',
+            'pt': 'De um grupo em que o teu amigo/a é membro',
+            'de': 'Aus einer Gruppe, in der dein/e Freund/in ist',
+            'fr': 'D’un groupe dont votre ami(e) est membre',
+            'es': 'De un grupo al que tu amigo pertenece',
+            'cs': 'Ze skupiny, kde je váš přítel',
+            'vi': 'From a group that your friend is in', // --- needs translation
+            'it': 'From a group that your friend is in', // --- needs translation
+            'lv': 'From a group that your friend is in', // --- needs translation
+            'pl': 'From a group that your friend is in', // --- needs translation
+            'nl': 'From a group that your friend is in', // --- needs translation
+            'isSuggestion': true,
+            'defaultEnabled': false,
+        },
+        // - Friends' groups
+        // -- usually shows up at top of feed.
+        GF_FRIENDS_GROUPS : {
+            'en': 'Friends\' groups',
+            'pt': 'Grupos dos amigos',
+            'de': 'Gruppen von Freunden',
+            'fr': 'Friends\' groups', // --- needs translation
+            'es': 'Friends\' groups', // --- needs translation
+            'cs': 'Friends\' groups', // --- needs translation
+            'vi': 'Friends\' groups', // --- needs translation
+            'it': 'Friends\' groups', // --- needs translation
+            'lv': 'Friends\' groups', // --- needs translation
+            'pl': 'Friends\' groups', // --- needs translation
+            'nl': 'Friends\' groups', // --- needs translation
+            'isSuggestion': true,
+            'defaultEnabled': false,
+        },
+        // - Popular near you / in your area
+        GF_POPULAR_NEAR_YOU : {
+            'en': 'Popular near you',
+            'pt': 'Populares perto de ti',
+            'de': 'Beliebt in deiner Nähe',
+            'fr': 'Popular near you', // --- needs translation
+            'es': 'Popular near you', // --- needs translation
+            'cs': 'Popular near you', // --- needs translation
+            'vi': 'Popular near you', // --- needs translation
+            'it': 'Popular near you', // --- needs translation
+            'lv': 'Popular near you', // --- needs translation
+            'pl': 'Popular near you', // --- needs translation
+            'nl': 'Popular near you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
         // - Join Group
-        // -- one of two generic join a group
+        // -- two options for joining a group (includes sign up, subscribe)
         // -- (bit like a catch-all rule - placed these to rules @ end of list.)
-        GF_JOIN_GROUP_1 : {
-            'en': 'Join Group',
-            'pt': 'Aderir ao grupo',
-            'de': 'Gruppe beitreten',
-            'fr': 'Rejoindre le groupe',
-            'es': 'Unirte al grupo',
-            'cs': 'Přidat se ke skupině',
-            'vi': 'Tham gia nhóm',
-            'it': 'Iscriviti al gruppo',
-            'isSuggestion': true,
-            'defaultEnabled': false,
-        },
-        // - "Join" / "Sign up" / "Subscribe" button/link
-        // -- one of two generic join a group
-        // -- (bit like a catch-all rule)
-        GF_JOIN_GROUP_2 : {
-            'en': 'Join',
-            'pt': 'Aderir',
-            'de': 'Beitreten',
-            'fr': 'Rejoindre',
-            'es': 'Unirte',
-            'cs': 'Přidat se',
-            'vi': 'Tham gia',
-            'it': 'Iscriviti',
+        GF_JOIN_GROUP: {
+            'en': ['Join Group', 'Join'],
+            'pt': ['Aderir ao grupo', 'Aderir'],
+            'de': ['Gruppe beitreten', 'Beitreten'],
+            'fr': ['Rejoindre le groupe', 'Rejoindre'],
+            'es': ['Unirte al grupo', 'Unirte', 'Unirse al grupo'],
+            'cs': ['Přidat se ke skupině', 'Přidat se'],
+            'vi': ['Tham gia nhóm', 'Tham gia'],
+            'it': ['Iscriviti al gruppo', 'Iscriviti'],
+            'lv': ['Pievienoties grupai', 'Pievienoties'],
+            'pl': ['Dołącz do grupy', 'Dołącz'],
+            'nl': 'Lid worden',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -582,6 +619,9 @@
             'cs': 'Placené partnerství',
             'vi': 'Mối quan hệ tài trợ',
             'it': 'Partnership pubblicizzata',
+            'lv': 'Apmaksāta sadarbība', // (Paid cooperation)
+            'pl': 'Post sponsorowany', // (Sponsored post)
+            'nl': 'Betaald partnerschap',
             'isSuggestion': true,
             'defaultEnabled': true,
         },
@@ -592,8 +632,11 @@
             'fr': 'Nouveautés',
             'es': 'Novedades para ti',
             'cs': 'Novinky pro vás',
-            'vi': 'New for you', // --- needs translation
+            'vi': 'Video mới dành cho bạn',
             'it': 'New for you', // --- needs translation
+            'lv': 'New Videos for You',
+            'pl': 'New for you', // --- needs translation
+            'nl': 'Nieuwe video\'s voor jou',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -606,6 +649,9 @@
             'cs': 'ŽIVĚ',
             'vi': 'TRỰC TIẾP',
             'it': 'IN DIRETTA',
+            'lv': 'TIEŠRAIDE',
+            'pl': 'NA ŻYWO',
+            'nl': 'LIVE',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -621,6 +667,9 @@
             'cs': 'Coronavirus (informační box)',
             'vi': 'Virus corona (hộp thông tin)',
             'it': 'Coronavirus (casella informativa)',
+            'lv': 'Koronavīruss (informācijas lodziņš)',
+            'pl': 'Koronawirus (skrzynka informacyjna)',
+            'nl': 'Coronavirus (informatiebox)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/', // -- the partial path name to match.
@@ -635,6 +684,9 @@
             'cs': 'Klimatická věda (informační box)',
             'vi': 'Khoa học khí hậu (hộp thông tin)',
             'it': 'Scienza del clima (casella informativa)',
+            'lv': 'Klimata zinātne (informācijas lodziņš)',
+            'pl': 'Nauka o klimacie (skrzynka informacyjna)',
+            'nl': 'Klimaatwetenschap (informatiebox)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
@@ -649,6 +701,9 @@
             'cs': 'Odebírat (informační box)',
             'vi': 'Đăng kí (hộp thông tin)',
             'it': 'Iscriviti (casella informativa)',
+            'lv': 'Abonēt (informācijas lodziņš)',
+            'pl': 'Subskrybuj (pole informacyjne)',
+            'nl': 'Abonneren (informatievak)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/support/',
@@ -663,6 +718,9 @@
             'cs': 'Viz Podrobnosti průzkumu',
             'vi': 'Xem chi tiết khảo sát',
             'it': 'Vedi i dettagli del sondaggio',
+            'lv': 'Skatiet aptaujas detaļas',
+            'pl': 'Zobacz szczegóły ankiety',
+            'nl': 'Bekijk de details van het onderzoek',
             'pathMatch': '/survey/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
@@ -677,6 +735,9 @@
             'cs': 'Facebooková společnost se nyní jmenuje Meta',
             'vi': 'Công ty Facebook bây giờ được gọi là Meta',
             'it': 'La società di Facebook si chiama ora Meta',
+            'lv': 'Facebook uzņēmumu tagad sauc par Meta',
+            'pl': 'Firma Facebook nazywa się teraz Meta',
+            'nl': 'Het Facebook-bedrijf heet nu Meta',
             'urlMatch': 'about.facebook.com/meta/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
@@ -693,6 +754,9 @@
             'cs': 'Vyčistěte mé kanály',
             'vi': 'Làm sạch nguồn cấp dữ liệu của tôi',
             'it': 'Pulisci i miei feed',
+            'lv': 'Tīrīt manas plūsmas',
+            'pl': 'Wyczyść moje kanały',
+            'nl': 'Schoon mijn feeds',
         },
         DLG_NF : {
             'en': 'News Feed',
@@ -703,6 +767,9 @@
             'cs': 'Informační kanál',
             'vi': 'Nguồn cấp tin tức',
             'it': 'Feed di notizie', // news section
+            'lv': 'Ziņu plūsma',
+            'pl': 'Kanał aktualności',
+            'nl': 'Nieuwsfeed',
         },
         DLG_GF : {
             'en': 'Groups Feed',
@@ -713,6 +780,9 @@
             'cs': 'Skupinový kanál',
             'vi': 'Nguồn cấp dữ liệu Nhóm',
             'it': 'Feed di gruppo',
+            'lv': 'Grupu plūsma',
+            'pl': 'Kanał grup',
+            'nl': 'Groepsfeed',
         },
         DLG_VF : {
             'en': 'Videos Feed',
@@ -723,6 +793,9 @@
             'cs': 'Video kanál',
             'vi': 'Nguồn cấp dữ liệu video',
             'it': 'Feed di video',
+            'lv': 'Video plūsma',
+            'pl': 'Kanał wideo',
+            'nl': 'Videofeed',
         },
         DLG_MP : {
             'en': 'Marketplace Feed',
@@ -733,6 +806,9 @@
             'cs': 'Marketplace kanál',
             'vi': 'Nguồn cấp dữ liệu Marketplace',
             'it': 'Feed id Marketplace',
+            'lv': 'Marketplace',
+            'pl': 'Kanał Marketplace',
+            'nl': 'Marktplaatsfeed',
         },
         DLG_OTHER : {
             'en': 'Miscellaneous items',
@@ -743,6 +819,9 @@
             'cs': 'Různé položky',
             'vi': 'Những thứ linh tinh',
             'it': 'Articoli vari',
+            'lv': 'Dažādas vienumus',
+            'pl': 'Różne pozycje',
+            'nl': 'Diversen',
         },
         DLG_NF_BLOCK : {
             'en': 'News Feed - text filter',
@@ -753,6 +832,9 @@
             'cs': 'Informační kanál - textový filtr',
             'vi': 'Nguồn cấp tin tức - bộ lọc văn bản',
             'it': 'Feed di notizie - filtro di testo',
+            'lv': 'Ziņu plūsma - teksta filtrs',
+            'pl': 'Kanał aktualności - filtr tekstu',
+            'nl': 'Nieuwsfeed - tekstfilter',
         },
         DLG_GF_BLOCK : {
             'en': 'Groups Feed - text filter',
@@ -763,6 +845,9 @@
             'cs': 'Skupinový kanál - textový filtr',
             'vi': 'Nguồn cấp dữ liệu Nhóm - bộ lọc văn bản',
             'it': 'Feed di gruppo - filtro di testo',
+            'lv': 'Grupu plūsma - teksta filtrs',
+            'pl': 'Kanał grup - filtr tekstu',
+            'nl': 'Groepsfeed - tekstfilter'
         },
         DLG_VF_BLOCK : {
             'en': 'Videos Feed - text filter',
@@ -773,6 +858,9 @@
             'cs': 'Video kanál - textový filtr',
             'vi': 'Nguồn cấp dữ liệu video - bộ lọc văn bản',
             'it': 'Feed di video - filtro di testo',
+            'lv': 'Video plūsma - teksta filtrs',
+            'pl': 'Kanał wideo - filtr tekstu',
+            'nl': 'Videofeed - tekstfilter',
         },
         DLG_BLOCK_NEW_LINE : {
             'en': '(separate words or phrases with a line break)',
@@ -783,6 +871,9 @@
             'cs': '(oddělte slova nebo fráze na nový řádek)',
             'vi': '(tách các từ hoặc cụm từ bằng dấu ngắt dòng)',
             'it': '(separare parole o frasi con un\'interruzione di riga)',
+            'lv': '(atdaliet vārdus vai frāzes ar rindas pārtraukumu)',
+            'pl': '(oddziel słowa lub wyrażenia z podziałem wiersza)',
+            'nl': '(scheid woorden of woordgroepen met een regeleinde)',
         },
         NF_BLOCKED_ENABLED : {
             'en': 'Enabled',
@@ -793,6 +884,8 @@
             'cs': 'Zapnuto',
             'vi': 'Đã kích hoạt',
             'it': 'Abilita opzione',
+            'lv': 'Iespējots',
+            'pl': 'Włączone',
         },
         GF_BLOCKED_ENABLED : {
             'en': 'Enabled',
@@ -803,6 +896,9 @@
             'cs': 'Zapnuto',
             'vi': 'Đã kích hoạt',
             'it': 'Abilita opzione',
+            'lv': 'Iespējots',
+            'pl': 'Włączone',
+            'nl': 'Ingeschakeld',
         },
         VF_BLOCKED_ENABLED : {
             'en': 'Enabled',
@@ -813,6 +909,9 @@
             'cs': 'Zapnuto',
             'vi': 'Đã kích hoạt',
             'it': 'Abilita opzione',
+            'lv': 'Iespējots',
+            'pl': 'Włączone',
+            'nl': 'Ingeschakeld',
         },
         DLG_VERBOSITY : {
             'en': 'Verbosity',
@@ -823,6 +922,9 @@
             'cs': 'Výřečnost',
             'vi': 'Tính dài dòng',
             'it': 'Verbosità',
+            'lv': 'Runīgums',
+            'pl': 'Włączone',
+            'nl': 'Ingeschakeld',
         },
         DLG_VERBOSITY_MESSAGE : {
             'en': 'Display a message if a post is hidden',
@@ -833,6 +935,9 @@
             'cs': 'Zobrazit zprávu, pokud je příspěvek skrytý',
             'vi': 'Hiển thị một tin nhắn nếu một bài đăng bị ẩn',
             'it': 'Visualizza un messaggio se un post è nascosto',
+            'lv': 'Parādīt ziņojumu, ja raksts ir paslēpts',
+            'pl': 'Wyświetlaj wiadomość, jeśli wpis jest ukryty',
+            'nl': 'Een bericht weergeven als een artikel verborgen is',
         },
         VERBOSITY_NO_MESSAGE : {
             'en': 'no message',
@@ -843,6 +948,9 @@
             'cs': 'žádná zpráva',
             'vi': 'không có tin nhắn',
             'it': 'Nessun messaggio',
+            'lv': 'Nekādu ziņojumu',
+            'pl': 'nie ma wiadomości',
+            'nl': 'geen bericht',
         },
         VERBOSITY_COLOUR : {
             'en': 'Text colour',
@@ -853,6 +961,9 @@
             'cs': 'Barva textu',
             'vi': 'Màu văn bản',
             'it': 'Colore del testo',
+            'lv': 'Teksta krāsa',
+            'pl': 'Kolor tekstu',
+            'nl': 'Tekstkleur',
         },
         VERBOSITY_BG_COLOUR : {
             'en': 'Background colour',
@@ -863,6 +974,9 @@
             'cs': 'Barva pozadí',
             'vi': 'Màu nền',
             'it': 'Colore di sfondo',
+            'lv': 'Fona krāsa',
+            'pl': 'Kolor tła',
+            'nl': 'Achtergrondkleur',
         },
         VERBOSITY_DEBUG : {
             'en': 'Highlight "hidden" posts',
@@ -873,6 +987,9 @@
             'cs': 'Zvýrazněte „skryté“ příspěvky',
             'vi': 'Đánh dấu các bài đăng "ẩn"',
             'it': 'Evidenzia i post "nascosti"',
+            'lv': 'Izceliet "slēptos" rakstus',
+            'pl': 'Wyróżnij „ukryte” posty',
+            'nl': 'Highlight "verborgen" artikelen',
         },
         // CMF's customisations
         CMF_CUSTOMISATIONS : {
@@ -884,6 +1001,9 @@
             'cs': 'Přizpůsobení',
             'vi': 'Các tùy chỉnh',
             'it': 'Personalizzazioni',
+            'lv': 'Personalizēšana',
+            'pl': 'Personalizacja',
+            'nl': 'Personalisaties',
         },
         CMF_BTN_LOCATION : {
             'en': 'Location of Clean my feeds\' button',
@@ -894,6 +1014,9 @@
             'cs': 'Umístění tlačítka Vyčistěte mé kanály',
             'vi': 'Vị trí của nút Làm sạch nguồn cấp dữ liệu của tôi',
             'it': 'Posizione del pulsante Pulisci i miei feed',
+            'lv': 'Pogas Tīrīt manas plūsmas atrašanās vieta',
+            'pl': 'Lokalizacja przycisku Wyczyść moje kanały',
+            'nl': 'Locatie van de knop Mijn feeds opschonen',
         },
         CMF_BTN_OPTION : {
             'en': ['bottom left', 'top right'],
@@ -904,6 +1027,9 @@
             'cs': ['vlevo dole', 'vpravo nahoře'],
             'vi': ['dưới cùng bên trái', 'trên cùng bên phải'],
             'it': ['in basso a sinistra', 'in alto a destra'],
+            'lv': ['apakšējā kreisajā stūrī', 'augšējā labajā stūrī'],
+            'pl': ['lewy dolny róg', 'prawy górny róg'],
+            'nl': ['linksonder', 'rechtsboven'],
             'defaultValue': 0,
         },
         CMF_DIALOG_LOCATION : {
@@ -915,6 +1041,9 @@
             'cs': 'Umístění dialogového okna Vyčistěte mé kanály',
             'vi': 'Vị trí của hộp thoại Làm sạch nguồn cấp dữ liệu của tôi',
             'it': 'Posizione della finestra di dialogo Pulisci i miei feed',
+            'lv': 'Dialoglodziņa Tīrīt manas plūsmas atrašanās vieta',
+            'pl': 'Lokalizacja okna dialogowego Wyczyść moje kanały',
+            'nl': 'Locatie van het dialoogvenster Mijn feeds opschonen',
         },
         CMF_DIALOG_OPTION : {
             'en': ['left side', 'right side'],
@@ -925,6 +1054,9 @@
             'cs': ['levá strana', 'pravá strana'],
             'vi': ['bên trái', 'bên phải'],
             'it': ['lato sinistro', 'lato destro'],
+            'lv': ['kreisā puse', 'labā puse'],
+            'pl': ['lewa strona', 'prawa strona'],
+            'nl': ['linkerkant', 'rechterkant'],
             'defaultValue': 0,
         },
         CMF_BORDER_COLOUR : {
@@ -936,6 +1068,9 @@
             'cs': 'Barva ohraničení',
             'vi': 'Màu viền',
             'it': 'Colore del bordo',
+            'lv': 'Apmales krāsa',
+            'pl': 'Kolor obramowania',
+            'nl': 'Randkleur',
         },
         CMF_BORDER_OPTION : {
             'defaultValue': 'orangered',
@@ -949,6 +1084,9 @@
             'cs': 'Tipy',
             'vi': 'Thủ thuật',
             'it': 'Suggerimenti',
+            'lv': 'Padomi',
+            'pl': 'Sugestia',
+            'nl': 'Tips'
         },
         DLG_TIPS_CONTENT : {
             'en': 'Clearing your browser\'s cache will reset your settings to their default values.\n\nUse the "Export" and "Import" buttons to backup and restore your customised settings.',
@@ -959,6 +1097,9 @@
             'cs': 'Vymazáním mezipaměti prohlížeče obnovíte výchozí hodnoty nastavení.\n\nPomocí tlačítek "Export" a "Import" zálohujte a obnovte svá přizpůsobená nastavení.',
             'vi': 'Xóa bộ nhớ cache của trình duyệt sẽ đặt lại cài đặt của bạn về các giá trị mặc định của chúng. Sử dụng các nút "Xuất" và "Nhập" để sao lưu và khôi phục cài đặt tùy chỉnh của bạn.',
             'it': 'La cancellazione della cache del browser ripristinerà le impostazioni ai valori predefiniti.\n\nUtilizza i pulsanti "Esporta" e "Importa" per eseguire il backup e ripristinare le impostazioni personalizzate.',
+            'lv': 'Iztīrot pārlūkprogrammas kešatmiņu, iestatījumi tiks atiestatīti uz noklusējuma vērtībām.\n\nIzmantojiet pogas "Eksportēt" un "Importēt", lai dublētu un atjaunotu pielāgotos iestatījumus.',
+            'pl': 'Wyczyszczenie pamięci podręcznej przeglądarki spowoduje zresetowanie ustawień do wartości domyślnych.\n\nUżyj przycisków „Eksportuj” i „Importuj”, aby wykonać kopię zapasową i przywrócić niestandardowe ustawienia.',
+            'nl': 'Als u de cache van uw browser wist, worden uw instellingen teruggezet naar hun standaardwaarden.\n\nGebruik de knoppen "Exporteren" en "Importeren" om een back-up te maken van uw aangepaste instellingen en deze te herstellen.',
         },
         DLG_BUTTONS : {
             'en': ['Save', 'Close', 'Export', 'Import'],
@@ -969,6 +1110,9 @@
             'cs': ['Zachránit', 'Zavřít', 'Export', 'Import'],
             'vi': ['Lưu', 'Đóng', 'Xuất', 'Nhập'],
             'it': ['Salva', 'Chiudi', 'Esportare', 'Importare'],
+            'lv': ['Saglabājiet', 'Aizveriet', 'Eksportēt', 'Importēt'],
+            'pl': ['Zapisz', 'Zamknij', 'Eksport', 'Import'],
+            'nl': ['Opslaan', 'Sluiten', 'Exporteren', 'Importeren'],
         },
     };
     // *** *** end of language components *** ***
@@ -1028,8 +1172,8 @@
         // - video feed post's blocks
         videoBlockQS: ':scope > div > div > div > div > div:nth-of-type(2) > div',
         // - video "new video for you" (post above feed)
-        videoNonFeedQS: '[id=watch_feed] > div > div:first-of-type > div',
-        videNonFeedPostBlock: ':scope > div:first-of-type',
+        videoNonFeedQS: `[id="watch_feed"] > div > div:first-of-type:not([data-pagelet]):not([${postAtt}-rule])`,
+        videNonFeedPostBlock: ':scope > div > div:first-of-type',
         // - marketplace - exclude boxes already processed (pre May 2022)
         marketplaceQS1: `div[data-pagelet="MainFeed"] div[data-pagelet^="BrowseFeedUpsell"]:not([${postAtt}])`,
         // - marketplace - exclude boxes already processed (May 2022 ->).
@@ -1043,7 +1187,7 @@
         // - create room (May 2022 ->)
         createRoomQS2: `div:not([${postAtt}]) > div > div > div > div[data-visualcompletion="ignore-dynamic"][class=""] i[data-visualcompletion="css-img"]`,
         // - stories - (May 2022 ->)
-        storiesQS1: '[id="ssrb_stories_start"]',
+        // storiesQS1: '[id="ssrb_stories_start"]',
         // - stories - (May 2022 ->) - becareful, may hide main feed if stories slow to show (hence [aria-label] attribute) ...
         storiesQS2: `div[role="main"] > div > div > div > div:nth-of-type(2):not([${postAtt}]) > div[aria-label]`,
         // - sponsored - paid for
@@ -1122,6 +1266,7 @@
             // - sponsored word
             VARS.sponsoredWord = KeyWords.SPONSORED[VARS.language];
             VARS.sponsoredWordMP = KeyWords.MP_SPONSORED[VARS.language];
+            // - sponsored paid for - remove the "_____" from the keywords
             VARS.sponsoredPaidForWords = KeyWords.NF_SPONSORED_PAID[VARS.language].replaceAll('_','').trim();
             // ...
             let result = getUserOptions()
@@ -1400,6 +1545,16 @@
         }
         if (!VARS.Options.hasOwnProperty(nkey)) { VARS.Options[nkey] = KeyWords[nkey].defaultEnabled; changed = true; }
 
+        let okey1 = 'GF_JOIN_GROUP_1';
+        let okey2 = 'GF_JOIN_GROUP_1';
+        nkey = 'GF_JOIN_GROUP';
+        if (VARS.Options.hasOwnProperty(okey1)) {
+            VARS.Options[nkey] = (VARS.Options[okey1] || VARS.Options[okey2]);
+            delete VARS.Options[okey1];
+            delete VARS.Options[okey2];
+        }
+        if (!VARS.Options.hasOwnProperty(nkey)) { VARS.Options[nkey] = KeyWords[nkey].defaultEnabled; changed = true; }
+
         // -- which suggestions / info boxes / top of NF feed items have been enabled?
         VARS.infoBoxes = false;
         VARS.infoBoxesPaths = [];
@@ -1414,7 +1569,7 @@
                 // - is this suggestion enabled? if yes, add to the relevant suggestions array.
                 if (VARS.Options[key]) {
                     // - nb: slice(0,2) gives you nf,gf,vf,mp.
-                    VARS[`${key.slice(0,2).toLowerCase()}Suggestions`].push(KeyWords[key][VARS.language]);
+                    VARS[`${key.slice(0,2).toLowerCase()}Suggestions`] = VARS[`${key.slice(0,2).toLowerCase()}Suggestions`].concat(KeyWords[key][VARS.language]);
                 }
             }
             else if (KeyWords[key].isInfoBox) {
@@ -1543,7 +1698,12 @@
             }
             label.appendChild(cb);
             if (KeyWords[cbKeyWord]) {
-                label.appendChild(document.createTextNode(KeyWords[cbKeyWord][VARS.language]));
+                if (Array.isArray(KeyWords[cbKeyWord][VARS.language]) === false) {
+                    label.appendChild(document.createTextNode(KeyWords[cbKeyWord][VARS.language]));
+                }
+                else {
+                    label.appendChild(document.createTextNode(Array.from(KeyWords[cbKeyWord][VARS.language]).join(', ')));
+                }
             }
             else if (['NF_SPONSORED','GF_SPONSORED','VF_SPONSORED'].indexOf(cbKeyWord) >=0) {
                 // -- nb: above 3x NF_ values are not in KeyWords, but MP_SPONSORED is ...
@@ -2295,14 +2455,15 @@
                 daText = checkText(daText).trim();
             }
         }
-        // console.info(`${log}is Sponsored post:`, `>${daText}<`, elWrapper);
+        //console.info(`${log}is Sponsored post:`, `>${VARS.sponsoredWord}<`, `>${daText}<`, elWrapper);
         return ((daText.length > 0) && (VARS.sponsoredWord === daText));
 
     }
     function isSuggested(post, isRegularPost) {
         // - check for suggestions
         // -- regular posts - scan first 2 blocks, otherwise first block.
-        let ptexts = (isRegularPost) ? extractTextContent(post, VARS.postBlocksQS, 2) : extractTextContent(post, VARS.nonRegularPostBlocksQS, 1);
+        let postBlocks = (isRegularPost) ? VARS.postBlocksQS : (VARS.isVF) ? VARS.videNonFeedPostBlock : VARS.nonRegularPostBlocksQS ;
+        let ptexts = (isRegularPost) ? extractTextContent(post, postBlocks, 2) : extractTextContent(post, postBlocks, 1);
         let suggestionIndex = -1;
         for (let p = 0, ptL = ptexts.length; p < ptL; p++) {
             suggestionIndex = VARS.suggestions.indexOf(ptexts[p]);
@@ -2363,23 +2524,6 @@
 
     function doMoppingStories() {
         if (VARS.Options.NF_STORIES) {
-            // let stories = Array.from(document.querySelectorAll(VARS.storiesQS1));
-            // if (stories.length > 0) {
-            //     for (let i = 0; i < stories.length; i++) {
-            //         let sbox = stories[i].nextElementSibling;
-            //         if (sbox.nodeName === 'DIV') {
-            //             if (!sbox.hasAttribute(postAtt)) {
-            //                 let astories = sbox.querySelector('a[href^="/stories/"]');
-            //                 if (astories) {
-            //                     sbox.setAttribute(postAtt, sbox.innerHTML.length);
-            //                     VARS.storiesFound = true;
-            //                     hide(sbox, '');
-            //                     sbox.setAttribute(`${postAtt}-rule`, KeyWords.NF_STORIES[VARS.language]);
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
             let stories = Array.from(document.querySelectorAll(VARS.storiesQS2));
             if (stories.length > 0) {
                 for (let i = 0; i < stories.length; i++) {
@@ -2432,6 +2576,7 @@
     }
     let tcCountFound = 0;
     function doMoppingThirdColumn(tcEntry, tcbox) {
+        //console.info(log+'dMoppingThirdCol:', tcEntry, tcbox);
         // - third column, sponsored box.
         if (tcEntry === 1) {
             if (tcbox) {
@@ -2455,7 +2600,7 @@
             if (tcbox) {
                 if (!tcbox.classList.contains(VARS.cssHide)) {
                     let ptexts = scanTreeForText(tcbox);
-                    // console.info(`${log}tcbox scanTreeForText():`, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language], ptexts);
+                    //console.info(`${log}tcbox scanTreeForText():`, VARS.language, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language], ptexts);
                     let pidx = ptexts.indexOf(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]) ;
                     if (pidx === 0 || pidx === 1) {
                         VARS.echoCount = 0;
