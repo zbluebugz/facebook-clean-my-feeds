@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.19
+// @version      3.20b
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,14 +13,19 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.20 :: June 2022
+        Updated detection code for: Sponsored posts in News Feed (FB changed it)
+        Updated detection code for: Sponsored posts in Marketplace posts (via Groups Feed)
+        Updated languages
+        Added option to hide Meta Privacy Policy and Terms of Service message (top of News Feed)
     v3.19 :: June 2022
         Added Latviešu
-        Added Dutch
-        Added Polish
+        Added Polski
+        Added Nederlands
         Minor code tweaks
     v3.18 :: May 2022
         Bug fix for Sponsored post detection code (non Flex branch)
-        Added Italian (incomplete)
+        Added Italino (incomplete)
         Other language updates
         News Feed - third column - option to hide: "Groups / Suggested for you" box
         News Feed - option to hide "Recommended post"
@@ -67,13 +72,10 @@
     Attribution: Mop & bucket icon:
     - made by Freepik (https://www.freepik.com) @ flaticon (https://www.flaticon.com/)
     - page: https://www.flaticon.com/premium-icon/mop_2383747
- 
+
     To do :::
     - complete language translation (based on FB's wording/spelling)
     - investigate Private/Icognito/InPrivate Mode (idb doesn't work)
-
-    - block sponsored ads on /commerce/ pages
-      (via Group post selling something)
 
     Instructions on how to use:
     - In FB, top right corner or bottom left corner, click on the "Clean my feeds" icon (mop + bucket)
@@ -248,8 +250,8 @@
             'fr': 'Sponsorisé · Financé par ______',
             'es': 'Publicidad · Pagado por ______',
             'cs': 'Sponzorováno · Platí za to ______',
-            'vi': 'Sponsored · Paid for by ______', // --- needs translation
-            'it': 'Sponsored · Paid for by ______', // --- needs translation ('Sponsorizzato · Pagato da ______' ?)
+            'vi': 'Được tài trợ · Tài trợ bởi ______',
+            'it': 'Sponsorizzato · Finanziato da ______',
             'lv': 'Apmaksāta reklāma · Apmaksā ______',
             'pl': 'Sponsorowane · Opłacona przez ______',
             'nl': 'Gesponsord · Betaald door ______',
@@ -297,7 +299,7 @@
             'es': 'Páginas sugeridas',
             'cs': 'Navrhované stránky',
             'vi': 'Suggested Pages', // --- needs translation
-            'it': 'Suggested Pages', // --- needs translation
+            'it': 'Contenuto suggerito per te', // suggested content for you
             'lv': 'Suggested Pages', // --- needs translation
             'pl': 'Suggested Pages', // --- needs translation
             'nl': 'Suggested Pages', // --- needs translation
@@ -738,7 +740,25 @@
             'lv': 'Facebook uzņēmumu tagad sauc par Meta',
             'pl': 'Firma Facebook nazywa się teraz Meta',
             'nl': 'Het Facebook-bedrijf heet nu Meta',
-            'urlMatch': 'about.facebook.com/meta/',
+            //'urlMatch': 'about.facebook.com/meta/',
+            'urlMatch': 'facebook.com/meta/',
+            'isTopOfNFFeed': true,
+            'defaultEnabled': false,
+        },
+        // -- nf - top of feed - "fb/meta updated privacy & terms" - won't shut up.
+        OTHER_FB_PRIVACY_TERMS : {
+            'en': 'We\'ve updated the Meta Privacy Policy and Terms of Service',
+            'pt': 'Atualizámos a Política de Privacidade e os Termos de Serviço da Meta',
+            'de': 'Wir haben die Meta-Datenrichtlinie und die Meta-Nutzungsbedingungen aktualisiert',
+            'fr': 'Nous avons mis à jour la Politique de confidentialité et les Conditions de service de Meta',
+            'es': 'Hemos actualizado la Política de privacidad y las Condiciones del servicio de Meta',
+            'cs': 'Aktualizovali jsme Zásady ochrany osobních údajů a Smluvní podmínky společnosti Meta',
+            'vi': 'Chúng tôi đã cập nhật Chính sách quyền riêng tư và Điều khoản dịch vụ của Meta',
+            'it': 'Abbiamo aggiornato l\'Informativa sulla privacy e i Termini di servizio di Meta',
+            'lv': 'Esam atjauninājuši Meta konfidencialitātes politiku un pakalpojumu sniegšanas noteikumus',
+            'pl': 'Zaktualizowaliśmy Politykę prywatności Meta i Warunki korzystania z usługi Meta',
+            'nl': 'We hebben het Meta Privacybeleid en de Servicevoorwaarden bijgewerkt',
+            'pathMatch': '/privacy_policy_notice/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
         },
@@ -1178,6 +1198,10 @@
         marketplaceQS1: `div[data-pagelet="MainFeed"] div[data-pagelet^="BrowseFeedUpsell"]:not([${postAtt}])`,
         // - marketplace - exclude boxes already processed (May 2022 ->).
         marketplaceQS2: `div[role="main"] a[href^="/ads/"]:not([${postAtt}])`,
+        // - marketplace - category pages and item
+        marketplaceQS3: `a[href*="/ads/"]:not([${postAtt}])`,
+        // - marketplace - commerce listing pages
+        marketplaceQS4: `h2 > span > span > div > a[href*="/ads/"]:not([${postAtt}])`,
         // - third column - sponsored box - set by addCSS()
         thirdColQS1: '',
         // - third column - groups suggested for you - set by addCSS() (May 2022 ->)
@@ -1851,6 +1875,7 @@
             }
             fs.appendChild(createCB('cbOther', 'OTHER_SURVEY'));
             fs.appendChild(createCB('cbOther', 'OTHER_FB_RENAMED'));
+            fs.appendChild(createCB('cbOther', 'OTHER_FB_PRIVACY_TERMS'));
             cnt.appendChild(fs);
 
             // -- Keywords to block - News Feed
@@ -2214,7 +2239,7 @@
             }
             else if (VARS.prevPathname.indexOf('/marketplace') >=0) {
                 VARS.isMP = true;
-                VARS.QS = VARS.marketplaceQS;
+                VARS.QS = VARS.marketplaceQS1;
                 VARS.suggestions = [];
                 VARS.blockText = false;
                 VARS.blockTextMatch = [];
@@ -2246,6 +2271,17 @@
                     VARS.mpItem = true;
                 }
                 // console.info(`${log}setFeedSettings() : isMP, mpType, mpItem:`, VARS.isMP, VARS.mpType, VARS.mpItem);
+            }
+            else if (VARS.prevPathname.indexOf('/commerce/listing/') >= 0) {
+                // - view a group's for sale post and is redirected to marketplace ..
+                VARS.isMP = true;
+                VARS.QS = VARS.marketplaceQS3;
+                VARS.suggestions = [];
+                VARS.blockText = false;
+                VARS.blockTextMatch = [];
+                VARS.blockTextMatchLC = [];
+                VARS.mpType = 'commerce';
+                VARS.mpItem = false;
             }
             else if (['/search/top/', '/search/top', '/search/posts/', '/search/posts'].indexOf(VARS.prevPathname) >=0) {
                 // -- search results page : "All" and "Posts"
@@ -2288,6 +2324,7 @@
             // - reset f2m and survey found flags
             VARS.f2mFound = (VARS.Options.OTHER_FB_RENAMED === false);
             VARS.surveyFound = (VARS.Options.OTHER_SURVEY === false);
+            VARS.fprivacyFound = (VARS.Options.OTHER_FB_PRIVACY_TERMS === false);
             // console.info(`${log}SF:`, VARS.surveyFound);
             VARS.otherLoopCount = 0;
 
@@ -2404,12 +2441,12 @@
     function isSponsored(post) {
         // Is it a sponsored post?
         // -- find the block of code that usually holds the post's timestamp / sponsored text.
-        // -- nb: fb uses SPAN or B ...
+        // -- there are various methods for displaying sponsored text.
 
         let daText = '';
 
-        // -- try the SPAN structure (w Flex)
-        let elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > span[style], span > span > span > a[href*="/ads/"] > span > span[class] > span[style]');
+        // -- try the Flex/Order structure
+        let elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > [style*="order"], span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"]');
         if (elWrapper) {
             // -- found a regular post structure
             let arrText = [];
@@ -2433,8 +2470,8 @@
             daText = checkText(arrText.join('')).trim();
         }
         else {
-            // -- try the B structure (no Flex)
-            elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > b[class], span > span > span > a[href*="/ads/"] > span > span[class] > b[class]');
+            // -- try the non-Flex/Order structure
+            elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > [class], span > span > span > a[href*="/ads/"] > span > span[class] > [class]');
             if (elWrapper) {
                 // -- found a regular post structure (Portugese, Italian)
                 daText = '';
@@ -2453,6 +2490,13 @@
                     }
                 });
                 daText = checkText(daText).trim();
+            }
+            else {
+                // --- try the non-obfuscated structure
+                elWrapper = post.querySelector('span > span > span > a[href="#"] > span, span > span > span > a[href*="/ads/"] > span');
+                if (elWrapper && elWrapper.children.length == 0) {
+                    daText = elWrapper.textContent;
+                }
             }
         }
         //console.info(`${log}is Sponsored post:`, `>${VARS.sponsoredWord}<`, `>${daText}<`, elWrapper);
@@ -2672,7 +2716,7 @@
                 // -- if parentElement is BODY, skip this round ...
                 // -- not all elements have been created - 'div[role="feed"]' one of the first few ...
                 if (VARS.f2mFound === false) {
-                    let linkEl = parentEl.querySelector(`a[href*="facebook.com/meta/"]:not([${postAtt}])`);
+                    let linkEl = parentEl.querySelector(`a[href*="${KeyWords.OTHER_FB_RENAMED.urlMatch}"]:not([${postAtt}])`);
                     if (linkEl) {
                         // -- grab the container (7 parent nodes up)
                         let boxEl = linkEl.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
@@ -2682,9 +2726,20 @@
                     }
                     VARS.f2mFound = true;
                 }
+                if (VARS.fprivacyFound === false) {
+                    let linkEl = parentEl.querySelector(`a[href*="${KeyWords.OTHER_FB_PRIVACY_TERMS.pathMatch}"]:not([${postAtt}])`);
+                    if (linkEl) {
+                        // -- grab the container (7 parent nodes up)
+                        let boxEl = linkEl.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+                        linkEl.setAttribute(postAtt, linkEl.innerHTML.length);
+                        boxEl.setAttribute(postAtt, boxEl.innerHTML.length);
+                        hide(boxEl, KeyWords.OTHER_FB_PRIVACY_TERMS[VARS.language]); // - fb removes the hidden message, so skip that bit.
+                    }
+                    VARS.fprivacyFound = true;
+                }
                 //console.info(`${log}vSF:`, VARS.surveyFound, VARS.surveyFound === false, VARS.otherLoopCount);
                 if (VARS.surveyFound === false) {
-                    let linkEl = parentEl.querySelector(`a[href*="/survey/"]:not([${postAtt}])`);
+                    let linkEl = parentEl.querySelector(`a[href*="${KeyWords.OTHER_SURVEY.pathMatch}"]:not([${postAtt}])`);
                     if (linkEl) {
                         // -- grab the container (7 parent nodes up)
                         let boxEl = linkEl.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
@@ -2886,7 +2941,7 @@
         }
         else if (VARS.mpType === 'category') {
             // -- Viewing a MP category
-            let splinks = Array.from(document.querySelectorAll(`a[href*="/ads/"]:not([${postAtt}])`));
+            let splinks = Array.from(document.querySelectorAll(VARS.marketplaceQS3));
             if (splinks.length > 0) {
                 for (let i = 0, iL = splinks.length; i < iL; i++) {
                     let splink = splinks[i];
@@ -2894,8 +2949,8 @@
                     if (spbox !== null) {
                         // -- found the sponsored box.
                         spbox = spbox.parentElement.parentElement.parentElement;
-                        spbox.setAttribute(postAtt, spbox.innerHTML.length);
                         splink.setAttribute(postAtt, splink.innerHTML.length);
+                        spbox.setAttribute(postAtt, spbox.innerHTML.length);
                         hide(spbox, VARS.sponsoredWordMP);
                         // (no break out - several sponsored boxes found)
                     }
@@ -2905,10 +2960,29 @@
                 doMoppingMPItem();
             }
         }
+        else if (VARS.mpType === 'commerce') {
+            // -- Viewing a Commerce Listing page
+            let splinks = Array.from(document.querySelectorAll(VARS.marketplaceQS4));
+            if (splinks.length > 0) {
+                for (let i = 0, iL = splinks.length; i < iL; i++) {
+                    let splink = splinks[i];
+                    let spbox = splink.parentElement.closest('h2').closest('span');
+                    if (spbox !== null) {
+                        // -- found the sponsored box.
+                        if (!spbox.hasAttribute('msz-rule')) {
+                            splink.setAttribute(postAtt, spbox.innerHTML.length);
+                            spbox.setAttribute(postAtt, spbox.innerHTML.length);
+                            hide(spbox, VARS.sponsoredWordMP);
+                        }
+                        // (no break out - several sponsored boxes found)
+                    }
+                }
+            }
+        }
     }
     function doMoppingMPItem() {
         // -- viewing a MP Item and a small sponsored box is showing up on the right.
-        let splinks = Array.from(document.querySelectorAll(`a[href*="/ads/"]:not([${postAtt}])`));
+        let splinks = Array.from(document.querySelectorAll(VARS.marketplaceQS3));
         // console.info(`${log}MPItem() - splinks:`, splinks);
         if (splinks.length > 0){
             for (let i = 0, iL = splinks.length; i < iL; i++) {
