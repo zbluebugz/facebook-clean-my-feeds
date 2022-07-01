@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.20b
+// @version      3.21
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,8 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.21 :: July 2022
+        Updated detection code for: Sponsored posts in News Feed (FB changed it)
     v3.20 :: June 2022
         Updated detection code for: Sponsored posts in News Feed (FB changed it)
         Updated detection code for: Sponsored posts in Marketplace posts (via Groups Feed)
@@ -2446,7 +2448,8 @@
         let daText = '';
 
         // -- try the Flex/Order structure
-        let elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > [style*="order"], span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"]');
+        let elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > [style*="order"], span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +
+                                           'span > span > span > a[href="#"] > span > span[class] > [style*="display"], span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]');
         if (elWrapper) {
             // -- found a regular post structure
             let arrText = [];
