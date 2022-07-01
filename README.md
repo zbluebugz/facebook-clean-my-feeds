@@ -10,6 +10,10 @@ Languages supported:
 - Espanol (Spain)
 - Čeština (Czech)
 - Tiếng Việt (Vietnam)
+- Italino (Italy)
+- Latviešu (Latvia)
+- Polski (Poland)
+- Nederlands (Netherlands)
 
 JavaScript code to use with Tampermonkey, Greasemonkey, Violentmonkey, etc to hide certain parts of FB.
 
