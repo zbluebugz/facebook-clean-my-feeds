@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.21
+// @version      3.22
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,8 +13,10 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.22 :: July 2022
+        Updated detection code for: Sponsored posts in Marketplace Feed
     v3.21 :: July 2022
-        Updated detection code for: Sponsored posts in News Feed (FB changed it)
+        Updated detection code for: Sponsored posts in News Feed
     v3.20 :: June 2022
         Updated detection code for: Sponsored posts in News Feed (FB changed it)
         Updated detection code for: Sponsored posts in Marketplace posts (via Groups Feed)
@@ -89,7 +91,7 @@
     \\\ --- No need to amend any of the code below --- ///
 */
 
-(async function() {
+(async function () {
 
     'use strict';
 
@@ -99,7 +101,7 @@
     // - idb-keyval - indexedDB wrapper
     // -- needs the "@require https://unpkg.com/idb-keyval@6.0.3/dist/umd.js" entry.
     // -- which functions do we want to use from the idb-keyval?
-    const  { get, set, createStore } = idbKeyval;
+    const { get, set, createStore } = idbKeyval;
     // - override idb-keyval's default db and store names.
     let DBVARS = {
         DBName: 'dbCMF',
@@ -122,9 +124,9 @@
 
         // *** Which languages have been setup:
         // - 'en' is default.
-        LANGUAGES : ['en', 'pt', 'de', 'fr', 'es', 'cs', 'vi', 'it', 'lv', 'pl', 'nl'],
+        LANGUAGES: ['en', 'pt', 'de', 'fr', 'es', 'cs', 'vi', 'it', 'lv', 'pl', 'nl'],
 
-        SPONSORED : {
+        SPONSORED: {
             // English
             'en': 'Sponsored',
             // Português (Portugal)
@@ -149,7 +151,7 @@
             'nl': 'Gesponsord',
         },
         // marketplace 'sponsored' word ... somtimes fb has a different spelling
-        MP_SPONSORED : {
+        MP_SPONSORED: {
             'en': 'Sponsored',
             'pt': 'Patrocinado',
             'de': 'Gesponsert',
@@ -163,7 +165,7 @@
             'nl': 'Gesponsord',
         },
         // *** Verbosity:
-        VERBOSITY : {
+        VERBOSITY: {
             'en': ['1 post hidden. Rule: ', ' posts hidden'],
             'pt': ['1 postagem oculta. Regra: ', ' postagens ocultas'],
             'de': ['1 Beitrag ausgeblendet. Regel: ', ' Beiträge versteckt'],
@@ -180,7 +182,7 @@
 
         // *** News Feed ::
         // - Stories
-        NF_STORIES : {
+        NF_STORIES: {
             'en': 'Stories',
             'pt': 'Histórias',
             'de': 'Stories',
@@ -196,7 +198,7 @@
             'defaultEnabled': false,
         },
         // - create room
-        NF_CREATE_ROOM : {
+        NF_CREATE_ROOM: {
             'en': 'Create room',
             'pt': 'Criar sala',
             'de': 'Room erstellen',
@@ -212,7 +214,7 @@
             'defaultEnabled': false,
         },
         // - People you may know
-        NF_PEOPLE_YOU_MAY_KNOW : {
+        NF_PEOPLE_YOU_MAY_KNOW: {
             'en': 'People you may know',
             'pt': 'Pessoas que talvez conheças',
             'de': 'Personen, die du kennen könntest',
@@ -229,7 +231,7 @@
         },
         // - Paid partnership
         // -- page you follow is "sponsoring" another page's post (e.g. job)
-        NF_PAID_PARTNERSHIP : {
+        NF_PAID_PARTNERSHIP: {
             'en': 'Paid partnership',
             'pt': 'Parceria paga',
             'de': 'Bezahlte Werbepartnerschaft',
@@ -245,7 +247,7 @@
             'defaultEnabled': true,
         },
         // Sponsored · Paid for by ______  (paid advertising)
-        NF_SPONSORED_PAID : {
+        NF_SPONSORED_PAID: {
             'en': 'Sponsored · Paid for by ______',
             'pt': 'Patrocinado · Financiado por ______',
             'de': 'Gesponsert · Finanziert von ______',
@@ -261,7 +263,7 @@
             'defaultEnabled': true
         },
         // - Suggested for you
-        NF_SUGGESTED_FOR_YOU : {
+        NF_SUGGESTED_FOR_YOU: {
             'en': 'Suggested for you',
             'pt': 'Sugestões para ti',
             'de': 'Vorschläge für dich',
@@ -277,7 +279,7 @@
             'defaultEnabled': false,
         },
         // - Recommended post (usually appears on fresh accounts)
-        NF_RECOMMENDED_POST : {
+        NF_RECOMMENDED_POST: {
             'en': 'Recommended post',
             'pt': 'Publicação recomendada',
             'de': 'Empfohlener Beitrag',
@@ -293,7 +295,7 @@
             'defaultEnabled': false,
         },
         // - Suggested pages
-        NF_SUGGESTED_PAGES : {
+        NF_SUGGESTED_PAGES: {
             'en': 'Suggested Pages',
             'pt': 'Páginas sugeridas',
             'de': 'Vorgeschlagene Seiten',
@@ -309,7 +311,7 @@
             'defaultEnabled': false,
         },
         // - Suggested events
-        NF_SUGGESTED_EVENTS : {
+        NF_SUGGESTED_EVENTS: {
             'en': 'Suggested Events',
             'pt': 'Eventos Sugeridos',
             'de': 'Vorgeschlagene Veranstaltungen',
@@ -325,7 +327,7 @@
             'defaultEnabled': false,
         },
         // - Events you may like
-        NF_EVENTS_YOU_MAY_LIKE : {
+        NF_EVENTS_YOU_MAY_LIKE: {
             'en': 'Events you may like',
             'pt': 'Events you may like', // --- needs translation
             'de': 'Events you may like', // --- needs translation
@@ -343,7 +345,7 @@
         // - June 2022: removed News Feed's "Videos just for you" & "Page you could subscribe to"
 
         // - Reels and short videos
-        NF_REELS_SHORT_VIDEOS : {
+        NF_REELS_SHORT_VIDEOS: {
             'en': 'Reels and short videos',
             //'pt': 'Vídeos do Reels e vídeos curtos',
             'pt': 'Vídeos do Reels e vídeos de curta duração',
@@ -360,7 +362,7 @@
             'defaultEnabled': false,
         },
         // - Sponsored box in right-hand column
-        NF_THIRD_COLUMN_SPONSORED : {
+        NF_THIRD_COLUMN_SPONSORED: {
             'en': 'Sponsored box (right-hand column)',
             'pt': 'Caixa patrocinada (coluna da direita)',
             'de': 'Gesponserte Box (rechte Spalte)',
@@ -375,7 +377,7 @@
             'defaultEnabled': true,
         },
         // - Suggested for you
-        NF_THIRD_COLUMN_SUGGESTED_FOR_YOU : {
+        NF_THIRD_COLUMN_SUGGESTED_FOR_YOU: {
             'en': 'Suggested for you (right-hand column)',
             'pt': 'Sugestões para ti (coluna da direita)',
             'de': 'Vorschläge für dich (rechte Spalte)',
@@ -396,7 +398,7 @@
         //    if both of these keywords are enabled, then the other keywords are "redundant"
         // - New for you
         // -- usually shows up at top of feed.
-        GF_NEW_FOR_YOU : {
+        GF_NEW_FOR_YOU: {
             'en': 'New for you',
             'pt': 'Novidades para ti',
             'de': 'Neu für dich',
@@ -412,7 +414,7 @@
             'defaultEnabled': false,
         },
         // - Suggested for you / Groups you might be interested in.
-        GF_SUGGESTED_FOR_YOU_GROUPS : {
+        GF_SUGGESTED_FOR_YOU_GROUPS: {
             'en': 'Suggested for you',
             'pt': 'Sugestões para ti',
             'de': 'Vorschläge für dich',
@@ -429,7 +431,7 @@
         },
         // - Paid partnership
         // -- a page you follow is "sponsoring" another page's post (e.g. job)
-        GF_PAID_PARTNERSHIP : {
+        GF_PAID_PARTNERSHIP: {
             'en': 'Paid partnership',
             'pt': 'Parceria paga',
             'de': 'Bezahlte Werbepartnerschaft', // (Paid advertising partnership)
@@ -446,7 +448,7 @@
         },
         // - Suggested groups
         // -- box of groups - may need to use the view/see more keyword
-        GF_SUGGESTED_GROUPS : {
+        GF_SUGGESTED_GROUPS: {
             'en': 'Suggested groups',
             'pt': 'Grupos sugeridos',
             'de': 'Vorgeschlagene Gruppen',
@@ -463,7 +465,7 @@
         },
         // - See More Groups - from post's heading "More like XYZ" / "Others similar to XYZ" (where XYZ is a group you've joined)
         // -- nb: some non-subscribed group posts also have this keyword.
-        GF_SEE_MORE_GROUPS : {
+        GF_SEE_MORE_GROUPS: {
             'en': 'See More Groups',
             'pt': 'Ver mais grupos',
             'de': 'Weitere Gruppen ansehen',
@@ -480,7 +482,7 @@
         },
         // - Suggested post from a public group
         // -- lots of posts from groups not subscribed too
-        GF_SUGGESTED_POST_PUBLIC_GROUP : {
+        GF_SUGGESTED_POST_PUBLIC_GROUP: {
             'en': ['Suggested post from a public group', 'Post from public group'],
             'pt': ['Publicação sugerida de um grupo público', 'Postagem de grupo público'],
             'de': 'Vorgeschlagener Beitrag aus einer öffentlichen Gruppe',
@@ -496,7 +498,7 @@
             'defaultEnabled': false,
         },
         // - Because you viewed a similar post (but not from a subscribed group)
-        GF_BECAUSE_YOU_VIEWED_A_SIMILAR_POST : {
+        GF_BECAUSE_YOU_VIEWED_A_SIMILAR_POST: {
             'en': 'Because you viewed a similar post',
             'pt': 'Porque viste uma publicação semelhante',
             'de': 'Weil du dir einen ähnlichen Beitrag angesehen hast',
@@ -512,7 +514,7 @@
             'defaultEnabled': false,
         },
         // - Because you viewed a similar group
-        GF_BECAUSE_YOU_VIEWED_A_SIMILAR_GROUP : {
+        GF_BECAUSE_YOU_VIEWED_A_SIMILAR_GROUP: {
             'en': 'Because you viewed a similar group',
             'pt': 'Porque viste um grupo semelhante',
             'de': 'Weil du dir eine ähnliche Gruppe angesehen hast',
@@ -544,7 +546,7 @@
             'defaultEnabled': false,
         },
         // - From a group that your friend is in
-        GF_FROM_A_GROUP_YOUR_FRIEND_IS_IN : {
+        GF_FROM_A_GROUP_YOUR_FRIEND_IS_IN: {
             'en': 'From a group that your friend is in',
             'pt': 'De um grupo em que o teu amigo/a é membro',
             'de': 'Aus einer Gruppe, in der dein/e Freund/in ist',
@@ -561,7 +563,7 @@
         },
         // - Friends' groups
         // -- usually shows up at top of feed.
-        GF_FRIENDS_GROUPS : {
+        GF_FRIENDS_GROUPS: {
             'en': 'Friends\' groups',
             'pt': 'Grupos dos amigos',
             'de': 'Gruppen von Freunden',
@@ -577,7 +579,7 @@
             'defaultEnabled': false,
         },
         // - Popular near you / in your area
-        GF_POPULAR_NEAR_YOU : {
+        GF_POPULAR_NEAR_YOU: {
             'en': 'Popular near you',
             'pt': 'Populares perto de ti',
             'de': 'Beliebt in deiner Nähe',
@@ -614,7 +616,7 @@
         // *** Watch Videos Feed
         // - Paid partnership
         //   -- page you follow is "sponsoring" another page's video post (e.g. job)
-        VF_PAID_PARTNERSHIP_VIDEOS : {
+        VF_PAID_PARTNERSHIP_VIDEOS: {
             'en': 'Paid partnership',
             'pt': 'Parceria paga',
             'de': 'Bezahlte Werbepartnerschaft', // (Paid advertising partnership)
@@ -629,7 +631,7 @@
             'isSuggestion': true,
             'defaultEnabled': true,
         },
-        VF_NEW_FOR_YOU_VIDEOS : {
+        VF_NEW_FOR_YOU_VIDEOS: {
             'en': 'New for you',
             'pt': 'Novidades para ti',
             'de': 'Neu für dich',
@@ -644,7 +646,7 @@
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        VF_LIVE : {
+        VF_LIVE: {
             'en': 'LIVE',
             'pt': 'DIRETO',
             'de': 'LIVE',
@@ -662,7 +664,7 @@
 
         // *** Miscellaneous/Other items
         // -- info box - coronavirus
-        OTHER_INFO_BOX_CORONAVIRUS : {
+        OTHER_INFO_BOX_CORONAVIRUS: {
             'en': 'Coronavirus (information box)',
             'pt': 'Coronavírus (caixa de informações)',
             'de': 'Coronavirus (Infobox)',
@@ -679,7 +681,7 @@
             'pathMatch': '/coronavirus_info/', // -- the partial path name to match.
         },
         // -- info box - climate science
-        OTHER_INFO_BOX_CLIMATE_SCIENCE : {
+        OTHER_INFO_BOX_CLIMATE_SCIENCE: {
             'en': 'Climate Science (information box)',
             'pt': 'Ciência do Clima (caixa de informações)',
             'de': 'Klimawissenschaft (Infobox)',
@@ -696,7 +698,7 @@
             'pathMatch': '/climatescienceinfo/',
         },
         // -- info box - subscribe
-        OTHER_INFO_BOX_SUBSCRIBE : {
+        OTHER_INFO_BOX_SUBSCRIBE: {
             'en': 'Subscribe (information box)',
             'pt': 'Assine (caixa de informações)',
             'de': 'Abonnieren (Infobox)',
@@ -713,7 +715,7 @@
             'pathMatch': '/support/',
         },
         // -- nf - top of feed - "invitation to a survey"
-        OTHER_SURVEY : {
+        OTHER_SURVEY: {
             'en': 'See Survey Details',
             'pt': 'Veja os detalhes da pesquisa',
             'de': 'Siehe Umfragedetails ',
@@ -730,7 +732,7 @@
             'defaultEnabled': false,
         },
         // -- nf - top of feed - "fb 2 m"
-        OTHER_FB_RENAMED : {
+        OTHER_FB_RENAMED: {
             'en': 'The Facebook company is now called Meta',
             'pt': 'A empresa do Facebook agora se chama Meta',
             'de': 'Das Facebook-Unternehmen heißt jetzt Meta',
@@ -748,7 +750,7 @@
             'defaultEnabled': false,
         },
         // -- nf - top of feed - "fb/meta updated privacy & terms" - won't shut up.
-        OTHER_FB_PRIVACY_TERMS : {
+        OTHER_FB_PRIVACY_TERMS: {
             'en': 'We\'ve updated the Meta Privacy Policy and Terms of Service',
             'pt': 'Atualizámos a Política de Privacidade e os Termos de Serviço da Meta',
             'de': 'Wir haben die Meta-Datenrichtlinie und die Meta-Nutzungsbedingungen aktualisiert',
@@ -767,7 +769,7 @@
 
         // *** Dialog box
         // - Title
-        DLG_TITLE : {
+        DLG_TITLE: {
             'en': 'Clean my feeds',
             'pt': 'Limpe meus feeds',
             'de': 'Bereinige meine Feeds',
@@ -780,7 +782,7 @@
             'pl': 'Wyczyść moje kanały',
             'nl': 'Schoon mijn feeds',
         },
-        DLG_NF : {
+        DLG_NF: {
             'en': 'News Feed',
             'pt': 'Feed de notícias',
             'de': 'Newsfeed',
@@ -793,7 +795,7 @@
             'pl': 'Kanał aktualności',
             'nl': 'Nieuwsfeed',
         },
-        DLG_GF : {
+        DLG_GF: {
             'en': 'Groups Feed',
             'pt': 'Feed de grupos',
             'de': 'Gruppen-Feed',
@@ -806,7 +808,7 @@
             'pl': 'Kanał grup',
             'nl': 'Groepsfeed',
         },
-        DLG_VF : {
+        DLG_VF: {
             'en': 'Videos Feed',
             'pt': 'Feed de vídeos',
             'de': 'Video-Feed',
@@ -819,7 +821,7 @@
             'pl': 'Kanał wideo',
             'nl': 'Videofeed',
         },
-        DLG_MP : {
+        DLG_MP: {
             'en': 'Marketplace Feed',
             'pt': 'Feed de mercado',
             'de': 'Marktplatz-Feed',
@@ -832,7 +834,7 @@
             'pl': 'Kanał Marketplace',
             'nl': 'Marktplaatsfeed',
         },
-        DLG_OTHER : {
+        DLG_OTHER: {
             'en': 'Miscellaneous items',
             'pt': 'Itens miscelâneos',
             'de': 'Sonstige Gegenstände',
@@ -845,7 +847,7 @@
             'pl': 'Różne pozycje',
             'nl': 'Diversen',
         },
-        DLG_NF_BLOCK : {
+        DLG_NF_BLOCK: {
             'en': 'News Feed - text filter',
             'pt': 'Feed de notícias - filtro de texto',
             'de': 'Newsfeed - Textfilter',
@@ -858,7 +860,7 @@
             'pl': 'Kanał aktualności - filtr tekstu',
             'nl': 'Nieuwsfeed - tekstfilter',
         },
-        DLG_GF_BLOCK : {
+        DLG_GF_BLOCK: {
             'en': 'Groups Feed - text filter',
             'pt': 'Feed de grupos - filtro de texto',
             'de': 'Gruppen-Feed - Textfilter',
@@ -871,7 +873,7 @@
             'pl': 'Kanał grup - filtr tekstu',
             'nl': 'Groepsfeed - tekstfilter'
         },
-        DLG_VF_BLOCK : {
+        DLG_VF_BLOCK: {
             'en': 'Videos Feed - text filter',
             'pt': 'Feed de vídeos - filtro de texto',
             'de': 'Video-Feed - Textfilter',
@@ -884,7 +886,7 @@
             'pl': 'Kanał wideo - filtr tekstu',
             'nl': 'Videofeed - tekstfilter',
         },
-        DLG_BLOCK_NEW_LINE : {
+        DLG_BLOCK_NEW_LINE: {
             'en': '(separate words or phrases with a line break)',
             'pt': '(separe palavras ou frases com quebras de linha)',
             'de': '(trennen Sie Wörter oder Sätze mit Zeilenumbrüchen)',
@@ -897,7 +899,7 @@
             'pl': '(oddziel słowa lub wyrażenia z podziałem wiersza)',
             'nl': '(scheid woorden of woordgroepen met een regeleinde)',
         },
-        NF_BLOCKED_ENABLED : {
+        NF_BLOCKED_ENABLED: {
             'en': 'Enabled',
             'pt': 'Habilidoso',
             'de': 'Ermöglichte',
@@ -909,20 +911,7 @@
             'lv': 'Iespējots',
             'pl': 'Włączone',
         },
-        GF_BLOCKED_ENABLED : {
-            'en': 'Enabled',
-            'pt': 'Habilidoso',
-            'de': 'Ermöglichte',
-            'fr': 'Activé',
-            'es': 'Habilitadas',
-            'cs': 'Zapnuto',
-            'vi': 'Đã kích hoạt',
-            'it': 'Abilita opzione',
-            'lv': 'Iespējots',
-            'pl': 'Włączone',
-            'nl': 'Ingeschakeld',
-        },
-        VF_BLOCKED_ENABLED : {
+        GF_BLOCKED_ENABLED: {
             'en': 'Enabled',
             'pt': 'Habilidoso',
             'de': 'Ermöglichte',
@@ -935,7 +924,20 @@
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
         },
-        DLG_VERBOSITY : {
+        VF_BLOCKED_ENABLED: {
+            'en': 'Enabled',
+            'pt': 'Habilidoso',
+            'de': 'Ermöglichte',
+            'fr': 'Activé',
+            'es': 'Habilitadas',
+            'cs': 'Zapnuto',
+            'vi': 'Đã kích hoạt',
+            'it': 'Abilita opzione',
+            'lv': 'Iespējots',
+            'pl': 'Włączone',
+            'nl': 'Ingeschakeld',
+        },
+        DLG_VERBOSITY: {
             'en': 'Verbosity',
             'pt': 'Verbosidade',
             'de': 'Ausführlichkeit',
@@ -948,7 +950,7 @@
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
         },
-        DLG_VERBOSITY_MESSAGE : {
+        DLG_VERBOSITY_MESSAGE: {
             'en': 'Display a message if a post is hidden',
             'pt': 'Exibir uma mensagem se uma postagem estiver oculta',
             'de': 'Nachricht anzeigen, wenn ein Beitrag ausgeblendet ist',
@@ -961,7 +963,7 @@
             'pl': 'Wyświetlaj wiadomość, jeśli wpis jest ukryty',
             'nl': 'Een bericht weergeven als een artikel verborgen is',
         },
-        VERBOSITY_NO_MESSAGE : {
+        VERBOSITY_NO_MESSAGE: {
             'en': 'no message',
             'pt': 'nenhuma mensagem',
             'de': 'keine Nachricht',
@@ -974,7 +976,7 @@
             'pl': 'nie ma wiadomości',
             'nl': 'geen bericht',
         },
-        VERBOSITY_COLOUR : {
+        VERBOSITY_COLOUR: {
             'en': 'Text colour',
             'pt': 'Cor do texto',
             'de': 'Textfarbe',
@@ -987,7 +989,7 @@
             'pl': 'Kolor tekstu',
             'nl': 'Tekstkleur',
         },
-        VERBOSITY_BG_COLOUR : {
+        VERBOSITY_BG_COLOUR: {
             'en': 'Background colour',
             'pt': 'Cor de fundo',
             'de': 'Hintergrundfarbe',
@@ -1000,7 +1002,7 @@
             'pl': 'Kolor tła',
             'nl': 'Achtergrondkleur',
         },
-        VERBOSITY_DEBUG : {
+        VERBOSITY_DEBUG: {
             'en': 'Highlight "hidden" posts',
             'pt': 'Destacar postagens "ocultas"',
             'de': 'Markieren Sie "versteckte" Beiträge',
@@ -1014,7 +1016,7 @@
             'nl': 'Highlight "verborgen" artikelen',
         },
         // CMF's customisations
-        CMF_CUSTOMISATIONS : {
+        CMF_CUSTOMISATIONS: {
             'en': 'Customisations',
             'pt': 'Personalizações',
             'de': 'Anpassungen',
@@ -1027,7 +1029,7 @@
             'pl': 'Personalizacja',
             'nl': 'Personalisaties',
         },
-        CMF_BTN_LOCATION : {
+        CMF_BTN_LOCATION: {
             'en': 'Location of Clean my feeds\' button',
             'pt': 'Localização do botão Limpe meus feeds',
             'de': 'Position der Schaltfläche "Bereinige meine Feeds"',
@@ -1040,7 +1042,7 @@
             'pl': 'Lokalizacja przycisku Wyczyść moje kanały',
             'nl': 'Locatie van de knop Mijn feeds opschonen',
         },
-        CMF_BTN_OPTION : {
+        CMF_BTN_OPTION: {
             'en': ['bottom left', 'top right'],
             'pt': ['inferior esquerdo', 'superior direito'],
             'de': ['unten links', 'oben rechts'],
@@ -1054,7 +1056,7 @@
             'nl': ['linksonder', 'rechtsboven'],
             'defaultValue': 0,
         },
-        CMF_DIALOG_LOCATION : {
+        CMF_DIALOG_LOCATION: {
             'en': 'Location of Clean my feeds\' dialog box',
             'pt': 'Localização da caixa de diálogo Limpe meus feeds',
             'de': 'Position des Dialogfelds "Bereinige meine Feeds"',
@@ -1067,7 +1069,7 @@
             'pl': 'Lokalizacja okna dialogowego Wyczyść moje kanały',
             'nl': 'Locatie van het dialoogvenster Mijn feeds opschonen',
         },
-        CMF_DIALOG_OPTION : {
+        CMF_DIALOG_OPTION: {
             'en': ['left side', 'right side'],
             'pt': ['lado esquerdo', 'lado direito'],
             'de': ['linke Seite', 'rechte Seite'],
@@ -1081,7 +1083,7 @@
             'nl': ['linkerkant', 'rechterkant'],
             'defaultValue': 0,
         },
-        CMF_BORDER_COLOUR : {
+        CMF_BORDER_COLOUR: {
             'en': 'Border colour',
             'pt': 'Cor da borda',
             'de': 'Farbe der Umrandung',
@@ -1094,10 +1096,10 @@
             'pl': 'Kolor obramowania',
             'nl': 'Randkleur',
         },
-        CMF_BORDER_OPTION : {
+        CMF_BORDER_OPTION: {
             'defaultValue': 'orangered',
         },
-        DLG_TIPS : {
+        DLG_TIPS: {
             'en': 'Tips"',
             'pt': 'Pontas',
             'de': 'Tipps',
@@ -1110,7 +1112,7 @@
             'pl': 'Sugestia',
             'nl': 'Tips'
         },
-        DLG_TIPS_CONTENT : {
+        DLG_TIPS_CONTENT: {
             'en': 'Clearing your browser\'s cache will reset your settings to their default values.\n\nUse the "Export" and "Import" buttons to backup and restore your customised settings.',
             'pt': 'Limpar o cache do navegador redefinirá suas configurações para os valores padrão.\n\nUse os botões "Exportar" e "Importar" para fazer backup e restaurar suas configurações personalizadas.',
             'de': 'Wenn Sie den Cache Ihres Browsers leeren, werden Ihre Einstellungen auf die Standardwerte zurückgesetzt.\n\nVerwenden Sie die Schaltflächen "Exportieren" und "Importieren", um Ihre benutzerdefinierten Einstellungen zu sichern und wiederherzustellen.',
@@ -1123,7 +1125,7 @@
             'pl': 'Wyczyszczenie pamięci podręcznej przeglądarki spowoduje zresetowanie ustawień do wartości domyślnych.\n\nUżyj przycisków „Eksportuj” i „Importuj”, aby wykonać kopię zapasową i przywrócić niestandardowe ustawienia.',
             'nl': 'Als u de cache van uw browser wist, worden uw instellingen teruggezet naar hun standaardwaarden.\n\nGebruik de knoppen "Exporteren" en "Importeren" om een back-up te maken van uw aangepaste instellingen en deze te herstellen.',
         },
-        DLG_BUTTONS : {
+        DLG_BUTTONS: {
             'en': ['Save', 'Close', 'Export', 'Import'],
             'pt': ['Salvar', 'Fechar', 'Exportar', 'Importar'],
             'de': ['Speichern', 'Schließen', 'Exportieren', 'Importieren'],
@@ -1154,7 +1156,7 @@
         sponsoredPaidForWords: [],
         // - Suggestions
         // -- "current" feed
-        suggestions : [],
+        suggestions: [],
         // - block text - partial matches (heading block, content block)
         // -- "current" feed. lc = lower case.
         blockText: false,
@@ -1176,7 +1178,7 @@
         infoBoxesPaths: [],
 
         // - Query String selectors for getting a collection of Feed posts / elements
-        QS : '',
+        QS: '',
         newsFeedQS: 'div[role="feed"] > div',
         groupsFeedQS: 'div[role="feed"] > div',
         // - News and Groups feeds post's blocks (posts have 1-4 blocks)
@@ -1189,7 +1191,7 @@
         // - non regular feed post blocks
         nonRegularPostBlocksQS: ':scope > div > div > div > div > div > div > div:first-of-type',
         // - videos feed
-        videosFeedQS: 'div#watch_feed > div > div > div > div > div > div[class], #watch_feed div[data-pagelet="MainFeed"] > div > div > div > div' ,
+        videosFeedQS: 'div#watch_feed > div > div > div > div > div > div[class], #watch_feed div[data-pagelet="MainFeed"] > div > div > div > div',
         videosFeedQS2: 'div[id="watch_feed"] > div:not([class]) > div[class]:nth-of-type(2) > div > div > div:not([class]) > div[class] > div[class] > div:not([class]) > div[class]',
         // - video feed post's blocks
         videoBlockQS: ':scope > div > div > div > div > div:nth-of-type(2) > div',
@@ -1223,12 +1225,12 @@
         searchTopQS: 'div[role="feed"] > div',
 
         // - Feed toggles
-        isNF : false,
-        isGF : false,
-        isVF : false,
-        isMP : false,
-        isAF : false,
-        isSF : false,
+        isNF: false,
+        isGF: false,
+        isVF: false,
+        isMP: false,
+        isAF: false,
+        isSF: false,
 
         // marketplace feed type (std | category)
         mpType: '',
@@ -1236,8 +1238,8 @@
         mpItem: false,
 
         // remember current URL - used for page change detection
-        prevURL : '',
-        prevPathname : '',
+        prevURL: '',
+        prevPathname: '',
 
         // number of posts to check/inspect
         // - need to re-process existing posts as sometimes fb is slow/late to populate/update them
@@ -1267,22 +1269,22 @@
         otherLoopCountLimit: 32,
 
         // StyleSheet Id
-        cssID : '',
+        cssID: '',
         // CSS class names
-        cssHide : '',
-        cssHideEl : '',
-        cssEcho : '',
+        cssHide: '',
+        cssHideEl: '',
+        cssEcho: '',
         // toggle dialog button (visible if is a Feed page)
-        btnToggleEl : null,
+        btnToggleEl: null,
         // - script's logo
         logoHTML: '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32"><g id="Layer" fill="currentColor">' +
-        '<path id="Layer" fill-rule="evenodd" class="s0" d="m51 3.2c0.7 1.1 0.7 1-1.6 9.2-1.4 5-2.1 7.4-2.3 7.6-0.1 0.1-0.3 0.2-0.6 0.2-0.4 0-0.9-0.4-0.9-0.7 0-0.1 1-3.5 2-7.4 1.2-4 2-7.3 2-7.5 0-0.4-0.6-1-0.9-1-0.2 0-0.5 0.2-0.7 0.3-0.3 0.3-0.7 1.8-5.5 19.2l-5.3 18.9 0.9 0.5c0.5 0.3 0.9 0.5 0.9 0.5 0 0 1.3-4.4 2.8-9.8 1.5-5.3 2.8-10 2.8-10.3 0.2-0.5 0.3-0.7 0.6-0.9 0.3-0.1 0.4-0.1 0.8 0 0.2 0.2 0.4 0.3 0.4 0.5 0.1 0.2-0.4 2.2-1.5 6.1-0.9 3.2-1.6 5.8-1.6 5.9 0 0 0.5 0.1 1.3 0.1 1.9 0 2.7 0.4 3.2 1.5 0.3 0.6 0.3 2.7 0 3.4-0.3 0.9-1.2 1.4-2 1.4-0.3 0-0.5 0.1-0.5 0.1 0 0.2-2.3 20.2-2.3 20.4-0.2 0.8 0.7 0.7-14.1 0.7-15.3 0-14.3 0.1-15.3-1-0.8-0.8-1.1-1.5-1-2.9 0.2-3.6 2.7-6.7 6.3-7.8 0.4-0.2 0.9-0.3 1-0.3 0.6 0 0.6 0.1 0.1-4.5-0.3-2.4-0.5-4.4-0.5-4.5-0.1-0.1-0.3-0.1-0.7-0.2-0.6 0-1.1-0.3-1.6-1-0.3-0.4-0.3-0.5-0.4-1.8 0-1.7 0.1-2.1 0.6-2.7 0.7-0.6 1-0.7 2.5-0.8h1.3v-2.9c0-3.1 0-3.4 0.6-3.6 0.2-0.1 2.4-0.1 7.1-0.1 6.5 0.1 6.9 0.1 7.1 0.3 0.2 0.2 0.2 0.3 0.2 3.3v3h0.6l0.6-0.1 4.3-15.3c2.4-8.5 4.4-15.6 4.5-15.9 0.4-0.6 0.9-1 1.5-1.3 1.2-0.4 2.6 0.1 3.3 1.2zm-26.6 26.6h-0.7c-0.3 0-0.6 0-0.7 0 0 0.1-0.1 1.2-0.1 2.5v2.3h1.5zm3.4 0h-0.7c-0.5 0-0.9 0-0.9 0.1 0 0-0.1 1.1-0.1 2.4v2.3h1.8v-2.4zm3.4 0h-1.6v4.8h1.6zm3.2 0h-1.3v4.8h1.3zm-6.4 6.6c-7.9 0-9 0-9.2 0.2-0.3 0.2-0.3 0.3-0.3 1.3 0 0.7 0.1 1.1 0.2 1.2 0.1 0.1 2.3 0.1 7.3 0.1 6.9 0.1 7.2 0.1 7.5 0.3 0.3 0.3 0.3 1 0 1.3-0.2 0.2-0.8 0.2-6.3 0.2h-6l0.1 0.5c0 0.3 0.2 2.3 0.5 4.5l0.4 4h0.4c0.6 0 1.5-0.3 2-0.7 0.3-0.3 0.7-0.8 0.9-1.3 0.6-1.1 1.3-2 2.1-2.7 1.1-0.9 2.8-1.5 4-1.5h0.6l0.7-1.1c0.6-1 0.8-1.2 1.3-1.5 0.4-0.2 0.6-0.2 0.9-0.2 0.4 0.1 0.5 0.1 0.5-0.1 0.1-0.1 0.3-1.1 0.6-2.1 0.3-1.1 0.6-2.1 0.6-2.2 0.1-0.2-0.4-0.2-8.8-0.2zm16.' +
-        '2 0h-1.5l-0.4 1.3c-0.2 0.8-0.4 1.4-0.4 1.5 0 0 0.9 0 2 0 2.3 0 2.3 0.1 2.3-1.4 0-0.9-0.1-1-0.3-1.2-0.2-0.2-0.6-0.2-1.7-0.2zm-2.8 4.7c0 0.1-0.2 0.8-0.5 1.6-0.2 1-0.3 1.4-0.2 1.5 0 0 0.3 0.2 0.6 0.4 0.4 0.4 0.4 0.5 0.5 1.2 0 0.6 0 0.7-0.8 2-0.7 1.1-0.8 1.3-1.3 1.6l-0.5 0.2v1.8c0 1.3-0.1 2-0.2 2.5-0.1 0.4-0.2 0.8-0.2 0.8 0 0 0.7 0.1 1.5 0.1 1.2 0 1.6-0.1 1.6-0.2 0-0.1 0.4-3.1 0.8-6.8 0.4-3.6 0.7-6.7 0.7-6.7-0.1-0.2-1.9-0.1-2 0zm-6.3 1.8c-0.2-0.1-0.3 0-0.9 1-0.2 0.4-0.4 0.8-0.3 0.8 0 0.1 1.1 0.7 2.3 1.5 1.3 0.7 2.4 1.4 2.5 1.5 0.3 0.1 0.3 0.1 0.8-0.8 0.3-0.6 0.6-1 0.5-1 0 0-1.1-0.7-2.4-1.5-1.3-0.8-2.4-1.4-2.5-1.5zm-4.5 2.8c-1.6 0.5-2.7 1.5-3.5 3.1-0.6 1.2-1.3 2-2.4 2.5-0.9 0.4-0.9 0.4-2.9 0.5-2.8 0.1-3.9 0.6-5.4 2.1-0.8 0.8-1 1.1-1.4 1.9-1 2.2-0.9 4 0.2 4.4 0.7 0.3 0.8 0.3 1-0.5 0.8-2.4 2.7-4.5 5.1-5.5 1.1-0.4 1.6-0.5 3.2-0.6 2-0.2 2.8-0.7 3.4-2.2 0.3-0.5 0.6-1.2 0.8-1.6 0.8-1.3 2.4-2.5 3.8-2.9 0.4-0.1 0.8-0.2 0.8-0.2q0.2-0.1-0.3-0.4c-0.3-0.2-0.6-0.4-0.6-0.5-0.1-0.3-1.1-0.3-1.8-0.1zm3.2 2.7c-0.9 0.2-2 0.8-2.8 1.5-0.7 0.6-0.8 0.9-1.6 2.6-0.7 1.5-2.2 2.5-3.9 2.7-3.4 0.4-4.3 0.8-5.8 2.2-0.7 0.8-1 1.2-1.4 1.9l-0.5 1 0.9 0.1c0.9 0 0.9 0 1.2-0.4q2.7-3.2 7.3-3.2c2.2 0 2.9-0.5 3.9-2.3 0.3-0.5 0.7-1.2 0.9-1.5 1-1.2 3-2.3 4.6-2.4l0.8-0.1-0.1-0.5c-0.1-0.8-0.3-1.2-0.9-1.4-0.7-0.2-1.9-0.3-2.6-0.2zm3.6 3.9h-0.4c-0.5 0-1.6 0.3-2.3 0.7-0.7 0.5-1.6 1.5-2.2 2.6-1.1 2.1-2.5 2.9-5.2 2.9-0.6 0-1.6 0.1-2 0.2-1 0.2-2.3 0.8-2.9 1.3l-0.4 0.4h4.1c4.6-0.1 4.7-0.1 6.5-1 0.9-0.5 1.3-0.7 2.2-1.6 1.4-1.4 2.2-3 2.5-4.9zm4.3 4.2h-1.9-1.8l-0.5 0.8c-0.6 0.9-1.5 1.9-2.4 2.6l-0.6 0.5h3.4c2.6 0 3.4 0 3.4-0.1 0-0.1 0.1-1 0.2-2z"/>' +
-        '</g></svg>'
+            '<path id="Layer" fill-rule="evenodd" class="s0" d="m51 3.2c0.7 1.1 0.7 1-1.6 9.2-1.4 5-2.1 7.4-2.3 7.6-0.1 0.1-0.3 0.2-0.6 0.2-0.4 0-0.9-0.4-0.9-0.7 0-0.1 1-3.5 2-7.4 1.2-4 2-7.3 2-7.5 0-0.4-0.6-1-0.9-1-0.2 0-0.5 0.2-0.7 0.3-0.3 0.3-0.7 1.8-5.5 19.2l-5.3 18.9 0.9 0.5c0.5 0.3 0.9 0.5 0.9 0.5 0 0 1.3-4.4 2.8-9.8 1.5-5.3 2.8-10 2.8-10.3 0.2-0.5 0.3-0.7 0.6-0.9 0.3-0.1 0.4-0.1 0.8 0 0.2 0.2 0.4 0.3 0.4 0.5 0.1 0.2-0.4 2.2-1.5 6.1-0.9 3.2-1.6 5.8-1.6 5.9 0 0 0.5 0.1 1.3 0.1 1.9 0 2.7 0.4 3.2 1.5 0.3 0.6 0.3 2.7 0 3.4-0.3 0.9-1.2 1.4-2 1.4-0.3 0-0.5 0.1-0.5 0.1 0 0.2-2.3 20.2-2.3 20.4-0.2 0.8 0.7 0.7-14.1 0.7-15.3 0-14.3 0.1-15.3-1-0.8-0.8-1.1-1.5-1-2.9 0.2-3.6 2.7-6.7 6.3-7.8 0.4-0.2 0.9-0.3 1-0.3 0.6 0 0.6 0.1 0.1-4.5-0.3-2.4-0.5-4.4-0.5-4.5-0.1-0.1-0.3-0.1-0.7-0.2-0.6 0-1.1-0.3-1.6-1-0.3-0.4-0.3-0.5-0.4-1.8 0-1.7 0.1-2.1 0.6-2.7 0.7-0.6 1-0.7 2.5-0.8h1.3v-2.9c0-3.1 0-3.4 0.6-3.6 0.2-0.1 2.4-0.1 7.1-0.1 6.5 0.1 6.9 0.1 7.1 0.3 0.2 0.2 0.2 0.3 0.2 3.3v3h0.6l0.6-0.1 4.3-15.3c2.4-8.5 4.4-15.6 4.5-15.9 0.4-0.6 0.9-1 1.5-1.3 1.2-0.4 2.6 0.1 3.3 1.2zm-26.6 26.6h-0.7c-0.3 0-0.6 0-0.7 0 0 0.1-0.1 1.2-0.1 2.5v2.3h1.5zm3.4 0h-0.7c-0.5 0-0.9 0-0.9 0.1 0 0-0.1 1.1-0.1 2.4v2.3h1.8v-2.4zm3.4 0h-1.6v4.8h1.6zm3.2 0h-1.3v4.8h1.3zm-6.4 6.6c-7.9 0-9 0-9.2 0.2-0.3 0.2-0.3 0.3-0.3 1.3 0 0.7 0.1 1.1 0.2 1.2 0.1 0.1 2.3 0.1 7.3 0.1 6.9 0.1 7.2 0.1 7.5 0.3 0.3 0.3 0.3 1 0 1.3-0.2 0.2-0.8 0.2-6.3 0.2h-6l0.1 0.5c0 0.3 0.2 2.3 0.5 4.5l0.4 4h0.4c0.6 0 1.5-0.3 2-0.7 0.3-0.3 0.7-0.8 0.9-1.3 0.6-1.1 1.3-2 2.1-2.7 1.1-0.9 2.8-1.5 4-1.5h0.6l0.7-1.1c0.6-1 0.8-1.2 1.3-1.5 0.4-0.2 0.6-0.2 0.9-0.2 0.4 0.1 0.5 0.1 0.5-0.1 0.1-0.1 0.3-1.1 0.6-2.1 0.3-1.1 0.6-2.1 0.6-2.2 0.1-0.2-0.4-0.2-8.8-0.2zm16.' +
+            '2 0h-1.5l-0.4 1.3c-0.2 0.8-0.4 1.4-0.4 1.5 0 0 0.9 0 2 0 2.3 0 2.3 0.1 2.3-1.4 0-0.9-0.1-1-0.3-1.2-0.2-0.2-0.6-0.2-1.7-0.2zm-2.8 4.7c0 0.1-0.2 0.8-0.5 1.6-0.2 1-0.3 1.4-0.2 1.5 0 0 0.3 0.2 0.6 0.4 0.4 0.4 0.4 0.5 0.5 1.2 0 0.6 0 0.7-0.8 2-0.7 1.1-0.8 1.3-1.3 1.6l-0.5 0.2v1.8c0 1.3-0.1 2-0.2 2.5-0.1 0.4-0.2 0.8-0.2 0.8 0 0 0.7 0.1 1.5 0.1 1.2 0 1.6-0.1 1.6-0.2 0-0.1 0.4-3.1 0.8-6.8 0.4-3.6 0.7-6.7 0.7-6.7-0.1-0.2-1.9-0.1-2 0zm-6.3 1.8c-0.2-0.1-0.3 0-0.9 1-0.2 0.4-0.4 0.8-0.3 0.8 0 0.1 1.1 0.7 2.3 1.5 1.3 0.7 2.4 1.4 2.5 1.5 0.3 0.1 0.3 0.1 0.8-0.8 0.3-0.6 0.6-1 0.5-1 0 0-1.1-0.7-2.4-1.5-1.3-0.8-2.4-1.4-2.5-1.5zm-4.5 2.8c-1.6 0.5-2.7 1.5-3.5 3.1-0.6 1.2-1.3 2-2.4 2.5-0.9 0.4-0.9 0.4-2.9 0.5-2.8 0.1-3.9 0.6-5.4 2.1-0.8 0.8-1 1.1-1.4 1.9-1 2.2-0.9 4 0.2 4.4 0.7 0.3 0.8 0.3 1-0.5 0.8-2.4 2.7-4.5 5.1-5.5 1.1-0.4 1.6-0.5 3.2-0.6 2-0.2 2.8-0.7 3.4-2.2 0.3-0.5 0.6-1.2 0.8-1.6 0.8-1.3 2.4-2.5 3.8-2.9 0.4-0.1 0.8-0.2 0.8-0.2q0.2-0.1-0.3-0.4c-0.3-0.2-0.6-0.4-0.6-0.5-0.1-0.3-1.1-0.3-1.8-0.1zm3.2 2.7c-0.9 0.2-2 0.8-2.8 1.5-0.7 0.6-0.8 0.9-1.6 2.6-0.7 1.5-2.2 2.5-3.9 2.7-3.4 0.4-4.3 0.8-5.8 2.2-0.7 0.8-1 1.2-1.4 1.9l-0.5 1 0.9 0.1c0.9 0 0.9 0 1.2-0.4q2.7-3.2 7.3-3.2c2.2 0 2.9-0.5 3.9-2.3 0.3-0.5 0.7-1.2 0.9-1.5 1-1.2 3-2.3 4.6-2.4l0.8-0.1-0.1-0.5c-0.1-0.8-0.3-1.2-0.9-1.4-0.7-0.2-1.9-0.3-2.6-0.2zm3.6 3.9h-0.4c-0.5 0-1.6 0.3-2.3 0.7-0.7 0.5-1.6 1.5-2.2 2.6-1.1 2.1-2.5 2.9-5.2 2.9-0.6 0-1.6 0.1-2 0.2-1 0.2-2.3 0.8-2.9 1.3l-0.4 0.4h4.1c4.6-0.1 4.7-0.1 6.5-1 0.9-0.5 1.3-0.7 2.2-1.6 1.4-1.4 2.2-3 2.5-4.9zm4.3 4.2h-1.9-1.8l-0.5 0.8c-0.6 0.9-1.5 1.9-2.4 2.6l-0.6 0.5h3.4c2.6 0 3.4 0 3.4-0.1 0-0.1 0.1-1 0.2-2z"/>' +
+            '</g></svg>'
     };
 
     // -- which language is the FB page in?
-    function setLanguageAndOptions(){
+    function setLanguageAndOptions() {
         // - run this function when HEAD is available.
         // - language (default to EN)
         // - also run getUserOptions().
@@ -1293,12 +1295,12 @@
             VARS.sponsoredWord = KeyWords.SPONSORED[VARS.language];
             VARS.sponsoredWordMP = KeyWords.MP_SPONSORED[VARS.language];
             // - sponsored paid for - remove the "_____" from the keywords
-            VARS.sponsoredPaidForWords = KeyWords.NF_SPONSORED_PAID[VARS.language].replaceAll('_','').trim();
+            VARS.sponsoredPaidForWords = KeyWords.NF_SPONSORED_PAID[VARS.language].replaceAll('_', '').trim();
             // ...
             let result = getUserOptions()
-            .then(() => {
-                return true;
-            });
+                .then(() => {
+                    return true;
+                });
         }
         else {
             setTimeout(setLanguageAndOptions, 5);
@@ -1312,7 +1314,7 @@
         function generateRandomName() {
             // - generate random names (first letter must be an alphabet)
             let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let str = chars.charAt(Math.floor(Math.random() * (chars.length-10)));
+            let str = chars.charAt(Math.floor(Math.random() * (chars.length - 10)));
             for (let i = 0; i < 12; i++) {
                 str += chars.charAt(Math.floor(Math.random() * chars.length));
             }
@@ -1524,9 +1526,9 @@
                     return 0; // -- no data (first time)
                 }
             })
-        .catch((err) => {
-            console.info(`${log}getuserOptions() > get() - Error:`, err);
-        });
+            .catch((err) => {
+                console.info(`${log}getuserOptions() > get() - Error:`, err);
+            });
         if (VARS.VERBOSITY_DEBUG) {
             console.info(`${log}getUserOptions() > get():`, result);
         }
@@ -1595,7 +1597,7 @@
                 // - is this suggestion enabled? if yes, add to the relevant suggestions array.
                 if (VARS.Options[key]) {
                     // - nb: slice(0,2) gives you nf,gf,vf,mp.
-                    VARS[`${key.slice(0,2).toLowerCase()}Suggestions`] = VARS[`${key.slice(0,2).toLowerCase()}Suggestions`].concat(KeyWords[key][VARS.language]);
+                    VARS[`${key.slice(0, 2).toLowerCase()}Suggestions`] = VARS[`${key.slice(0, 2).toLowerCase()}Suggestions`].concat(KeyWords[key][VARS.language]);
                 }
             }
             else if (KeyWords[key].isInfoBox) {
@@ -1644,13 +1646,13 @@
             // - save the changes ...
             // -- usually happen if first time setup or change in Options' variables.
             let result = await set(DBVARS.DBKey, JSON.stringify(VARS.Options), DBVARS.ostore)
-            .then(() => {
-                return true;
-            })
-            .catch((err) => {
-                console.info(`${log}getUserOptions() > changed > saving - failed, Error:`, err);
-                return false;
-            });
+                .then(() => {
+                    return true;
+                })
+                .catch((err) => {
+                    console.info(`${log}getUserOptions() > changed > saving - failed, Error:`, err);
+                    return false;
+                });
             if (VARS.Options.VERBOSITY_DEBUG) {
                 if (result) {
                     console.info(`${log}Changed - success`);
@@ -1709,7 +1711,7 @@
         // -- BODY must be available for use.
         // -- used for displaying/getting/setting the various options
 
-        function createCB(cbName, cbKeyWord, cbReadOnly=false) {
+        function createCB(cbName, cbKeyWord, cbReadOnly = false) {
             let div = document.createElement('div');
             let cb = document.createElement('input');
             cb.type = 'checkbox';
@@ -1731,7 +1733,7 @@
                     label.appendChild(document.createTextNode(Array.from(KeyWords[cbKeyWord][VARS.language]).join(', ')));
                 }
             }
-            else if (['NF_SPONSORED','GF_SPONSORED','VF_SPONSORED'].indexOf(cbKeyWord) >=0) {
+            else if (['NF_SPONSORED', 'GF_SPONSORED', 'VF_SPONSORED'].indexOf(cbKeyWord) >= 0) {
                 // -- nb: above 3x NF_ values are not in KeyWords, but MP_SPONSORED is ...
                 label.appendChild(document.createTextNode(KeyWords['SPONSORED'][VARS.language]));
             }
@@ -1821,7 +1823,7 @@
             fs.appendChild(createCB('cbNF', 'NF_STORIES', false));
             fs.appendChild(createCB('cbNF', 'NF_CREATE_ROOM', false));
             for (const key in KeyWords) {
-                if (key.slice(0,3) === 'NF_' && KeyWords[key].isSuggestion) {
+                if (key.slice(0, 3) === 'NF_' && KeyWords[key].isSuggestion) {
                     fs.appendChild(createCB('cbNF', key));
                 }
             }
@@ -1837,7 +1839,7 @@
             fs.appendChild(l);
             fs.appendChild(createCB('cbGF', 'GF_SPONSORED', true));
             for (const key in KeyWords) {
-                if (key.slice(0,3) === 'GF_' && KeyWords[key].isSuggestion) {
+                if (key.slice(0, 3) === 'GF_' && KeyWords[key].isSuggestion) {
                     fs.appendChild(createCB('cbGF', key));
                 }
             }
@@ -1850,7 +1852,7 @@
             fs.appendChild(l);
             fs.appendChild(createCB('cbVF', 'VF_SPONSORED', true));
             for (const key in KeyWords) {
-                if (key.slice(0,3) === 'VF_' && KeyWords[key].isSuggestion) {
+                if (key.slice(0, 3) === 'VF_' && KeyWords[key].isSuggestion) {
                     fs.appendChild(createCB('cbVF', key));
                 }
             }
@@ -1870,7 +1872,7 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_OTHER[VARS.language];
             fs.appendChild(l);
-             for (const key in KeyWords) {
+            for (const key in KeyWords) {
                 if (KeyWords[key].isInfoBox) {
                     fs.appendChild(createCB('cbOther', key));
                 }
@@ -2010,7 +2012,7 @@
             fileInput.addEventListener('change', importUserOptions, false);
             // -- make the btn Import trigger file input ...
             let btnImport = document.getElementById('BTNImport');
-            btnImport.addEventListener('click', function(){fileInput.click()}, false);
+            btnImport.addEventListener('click', function () { fileInput.click() }, false);
         }
         function updateDialog() {
             let content = document.getElementById('fbcmf').querySelector('.content');
@@ -2043,7 +2045,7 @@
             }
         }
 
-        async function saveUserOptions(event, source='dialog') {
+        async function saveUserOptions(event, source = 'dialog') {
             // -- save Options in indexeddb as JSON.
             if (source === 'dialog') {
                 let md, cbs, rbs, tas, inputs;
@@ -2052,7 +2054,7 @@
                 md = document.getElementById('fbcmf');
                 // -- checkboxes
                 cbs = Array.from(md.querySelectorAll('input[type="checkbox"]'));
-                cbs.forEach( cb => {
+                cbs.forEach(cb => {
                     VARS.Options[cb.value] = cb.checked;
                 });
                 // -- radios
@@ -2084,7 +2086,7 @@
             let inputs = Array.from(md.querySelectorAll('input:not([type="file"]), textarea'));
             let validNames = [];
             inputs.forEach(inp => {
-                validNames.push( (inp.type === 'checkbox') ? inp.value : inp.name);
+                validNames.push((inp.type === 'checkbox') ? inp.value : inp.name);
             });
             for (let key in VARS.Options) {
                 if (validNames.indexOf(key) < 0) {
@@ -2097,21 +2099,21 @@
 
             // -- save options
             let result = await set(DBVARS.DBKey, JSON.stringify(VARS.Options), DBVARS.ostore)
-            .then(() => {
-                // if (VARS.Options.VERBOSITY_DEBUG) {
-                //     console.info(`${log}saveUserOptions() > set() -> Saved, Options:`, VARS.Options);
-                // }
-                // -- refresh options and split blocks of texts
-                let result2 = getUserOptions()
                 .then(() => {
-                    return true;
+                    // if (VARS.Options.VERBOSITY_DEBUG) {
+                    //     console.info(`${log}saveUserOptions() > set() -> Saved, Options:`, VARS.Options);
+                    // }
+                    // -- refresh options and split blocks of texts
+                    let result2 = getUserOptions()
+                        .then(() => {
+                            return true;
+                        });
+                    return result2;
+                })
+                .catch((err) => {
+                    console.info(`${log}saveUserOptions() > set() -> Error:`, err);
+                    return false;
                 });
-                return result2;
-            })
-            .catch((err) => {
-                console.info(`${log}saveUserOptions() > set() -> Error:`, err);
-                return false;
-            });
             if (VARS.VERBOSITY_DEBUG) {
                 console.info(`${log}saveUserOptions() > set() -> Saved:`, result);
             }
@@ -2121,14 +2123,14 @@
                 addCSS();
                 addExtraCSS();
             }
-            document.querySelector('#fbcmf .fileResults').innerText = `Last Saved @ ${(new Date).toTimeString().slice(0,8)}`;
+            document.querySelector('#fbcmf .fileResults').innerText = `Last Saved @ ${(new Date).toTimeString().slice(0, 8)}`;
         }
 
         function exportUserOptions() {
             // -- export user's options into a text file.
             // console.info(`${log}exportUserOptions() : Options:`,VARS.Options);
             let exportOptions = document.createElement("a");
-            exportOptions.href = window.URL.createObjectURL(new Blob([JSON.stringify(VARS.Options)], {type: "text/plain"}));
+            exportOptions.href = window.URL.createObjectURL(new Blob([JSON.stringify(VARS.Options)], { type: "text/plain" }));
             exportOptions.download = 'fb - clean my feeds - settings.json';
             exportOptions.click();
             exportOptions.remove();
@@ -2155,11 +2157,11 @@
                         // -- save the file to the db
                         // -- save will run getUserOptions();
                         let result = saveUserOptions(null, 'file')
-                        .then(() => {
-                            updateDialog();
-                            fileResults.innerText = `File imported: ${fileN}`;
-                            return true;
-                        });
+                            .then(() => {
+                                updateDialog();
+                                fileResults.innerText = `File imported: ${fileN}`;
+                                return true;
+                            });
                     }
                     else {
                         fileResults.innerText = `File NOT imported: ${fileN}`;
@@ -2197,7 +2199,7 @@
 
 
     // adjust some settings if URL has changed.
-    function setFeedSettings(forceUpdate=false) {
+    function setFeedSettings(forceUpdate = false) {
         if ((VARS.prevURL !== window.location.href) || forceUpdate) {
             // - remember current page's URL
             VARS.prevURL = window.location.href;
@@ -2239,7 +2241,7 @@
                 VARS.blockTextMatch = VARS.Filters.VF_BLOCKED_TEXT;
                 VARS.blockTextMatchLC = VARS.Filters.VF_BLOCKED_TEXT_LC;
             }
-            else if (VARS.prevPathname.indexOf('/marketplace') >=0) {
+            else if (VARS.prevPathname.indexOf('/marketplace') >= 0) {
                 VARS.isMP = true;
                 VARS.QS = VARS.marketplaceQS1;
                 VARS.suggestions = [];
@@ -2250,7 +2252,7 @@
                 VARS.mpItem = false;
                 //let mpf = Array.from(document.querySelectorAll('div[data-pagelet="MainFeed"]')); // pre May 2022
                 let mpf = Array.from(document.querySelectorAll('div[role="main"]')); // May 2022+
-                if (VARS.prevPathname.indexOf('/category/') >=0 ) {
+                if (VARS.prevPathname.indexOf('/category/') >= 0) {
                     // - category feed (doesn't have the data-pagelet attribute)
                     VARS.mpType = 'category';
                 }
@@ -2269,7 +2271,7 @@
                         VARS.mpType = 'std';
                     }
                 }
-                if (VARS.isMP && VARS.prevPathname.indexOf('/item/') >=0) {
+                if (VARS.isMP && VARS.prevPathname.indexOf('/item/') >= 0) {
                     VARS.mpItem = true;
                 }
                 // console.info(`${log}setFeedSettings() : isMP, mpType, mpItem:`, VARS.isMP, VARS.mpType, VARS.mpItem);
@@ -2285,7 +2287,7 @@
                 VARS.mpType = 'commerce';
                 VARS.mpItem = false;
             }
-            else if (['/search/top/', '/search/top', '/search/posts/', '/search/posts'].indexOf(VARS.prevPathname) >=0) {
+            else if (['/search/top/', '/search/top', '/search/posts/', '/search/posts'].indexOf(VARS.prevPathname) >= 0) {
                 // -- search results page : "All" and "Posts"
                 VARS.isSF = true;
                 VARS.QS = VARS.searchTopQS;
@@ -2351,7 +2353,7 @@
         return arrayTextValues;
     }
 
-    function extractTextContent(post, selector, maxBlocks ) {
+    function extractTextContent(post, selector, maxBlocks) {
         // - get the text node values of the regular feed posts
         // -- scan the top portion of the posts (first maxBlocks blocks)
         // -- parameters:
@@ -2382,7 +2384,7 @@
         //    whichBlock: the block to scan for text (0 = first block ...)
         let blocks = Array.from(post.querySelectorAll(selector));
         let arrayTextValues = [];
-        if ((blocks.length-1) >= whichBlock) {
+        if ((blocks.length - 1) >= whichBlock) {
             // - block 0 = Suggested headings, block 1 = title/heading, block 2 = content, block 3 = info box / comments, block 4 = comments
             // - nb: some suggested posts only have one block ...
             let blockToScan = blocks[whichBlock];
@@ -2408,7 +2410,7 @@
                 echoEl.textContent = KeyWords.VERBOSITY[VARS.language][0] + reason;
                 // - add after post being hidden (issue with first post being hidden & fb updating it)
                 post = post.querySelector(':scope div:first-of-type');
-                if (post){
+                if (post) {
                     post.after(echoEl);
                     VARS.echoEl = echoEl;
                     return true;
@@ -2430,7 +2432,7 @@
         // hide something ..
         // - also call up echo 'post is hidden' text functions
         if (echoHiddenPost(post, reason)) {
-            post.classList.add( (VARS.isMP) ? VARS.cssHideEl : VARS.cssHide);
+            post.classList.add((VARS.isMP) ? VARS.cssHideEl : VARS.cssHide);
             // - enable the following if wanting to inspect each post's reason for being hidden (in developer's tools)
             post.setAttribute(`${postAtt}-rule`, reason);
         }
@@ -2449,7 +2451,7 @@
 
         // -- try the Flex/Order structure
         let elWrapper = post.querySelector('span > span > span > a[href="#"] > span > span[class] > [style*="order"], span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +
-                                           'span > span > span > a[href="#"] > span > span[class] > [style*="display"], span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]');
+            'span > span > span > a[href="#"] > span > span[class] > [style*="display"], span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]');
         if (elWrapper) {
             // -- found a regular post structure
             let arrText = [];
@@ -2509,7 +2511,7 @@
     function isSuggested(post, isRegularPost) {
         // - check for suggestions
         // -- regular posts - scan first 2 blocks, otherwise first block.
-        let postBlocks = (isRegularPost) ? VARS.postBlocksQS : (VARS.isVF) ? VARS.videNonFeedPostBlock : VARS.nonRegularPostBlocksQS ;
+        let postBlocks = (isRegularPost) ? VARS.postBlocksQS : (VARS.isVF) ? VARS.videNonFeedPostBlock : VARS.nonRegularPostBlocksQS;
         let ptexts = (isRegularPost) ? extractTextContent(post, postBlocks, 2) : extractTextContent(post, postBlocks, 1);
         let suggestionIndex = -1;
         for (let p = 0, ptL = ptexts.length; p < ptL; p++) {
@@ -2545,7 +2547,7 @@
             // scan the first few elements for the keyword ...
             if (els.length > 0) {
                 let eL = Math.min(5, els.length);
-                for (let i = 0; i < eL; i++ ) {
+                for (let i = 0; i < eL; i++) {
                     let etxt = els[i].textContent;
                     if (etxt.indexOf(VARS.sponsoredPaidForWords) >= 0) {
                         return true;
@@ -2558,11 +2560,10 @@
         // - check for "LIVE" indicator on videos
         if (VARS.Options.VF_LIVE === true) {
             let ptexts = extractTextContentVF(post, VARS.videoBlockQS, 1);
-            if (ptexts.length >0) {
+            if (ptexts.length > 0) {
                 return (ptexts[0].toUpperCase() === KeyWords.VF_LIVE[VARS.language].toUpperCase());
             }
-            else
-            {
+            else {
                 return false
             }
         }
@@ -2648,7 +2649,7 @@
                 if (!tcbox.classList.contains(VARS.cssHide)) {
                     let ptexts = scanTreeForText(tcbox);
                     //console.info(`${log}tcbox scanTreeForText():`, VARS.language, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language], ptexts);
-                    let pidx = ptexts.indexOf(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]) ;
+                    let pidx = ptexts.indexOf(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]);
                     if (pidx === 0 || pidx === 1) {
                         VARS.echoCount = 0;
                         hide(tcbox, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]);
@@ -2664,7 +2665,7 @@
     }
     function doMoppingInfoBoxes(post) {
         // hide the info boxes that appear in posts having a certain topic.
-        if((VARS.infoBoxes) && (VARS.infoBoxesPaths.length > 0)){
+        if ((VARS.infoBoxes) && (VARS.infoBoxesPaths.length > 0)) {
             let blocks; // - post's major blocks (sections)
             let minNumBlocks; // - minimum number of blocks in this post that has an info box
             let infoBlock; // - which block has the info box
@@ -2772,7 +2773,7 @@
             if (posts.length - VARS.inspectPostCount > 0) {
                 quickScanCount = posts.length - VARS.inspectPostCount;
                 for (let i = 0; i < quickScanCount; i++) {
-                    if(posts[i].classList.contains(VARS.cssHide)) {
+                    if (posts[i].classList.contains(VARS.cssHide)) {
                         VARS.echoCount++;
                     }
                     else {
@@ -2783,7 +2784,7 @@
             // - check the posts
             for (let i = quickScanCount, iL = posts.length; i < iL; i++) {
                 let post = posts[i];
-                if (post.textContent.length > 0 ) {
+                if (post.textContent.length > 0) {
                     let hiding = false;
                     if (post.classList.contains(VARS.cssHide)) {
                         hiding = true;
@@ -2893,8 +2894,10 @@
         if (VARS.mpType === 'std') {
             // -- MainFeed:
             // --- get collection of blocks (which haven't been read/processed)
+
+            // pre May 2021::
             let mpblocks = Array.from(document.querySelectorAll(VARS.marketplaceQS1));
-            if (mpblocks.length > 0){
+            if (mpblocks.length > 0) {
                 // - pre May 2022 structure
                 for (let i = 0, iL = mpblocks.length; i < iL; i++) {
                     let mpblock = mpblocks[i];
@@ -2916,27 +2919,43 @@
                 }
             }
             else {
-                // - May 2022 structure
                 let spLinks = Array.from(document.querySelectorAll(VARS.marketplaceQS2));
-                if (spLinks.length > 0 ) {
-                    for (let i = 0, iL = spLinks.length; i < iL; i++) {
-                        let link = spLinks[i];
-                        let pbox = link.parentElement;
-                        if (pbox.nodeName === "OBJECT") {
-                            // - content
-                            pbox = pbox.closest('a').parentElement.parentElement.parentElement;
-                        }
-                        else {
-                            // - heading (do nothing)
-                        }
-                        if (pbox.innerHTML.length > 0) {
-                            link.setAttribute(postAtt, link.innerHTML.length);
-                            pbox.setAttribute(postAtt, pbox.innerHTML.length);
-                            hide(pbox, VARS.sponsoredWordMP);
+                if (spLinks.length > 1) {
+                    if (spLinks[0].classList.length !== spLinks[1].classList.length) {
+                        // May 2022 structure - heading and content flagged as sponsored
+                        for (let i = 0, iL = spLinks.length; i < iL; i++) {
+                            let link = spLinks[i];
+                            let pbox = link.parentElement;
+                            if (pbox.nodeName === "OBJECT") {
+                                // - content
+                                pbox = pbox.closest('a').parentElement.parentElement.parentElement;
+                            }
+                            else {
+                                // - heading (do nothing)
+                            }
+                            if (pbox.innerHTML.length > 0) {
+                                link.setAttribute(postAtt, link.innerHTML.length);
+                                pbox.setAttribute(postAtt, pbox.innerHTML.length);
+                                hide(pbox, VARS.sponsoredWordMP);
+                            }
                         }
                     }
-                }
-            }
+                    else {
+                        // June/July 2022 structure - heading is flagged as sponsored, but content isn't ...
+                        if (spLinks.length > 0) {
+                            for (let i = 0, iL = spLinks.length; i < iL; i++) {
+                                let spLink = spLinks[i];
+                                let hbox = spLink.parentElement;
+                                let cbox = hbox.parentElement.parentElement.parentElement.nextSibling.firstElementChild;
+                                spLink.setAttribute(postAtt, spLink.innerHTML.length);
+                                hbox.setAttribute(postAtt, hbox.innerHTML.length);
+                                cbox.setAttribute(postAtt, cbox.innerHTML.length);
+                                hide(hbox, VARS.sponsoredWordMP);
+                                hide(cbox, VARS.sponsoredWordMP);
+                            }
+                        }
+                    }
+                }            }
 
             if (VARS.mpItem) {
                 doMoppingMPItem();
@@ -2987,7 +3006,7 @@
         // -- viewing a MP Item and a small sponsored box is showing up on the right.
         let splinks = Array.from(document.querySelectorAll(VARS.marketplaceQS3));
         // console.info(`${log}MPItem() - splinks:`, splinks);
-        if (splinks.length > 0){
+        if (splinks.length > 0) {
             for (let i = 0, iL = splinks.length; i < iL; i++) {
                 let splink = splinks[i];
                 if (splink.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
@@ -3020,8 +3039,8 @@
                         let mnode = mutation.addedNodes[i];
                         // -- There's a MarketPlace SPAN node that has Sponsored text ...
                         // -- NF, GF & VF don't need to check SPAN nodes ... so exclude those NODES for performance reasons.
-                        let safeNode = (['SCRIPT', 'LINK', undefined, 'FORM'].indexOf(mnode.tagName) < 0) ;
-                        let doCleaning = safeNode ? ((VARS.isMP) ? true : (mnode.tagName === 'DIV')) : false ;
+                        let safeNode = (['SCRIPT', 'LINK', undefined, 'FORM'].indexOf(mnode.tagName) < 0);
+                        let doCleaning = safeNode ? ((VARS.isMP) ? true : (mnode.tagName === 'DIV')) : false;
                         if (doCleaning) {
                             // console.info(`${log}m.an:`, VARS.isMP, mnode.innerHTML.length, mnode.textContent.length, mnode);
                             if ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0)) {
@@ -3045,7 +3064,7 @@
                                         doMoppingThirdColumn(2, tcbox);
                                     }
                                 }
-                                if ((VARS.f2mFound === false) || (VARS.surveyFound === false)){
+                                if ((VARS.f2mFound === false) || (VARS.surveyFound === false)) {
                                     doMoppingOthers();
                                 }
                                 if (VARS.storiesFound && VARS.crFound && (VARS.tcFound_Sponsored || VARS.tcFound_Suggested4U) && VARS.f2mFound && VARS.surveyFound) {
@@ -3109,7 +3128,7 @@
                 let mutations = bodyObserver.takeRecords();
                 bodyObserver.disconnect();
                 // - and start up the osbserver again.
-                bodyObserver.observe(document.body, {childList: true, subtree: true, attributes: false});
+                bodyObserver.observe(document.body, { childList: true, subtree: true, attributes: false });
             }
         }
         else {
