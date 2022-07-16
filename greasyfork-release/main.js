@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.24
+// @version      3.25-beta
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,9 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.25 :: July 2022
+        Added עִברִית (Hebrew - thanks to https://github.com/Crapy)
+        Code tweaks
     v3.24 :: July 2022
         Updated detection code for: Sponsored posts in News Feed
     v3.23 :: July 2022
@@ -99,28 +102,6 @@
 
     'use strict';
 
-    // - console log "label" - used for filtering console logs.
-    const log = '-- fbm :: ';
-
-    // - idb-keyval - indexedDB wrapper
-    // -- needs the "@require https://unpkg.com/idb-keyval@6.0.3/dist/umd.js" entry.
-    // -- which functions do we want to use from the idb-keyval?
-    const { get, set, createStore } = idbKeyval;
-    // - override idb-keyval's default db and store names.
-    let DBVARS = {
-        DBName: 'dbCMF',
-        DBStore: 'Mopping',
-        DBKey: 'Options',
-        optionsReady: false,
-        ostore: null,
-    }
-    // - make sure the db's store exists ...
-    DBVARS.ostore = createStore(DBVARS.DBName, DBVARS.DBStore);
-
-    // - post attribute (used for detecting changes within a post)
-    const postAtt = 'msz';
-    const postAttIB = 'msz-ib';
-
     // *** *** Language components *** ***
     const KeyWords = {
         // Keywords - use FB's wording.
@@ -153,7 +134,7 @@
             'pl': 'Sponsorowane',
             // Nederlands (Netherlands)
             'nl': 'Gesponsord',
-             // Hebrew
+            // Hebrew
             'he': 'ממומן',
         },
         // marketplace 'sponsored' word ... somtimes fb has a different spelling
@@ -184,7 +165,7 @@
             'lv': ['1 ziņa ir paslēpta. Noteikums: ', ' ziņas ir paslēptas'],
             'pl': ['Ukryto 1 post. Reguła: ', ' posty ukryte'],
             'nl': ['1 post verborgen. Regel: ', ' posts verborgen'],
-            'he': ['פוסט 1 נמחק חוק: ', ' פוסטים נמחקו'],
+            'he': ['פוסט אחד מוסתר. כלל: ', ' פוסטים מוסתרים'],
         },
 
 
@@ -202,7 +183,7 @@
             'lv': 'Stāsti',
             'pl': 'Historie',
             'nl': 'Verhalen',
-            'he': 'Stories',
+            'he': 'Stories', // --- needs translation?
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -288,7 +269,7 @@
             'lv': 'Ieteikts tev',
             'pl': 'Propozycje dla Ciebie', // 'Proponowane dla Ciebie', ?
             'nl': 'Suggested for you', // --- needs translation
-            'he': 'מומלץ בשבילך',
+            'he': 'הצעות בשבילך',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -349,7 +330,7 @@
             'pt': 'Events you may like', // --- needs translation
             'de': 'Events you may like', // --- needs translation
             'fr': 'Évènements qui pourraient vous intéresser', // (Events that may/might interest you )
-            'es': ['Eventos que te pueden gustar', 'Eventos que quizá te gusten'], // Events that you may|might like
+            'es': ['Eventos que te pueden gustar', 'Eventos que quizá te gusten'], // Events that you may/might like
             'cs': 'Events you may like', // --- needs translation
             'vi': 'Events you may like', // --- needs translation
             'it': 'Events you may like', // --- needs translation
@@ -380,7 +361,7 @@
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Sponsored box in right-hand column
+        // - Sponsored box in right-hand / left-hand column (language - rtl & ltr)
         NF_THIRD_COLUMN_SPONSORED: {
             'en': 'Sponsored box (right-hand column)',
             'pt': 'Caixa patrocinada (coluna da direita)',
@@ -393,7 +374,7 @@
             'lv': 'Sponsorētā kaste (labā kolonna)',
             'pl': 'Boks sponsorowany (prawa kolumna)',
             'nl': 'Gesponsorde doos (rechterkolom)',
-            'he': 'Sponsored box (right-hand column)', // --- needs translation
+            'he': 'תיבה ממומנת (עמודה שמאל)',  // left-hand column
             'defaultEnabled': true,
         },
         // - Suggested for you
@@ -409,7 +390,7 @@
             'lv': 'Ieteikts tev (labā kolonna)',
             'pl': 'Propozycje dla Ciebie (prawa kolumna)',
             'nl': 'Voorgesteld voor jou (rechterkolom)',
-            'he': 'Suggested for you (right-hand column)', // --- needs translation
+            'he': 'הוצע עבורך (עמודה שמאל)', // left-hand column
             'defaultEnabled': false,
         },
 
@@ -448,7 +429,7 @@
             'lv': 'Iesakām',
             'pl': 'Proponowane dla Ciebie',
             'nl': 'Voorgesteld voor jou',
-            'he': 'Suggested for you', // --- needs translation
+            'he': 'הצעות בשבילך',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -466,7 +447,7 @@
             'lv': 'Apmaksāta sadarbība', // (Paid cooperation)
             'pl': 'Post sponsorowany', // (Sponsored post)
             'nl': 'Betaald partnerschap',
-            'he': 'Paid partnership', // --- needs translation
+            'he':  'שותפות בתשלום', 
             'isSuggestion': true,
             'defaultEnabled': true,
         },
@@ -520,7 +501,7 @@
             'lv': 'Ieteikts ieraksts no publiskas grupas',
             'pl': 'Proponowany post z grupy publicznej',
             'nl': 'Voorgesteld bericht van een openbare groep',
-            'he': ['Suggested post from a public group', 'Post from public group'], // --- needs translation
+            'he': 'הצעה של פוסט מקבוצה ציבורית', // proposal of  a post from a public group
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -537,7 +518,7 @@
             'lv': 'Jo tu skatīji līdzīgu ierakstu',
             'pl': 'Ponieważ wyświetliłaś podobny post',
             'nl': 'Because you viewed a similar post', // --- needs translation
-            'he': 'Because you viewed a similar post', // --- needs translation
+            'he': 'בגלל שצפית בפוסט דומה',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -554,7 +535,7 @@
             'lv': 'Jo tu apskatīji līdzīgu grupu',
             'pl': ['Ponieważ wyświetliłaś podobną grupę', 'Ponieważ wyświetliłeś podobną grupę'],
             'nl': 'Omdat je een vergelijkbare groep hebt bekeken',
-            'he': 'Because you viewed a similar group', // --- needs translation
+            'he': 'בגלל שצפית בקבוצה דומה',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -623,7 +604,7 @@
             'lv': 'Popular near you', // --- needs translation
             'pl': 'Popular near you', // --- needs translation
             'nl': 'Popular near you', // --- needs translation
-            'he': 'Popular near you', // --- needs translation
+            'he': 'פופולרי באזורך',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -642,7 +623,7 @@
             'lv': ['Pievienoties grupai', 'Pievienoties'],
             'pl': ['Dołącz do grupy', 'Dołącz'],
             'nl': 'Lid worden',
-            'he': ['Join Group', 'Join'], // --- needs translation
+            'he': ['הצטרף לקבוצה', 'הצטרפי', 'הצטרף'], // join group / join / join up
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -694,7 +675,7 @@
             'lv': 'TIEŠRAIDE',
             'pl': 'NA ŻYWO',
             'nl': 'LIVE',
-            'he': 'LIVE', // --- needs translation
+            'he': 'שידור חי',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -713,7 +694,7 @@
             'lv': 'Koronavīruss (informācijas lodziņš)',
             'pl': 'Koronawirus (skrzynka informacyjna)',
             'nl': 'Coronavirus (informatiebox)',
-            'he': 'Coronavirus (information box)', // --- needs translation
+            'he': 'וירוס קורונה (תיבת מידע)', 
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/', // -- the partial path name to match.
@@ -731,7 +712,7 @@
             'lv': 'Klimata zinātne (informācijas lodziņš)',
             'pl': 'Nauka o klimacie (skrzynka informacyjna)',
             'nl': 'Klimaatwetenschap (informatiebox)',
-            'he': 'Climate Science (information box)', // --- needs translation
+            'he': 'מדע האקלים (תיבת מידע)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
@@ -749,7 +730,7 @@
             'lv': 'Abonēt (informācijas lodziņš)',
             'pl': 'Subskrybuj (pole informacyjne)',
             'nl': 'Abonneren (informatievak)',
-            'he': 'Subscribe (information box)', // --- needs translation
+            'he': 'הירשם (תיבת מידע)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/support/',
@@ -767,7 +748,7 @@
             'lv': 'Skatiet aptaujas detaļas',
             'pl': 'Zobacz szczegóły ankiety',
             'nl': 'Bekijk de details van het onderzoek',
-            'he': 'See Survey Details', // --- needs translation
+            'he': 'ראה פרטי הסקר',
             'pathMatch': '/survey/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
@@ -804,7 +785,7 @@
             'lv': 'Esam atjauninājuši Meta konfidencialitātes politiku un pakalpojumu sniegšanas noteikumus',
             'pl': 'Zaktualizowaliśmy Politykę prywatności Meta i Warunki korzystania z usługi Meta',
             'nl': 'We hebben het Meta Privacybeleid en de Servicevoorwaarden bijgewerkt',
-            'he': 'We\'ve updated the Meta Privacy Policy and Terms of Service', // --- needs translation
+            'he': 'עדכנו את מדיניות הפרטיות ותנאי השירות של Meta',
             'pathMatch': '/privacy_policy_notice/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
@@ -824,7 +805,7 @@
             'lv': 'Tīrīt manas plūsmas',
             'pl': 'Wyczyść moje kanały',
             'nl': 'Schoon mijn feeds',
-            'he': 'Clean my feeds', // --- needs translation
+            'he': 'תנקה את הזנות שלי',
         },
         DLG_NF: {
             'en': 'News Feed',
@@ -838,7 +819,7 @@
             'lv': 'Ziņu plūsma',
             'pl': 'Kanał aktualności',
             'nl': 'Nieuwsfeed',
-            'he': 'News Feed', // --- needs translation
+            'he': 'ניוז פיד',
         },
         DLG_GF: {
             'en': 'Groups Feed',
@@ -852,7 +833,7 @@
             'lv': 'Grupu plūsma',
             'pl': 'Kanał grup',
             'nl': 'Groepsfeed',
-            'he': 'Groups Feed', // --- needs translation
+            'he': 'פיד קבוצות',
         },
         DLG_VF: {
             'en': 'Videos Feed',
@@ -866,7 +847,7 @@
             'lv': 'Video plūsma',
             'pl': 'Kanał wideo',
             'nl': 'Videofeed',
-            'he': 'Videos Feed', // --- needs translation
+            'he': 'צפה בפיד הסרטונים', // Watch the video feed
         },
         DLG_MP: {
             'en': 'Marketplace Feed',
@@ -880,7 +861,7 @@
             'lv': 'Marketplace',
             'pl': 'Kanał Marketplace',
             'nl': 'Marktplaatsfeed',
-            'he': 'Marketplace Feed', // --- needs translation
+            'he': 'זירת מסחר',
         },
         DLG_OTHER: {
             'en': 'Miscellaneous items',
@@ -894,7 +875,7 @@
             'lv': 'Dažādas vienumus',
             'pl': 'Różne pozycje',
             'nl': 'Diversen',
-            'he': 'Miscellaneous items', // --- needs translation
+            'he': 'פריטים שונים',
         },
         DLG_NF_BLOCK: {
             'en': 'News Feed - text filter',
@@ -908,7 +889,7 @@
             'lv': 'Ziņu plūsma - teksta filtrs',
             'pl': 'Kanał aktualności - filtr tekstu',
             'nl': 'Nieuwsfeed - tekstfilter',
-            'he': 'News Feed - text filter', // --- needs translation
+            'he': 'מסנן טקסט - ניוז פיד',
         },
         DLG_GF_BLOCK: {
             'en': 'Groups Feed - text filter',
@@ -922,7 +903,7 @@
             'lv': 'Grupu plūsma - teksta filtrs',
             'pl': 'Kanał grup - filtr tekstu',
             'nl': 'Groepsfeed - tekstfilter',
-            'he': 'Groups Feed - text filter', // --- needs translation
+            'he': 'פיד קבוצות - מסנן טקסט',
         },
         DLG_VF_BLOCK: {
             'en': 'Videos Feed - text filter',
@@ -936,7 +917,7 @@
             'lv': 'Video plūsma - teksta filtrs',
             'pl': 'Kanał wideo - filtr tekstu',
             'nl': 'Videofeed - tekstfilter',
-            'he': 'Videos Feed - text filter', // --- needs translation
+            'he': 'צפה בפיד סרטונים - מסנן טקסט',
         },
         DLG_BLOCK_NEW_LINE: {
             'en': '(separate words or phrases with a line break)',
@@ -950,7 +931,7 @@
             'lv': '(atdaliet vārdus vai frāzes ar rindas pārtraukumu)',
             'pl': '(oddziel słowa lub wyrażenia z podziałem wiersza)',
             'nl': '(scheid woorden of woordgroepen met een regeleinde)',
-            'he': '(separate words or phrases with a line break)', // --- needs translation
+            'he': '(הפרד מילים או ביטויים עם מעבר שורה)',
         },
         NF_BLOCKED_ENABLED: {
             'en': 'Enabled',
@@ -963,7 +944,8 @@
             'it': 'Abilita opzione',
             'lv': 'Iespējots',
             'pl': 'Włączone',
-            'he': 'Enabled', // --- needs translation
+            'nl': 'Ingeschakeld',
+            'he': 'מופעל',
         },
         GF_BLOCKED_ENABLED: {
             'en': 'Enabled',
@@ -977,7 +959,7 @@
             'lv': 'Iespējots',
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
-            'he': 'Enabled', // --- needs translation
+            'he': 'מופעל',
         },
         VF_BLOCKED_ENABLED: {
             'en': 'Enabled',
@@ -991,7 +973,7 @@
             'lv': 'Iespējots',
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
-            'he': 'Enabled', // --- needs translation
+            'he': 'מופעל',
         },
         DLG_VERBOSITY: {
             'en': 'Verbosity',
@@ -1005,7 +987,7 @@
             'lv': 'Runīgums',
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
-            'he': 'Verbosity', // --- needs translation
+            'he': 'ורבוסיטי',
         },
         DLG_VERBOSITY_MESSAGE: {
             'en': 'Display a message if a post is hidden',
@@ -1019,7 +1001,7 @@
             'lv': 'Parādīt ziņojumu, ja raksts ir paslēpts',
             'pl': 'Wyświetlaj wiadomość, jeśli wpis jest ukryty',
             'nl': 'Een bericht weergeven als een artikel verborgen is',
-            'he': 'Display a message if a post is hidden', // --- needs translation
+            'he': 'הצג הודעה אם פוסט מוסתר',
         },
         VERBOSITY_NO_MESSAGE: {
             'en': 'no message',
@@ -1033,7 +1015,7 @@
             'lv': 'Nekādu ziņojumu',
             'pl': 'nie ma wiadomości',
             'nl': 'geen bericht',
-            'he': 'no message', // --- needs translation
+            'he': 'אין הודעה',
         },
         VERBOSITY_COLOUR: {
             'en': 'Text colour',
@@ -1047,7 +1029,7 @@
             'lv': 'Teksta krāsa',
             'pl': 'Kolor tekstu',
             'nl': 'Tekstkleur',
-            'he': 'Text colour', // --- needs translation
+            'he': 'צבע טקסט',
         },
         VERBOSITY_BG_COLOUR: {
             'en': 'Background colour',
@@ -1061,7 +1043,7 @@
             'lv': 'Fona krāsa',
             'pl': 'Kolor tła',
             'nl': 'Achtergrondkleur',
-            'he': 'Background colour', // --- needs translation
+            'he': 'צבע הרקע',
         },
         VERBOSITY_DEBUG: {
             'en': 'Highlight "hidden" posts',
@@ -1075,7 +1057,7 @@
             'lv': 'Izceliet "slēptos" rakstus',
             'pl': 'Wyróżnij „ukryte” posty',
             'nl': 'Highlight "verborgen" artikelen',
-            'he': 'Highlight "hidden" posts', // --- needs translation
+            'he': 'הדגש פוסטים "מוסתרים"',
         },
         // CMF's customisations
         CMF_CUSTOMISATIONS: {
@@ -1090,7 +1072,7 @@
             'lv': 'Personalizēšana',
             'pl': 'Personalizacja',
             'nl': 'Personalisaties',
-            'he': 'Customisations', // --- needs translation
+            'he': 'התאמות אישיות',
         },
         CMF_BTN_LOCATION: {
             'en': 'Location of Clean my feeds\' button',
@@ -1104,7 +1086,7 @@
             'lv': 'Pogas Tīrīt manas plūsmas atrašanās vieta',
             'pl': 'Lokalizacja przycisku Wyczyść moje kanały',
             'nl': 'Locatie van de knop Mijn feeds opschonen',
-            'he': 'Location of Clean my feeds\' button', // --- needs translation
+            'he': 'תנקה את הזנות שלי מיקום הכפתור',
         },
         CMF_BTN_OPTION: {
             'en': ['bottom left', 'top right'],
@@ -1133,7 +1115,7 @@
             'lv': 'Dialoglodziņa Tīrīt manas plūsmas atrašanās vieta',
             'pl': 'Lokalizacja okna dialogowego Wyczyść moje kanały',
             'nl': 'Locatie van het dialoogvenster Mijn feeds opschonen',
-            'he': 'Location of Clean my feeds\' dialog box', // --- needs translation
+            'he': 'מיקום תיבת הדו-שיח "נקה את ההזנות שלי"',
         },
         CMF_DIALOG_OPTION: {
             'en': ['left side', 'right side'],
@@ -1211,6 +1193,28 @@
         },
     };
     // *** *** end of language components *** ***
+
+    // - console log "label" - used for filtering console logs.
+    const log = '-- fbm :: ';
+
+    // - idb-keyval - indexedDB wrapper
+    // -- needs the "@require https://unpkg.com/idb-keyval@6.0.3/dist/umd.js" entry.
+    // -- which functions do we want to use from the idb-keyval?
+    const { get, set, createStore } = idbKeyval;
+    // - override idb-keyval's default db and store names.
+    let DBVARS = {
+        DBName: 'dbCMF',
+        DBStore: 'Mopping',
+        DBKey: 'Options',
+        optionsReady: false,
+        ostore: null,
+    }
+    // - make sure the db's store exists ...
+    DBVARS.ostore = createStore(DBVARS.DBName, DBVARS.DBStore);
+
+    // - post attribute (used for detecting changes within a post)
+    const postAtt = 'msz';
+    const postAttIB = 'msz-ib';
 
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
@@ -1336,6 +1340,9 @@
         f2mFound: false,
         // indicate if survey was found and stop looking for it
         surveyFound: false,
+        // indicate if privacy was found and stop looking for it
+        fprivacyFound: false,
+
         otherLoopCount: 0,
         otherLoopCountLimit: 32,
 
@@ -1491,7 +1498,7 @@
         styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset legend {${css}}`));
         css = 'display:inline-block; padding:0.125rem 0; width:95%; color: var(--primary-text); font-weight: normal;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset label {${css}}`));
-        css = 'margin: 0 0.5rem 0 0; vertical-align:baseline;';
+        css = 'margin: 0 0.5rem 0 0.5rem; vertical-align:baseline;'; // left & right margins for RTL & LTR text
         styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset label input {${css}}`));
         css = 'color:darkgrey;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset label[disabled] {${css}}`));
@@ -1684,7 +1691,7 @@
                 }
             }
             else if (KeyWords[key].isTopOfNFFeed) {
-                // -- top of nf (appears @ top of nf, not a regular post)
+                // -- top of nf (appears @ top of nf, not a regular post - e.g. f2m)
                 if (!VARS.Options.hasOwnProperty(key)) {
                     VARS.Options[key] = KeyWords[key].defaultEnabled;
                     changed = true;
@@ -2376,6 +2383,7 @@
             }
             VARS.isAF = (VARS.isNF || VARS.isGF || VARS.isVF || VARS.isMP || VARS.isSF);
 
+            // when to display the cmf button
             if (VARS.isAF) {
                 if (VARS.btnToggleEl) VARS.btnToggleEl.classList.add('show');
             }
@@ -2396,11 +2404,11 @@
             VARS.tcFound_Sponsored = (VARS.Options.NF_THIRD_COLUMN_SPONSORED === false);
             VARS.tcFound_Suggested4U = (VARS.Options.NF_THIRD_COLUMN_SUGGESTED_FOR_YOU === false);
 
-            // - reset f2m and survey found flags
+            // - reset f2m, survey, privacy found flags
             VARS.f2mFound = (VARS.Options.OTHER_FB_RENAMED === false);
             VARS.surveyFound = (VARS.Options.OTHER_SURVEY === false);
             VARS.fprivacyFound = (VARS.Options.OTHER_FB_PRIVACY_TERMS === false);
-            // console.info(`${log}SF:`, VARS.surveyFound);
+
             VARS.otherLoopCount = 0;
 
             // console.info(`${log}setFeedSettings() : VARS:`, VARS.isAF, VARS.isNF, VARS.isGF, VARS.isVF, VARS.isMP, VARS.isSF);
@@ -2834,6 +2842,7 @@
                 if (VARS.otherLoopCount >= VARS.otherLoopCountLimit) {
                     VARS.surveyFound = true;
                     VARS.f2mFound = true;
+                    VARS.fprivacyFound = true;
                 }
             }
         }
@@ -2873,7 +2882,7 @@
                         hiding = false;
                     }
                     else {
-                        // - post is new or updated
+                        // - post just added or or updated
 
                         // - record size of post
                         post.setAttribute(postAtt, post.innerHTML.length);
@@ -2945,6 +2954,7 @@
         // -- this function is called repeatedly a few times - up to VARS.inspectPostCount.
         //    (due to some posts being latecomers)
         let posts = Array.from(document.querySelectorAll(nfQS));
+        // console.info(log + ' doMoppingNonFeedPosts():', nfQS, posts);
         if (posts.length > 0) {
             for (let i = 0, iL = posts.length; i < iL; i++) {
                 let post = posts[i];
@@ -3141,10 +3151,10 @@
                                         doMoppingThirdColumn(2, tcbox);
                                     }
                                 }
-                                if ((VARS.f2mFound === false) || (VARS.surveyFound === false)) {
+                                if ((VARS.f2mFound === false) || (VARS.surveyFound === false || VARS.fprivacyFound === false)) {
                                     doMoppingOthers();
                                 }
-                                if (VARS.storiesFound && VARS.crFound && (VARS.tcFound_Sponsored || VARS.tcFound_Suggested4U) && VARS.f2mFound && VARS.surveyFound) {
+                                if (VARS.storiesFound && VARS.crFound && (VARS.tcFound_Sponsored || VARS.tcFound_Suggested4U) && VARS.f2mFound && VARS.surveyFound && VARS.fprivacyFound) {
                                     VARS.nfpLoopCount = VARS.nfpLoopCountLimit + 1;
                                 }
                                 else {
