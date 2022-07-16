@@ -128,7 +128,7 @@
 
         // *** Which languages have been setup:
         // - 'en' is default.
-        LANGUAGES: ['en', 'pt', 'de', 'fr', 'es', 'cs', 'vi', 'it', 'lv', 'pl', 'nl'],
+        LANGUAGES: ['en', 'pt', 'de', 'fr', 'es', 'cs', 'vi', 'it', 'lv', 'pl', 'nl', 'he'],
 
         SPONSORED: {
             // English
@@ -153,6 +153,8 @@
             'pl': 'Sponsorowane',
             // Nederlands (Netherlands)
             'nl': 'Gesponsord',
+             // Hebrew
+            'he': 'ממומן',
         },
         // marketplace 'sponsored' word ... somtimes fb has a different spelling
         MP_SPONSORED: {
@@ -167,6 +169,7 @@
             'lv': 'Apmaksāta reklāma',
             'pl': 'Sponsorowane',
             'nl': 'Gesponsord',
+            'he': 'ממומן',
         },
         // *** Verbosity:
         VERBOSITY: {
@@ -181,6 +184,7 @@
             'lv': ['1 ziņa ir paslēpta. Noteikums: ', ' ziņas ir paslēptas'],
             'pl': ['Ukryto 1 post. Reguła: ', ' posty ukryte'],
             'nl': ['1 post verborgen. Regel: ', ' posts verborgen'],
+            'he': ['פוסט 1 נמחק חוק: ', ' פוסטים נמחקו'],
         },
 
 
@@ -198,6 +202,7 @@
             'lv': 'Stāsti',
             'pl': 'Historie',
             'nl': 'Verhalen',
+            'he': 'Stories',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -214,6 +219,7 @@
             'lv': 'Izveidot istabu',
             'pl': 'Utwórz pokój',
             'nl': 'Ruimte maken',
+            'he': 'צור חדר',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -230,6 +236,7 @@
             'lv': 'Cilvēki, kurus tu varētu pazīt',
             'pl': 'Osoby, które możesz znać',
             'nl': 'Mensen die je misschien kent',
+            'he': 'אנשים שאולי אתה מכיר',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -247,6 +254,7 @@
             'lv': 'Apmaksāta sadarbība',
             'pl': 'Post sponsorowany',
             'nl': 'Betaald partnerschap',
+            'he': 'שותפות בתשלום',
             'isSuggestion': true,
             'defaultEnabled': true,
         },
@@ -263,6 +271,7 @@
             'lv': 'Apmaksāta reklāma · Apmaksā ______',
             'pl': 'Sponsorowane · Opłacona przez ______',
             'nl': 'Gesponsord · Betaald door ______',
+            'he': '______ ממומן - על ידי',
             'isSuggestion': false,
             'defaultEnabled': true
         },
@@ -279,6 +288,7 @@
             'lv': 'Ieteikts tev',
             'pl': 'Propozycje dla Ciebie', // 'Proponowane dla Ciebie', ?
             'nl': 'Suggested for you', // --- needs translation
+            'he': 'מומלץ בשבילך',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -295,6 +305,7 @@
             'lv': 'Ieteikts ieraksts',
             'pl': 'Polecany post',
             'nl': 'Aanbevolen bericht',
+            'he': 'מומלץ בשבילך',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -311,6 +322,7 @@
             'lv': 'Suggested Pages', // --- needs translation
             'pl': 'Suggested Pages', // --- needs translation
             'nl': 'Suggested Pages', // --- needs translation
+            'he': 'Suggested Pages', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -327,6 +339,7 @@
             'lv': 'Suggested Events', // --- needs translation
             'pl': 'Proponowane wydarzenia',
             'nl': 'Voorgestelde evenementen',
+            'he': 'Suggested Events', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -343,6 +356,7 @@
             'lv': 'Events you may like', // --- needs translation
             'pl': 'Events you may like', // --- needs translation
             'nl': 'Events you may like', // --- needs translation
+            'he': 'Events you may like', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -362,6 +376,7 @@
             'lv': 'Reels un īsi videoklipi',
             'pl': 'Rolki i krótkie filmy',
             'nl': 'Reels en korte video\'s',
+            'he': 'סרטוני Reels וקטעי וידאו קצרים',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -378,6 +393,7 @@
             'lv': 'Sponsorētā kaste (labā kolonna)',
             'pl': 'Boks sponsorowany (prawa kolumna)',
             'nl': 'Gesponsorde doos (rechterkolom)',
+            'he': 'Sponsored box (right-hand column)', // --- needs translation
             'defaultEnabled': true,
         },
         // - Suggested for you
@@ -393,6 +409,7 @@
             'lv': 'Ieteikts tev (labā kolonna)',
             'pl': 'Propozycje dla Ciebie (prawa kolumna)',
             'nl': 'Voorgesteld voor jou (rechterkolom)',
+            'he': 'Suggested for you (right-hand column)', // --- needs translation
             'defaultEnabled': false,
         },
 
@@ -414,6 +431,7 @@
             'lv': 'New for you', // --- needs translation
             'pl': 'New for you', // --- needs translation
             'nl': 'New for you', // --- needs translation
+            'he': 'New for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -430,6 +448,7 @@
             'lv': 'Iesakām',
             'pl': 'Proponowane dla Ciebie',
             'nl': 'Voorgesteld voor jou',
+            'he': 'Suggested for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -447,6 +466,7 @@
             'lv': 'Apmaksāta sadarbība', // (Paid cooperation)
             'pl': 'Post sponsorowany', // (Sponsored post)
             'nl': 'Betaald partnerschap',
+            'he': 'Paid partnership', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': true,
         },
@@ -464,6 +484,7 @@
             'lv': 'Ieteiktās grupas',
             'pl': 'Proponowane grupy',
             'nl': 'Voorgestelde groepen',
+            'he': 'Suggested groups', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -481,6 +502,7 @@
             'lv': 'Skatīt vairāk grupu',
             'pl': 'Wyświetl więcej grup',
             'nl': 'Meer groepen bekijken',
+            'he': 'See More Groups', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -498,6 +520,7 @@
             'lv': 'Ieteikts ieraksts no publiskas grupas',
             'pl': 'Proponowany post z grupy publicznej',
             'nl': 'Voorgesteld bericht van een openbare groep',
+            'he': ['Suggested post from a public group', 'Post from public group'], // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -514,6 +537,7 @@
             'lv': 'Jo tu skatīji līdzīgu ierakstu',
             'pl': 'Ponieważ wyświetliłaś podobny post',
             'nl': 'Because you viewed a similar post', // --- needs translation
+            'he': 'Because you viewed a similar post', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -530,6 +554,7 @@
             'lv': 'Jo tu apskatīji līdzīgu grupu',
             'pl': ['Ponieważ wyświetliłaś podobną grupę', 'Ponieważ wyświetliłeś podobną grupę'],
             'nl': 'Omdat je een vergelijkbare groep hebt bekeken',
+            'he': 'Because you viewed a similar group', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -546,6 +571,7 @@
             'lv': 'Pamatojoties uz tavām nesenajām darbībām',
             'pl': 'Na podstawie Twojej ostatniej aktywności',
             'nl': 'Gebaseerd op je recente activiteit',
+            'he': 'Based on your recent activity', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -562,6 +588,7 @@
             'lv': 'From a group that your friend is in', // --- needs translation
             'pl': 'From a group that your friend is in', // --- needs translation
             'nl': 'From a group that your friend is in', // --- needs translation
+            'he': 'From a group that your friend is in', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -579,6 +606,7 @@
             'lv': 'Friends\' groups', // --- needs translation
             'pl': 'Friends\' groups', // --- needs translation
             'nl': 'Friends\' groups', // --- needs translation
+            'he': 'Friends\' groups', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -595,6 +623,7 @@
             'lv': 'Popular near you', // --- needs translation
             'pl': 'Popular near you', // --- needs translation
             'nl': 'Popular near you', // --- needs translation
+            'he': 'Popular near you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -613,6 +642,7 @@
             'lv': ['Pievienoties grupai', 'Pievienoties'],
             'pl': ['Dołącz do grupy', 'Dołącz'],
             'nl': 'Lid worden',
+            'he': ['Join Group', 'Join'], // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -632,6 +662,7 @@
             'lv': 'Apmaksāta sadarbība', // (Paid cooperation)
             'pl': 'Post sponsorowany', // (Sponsored post)
             'nl': 'Betaald partnerschap',
+            'he': 'שותפות בתשלום',
             'isSuggestion': true,
             'defaultEnabled': true,
         },
@@ -647,6 +678,7 @@
             'lv': 'New Videos for You',
             'pl': 'New for you', // --- needs translation
             'nl': 'Nieuwe video\'s voor jou',
+            'he': 'New for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -662,6 +694,7 @@
             'lv': 'TIEŠRAIDE',
             'pl': 'NA ŻYWO',
             'nl': 'LIVE',
+            'he': 'LIVE', // --- needs translation
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -680,6 +713,7 @@
             'lv': 'Koronavīruss (informācijas lodziņš)',
             'pl': 'Koronawirus (skrzynka informacyjna)',
             'nl': 'Coronavirus (informatiebox)',
+            'he': 'Coronavirus (information box)', // --- needs translation
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/', // -- the partial path name to match.
@@ -697,6 +731,7 @@
             'lv': 'Klimata zinātne (informācijas lodziņš)',
             'pl': 'Nauka o klimacie (skrzynka informacyjna)',
             'nl': 'Klimaatwetenschap (informatiebox)',
+            'he': 'Climate Science (information box)', // --- needs translation
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
@@ -714,6 +749,7 @@
             'lv': 'Abonēt (informācijas lodziņš)',
             'pl': 'Subskrybuj (pole informacyjne)',
             'nl': 'Abonneren (informatievak)',
+            'he': 'Subscribe (information box)', // --- needs translation
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/support/',
@@ -731,6 +767,7 @@
             'lv': 'Skatiet aptaujas detaļas',
             'pl': 'Zobacz szczegóły ankiety',
             'nl': 'Bekijk de details van het onderzoek',
+            'he': 'See Survey Details', // --- needs translation
             'pathMatch': '/survey/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
@@ -748,6 +785,7 @@
             'lv': 'Facebook uzņēmumu tagad sauc par Meta',
             'pl': 'Firma Facebook nazywa się teraz Meta',
             'nl': 'Het Facebook-bedrijf heet nu Meta',
+            'he': 'The Facebook company is now called Meta', // --- needs translation
             //'urlMatch': 'about.facebook.com/meta/',
             'urlMatch': 'facebook.com/meta/',
             'isTopOfNFFeed': true,
@@ -766,6 +804,7 @@
             'lv': 'Esam atjauninājuši Meta konfidencialitātes politiku un pakalpojumu sniegšanas noteikumus',
             'pl': 'Zaktualizowaliśmy Politykę prywatności Meta i Warunki korzystania z usługi Meta',
             'nl': 'We hebben het Meta Privacybeleid en de Servicevoorwaarden bijgewerkt',
+            'he': 'We\'ve updated the Meta Privacy Policy and Terms of Service', // --- needs translation
             'pathMatch': '/privacy_policy_notice/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
@@ -785,6 +824,7 @@
             'lv': 'Tīrīt manas plūsmas',
             'pl': 'Wyczyść moje kanały',
             'nl': 'Schoon mijn feeds',
+            'he': 'Clean my feeds', // --- needs translation
         },
         DLG_NF: {
             'en': 'News Feed',
@@ -798,6 +838,7 @@
             'lv': 'Ziņu plūsma',
             'pl': 'Kanał aktualności',
             'nl': 'Nieuwsfeed',
+            'he': 'News Feed', // --- needs translation
         },
         DLG_GF: {
             'en': 'Groups Feed',
@@ -811,6 +852,7 @@
             'lv': 'Grupu plūsma',
             'pl': 'Kanał grup',
             'nl': 'Groepsfeed',
+            'he': 'Groups Feed', // --- needs translation
         },
         DLG_VF: {
             'en': 'Videos Feed',
@@ -824,6 +866,7 @@
             'lv': 'Video plūsma',
             'pl': 'Kanał wideo',
             'nl': 'Videofeed',
+            'he': 'Videos Feed', // --- needs translation
         },
         DLG_MP: {
             'en': 'Marketplace Feed',
@@ -837,6 +880,7 @@
             'lv': 'Marketplace',
             'pl': 'Kanał Marketplace',
             'nl': 'Marktplaatsfeed',
+            'he': 'Marketplace Feed', // --- needs translation
         },
         DLG_OTHER: {
             'en': 'Miscellaneous items',
@@ -850,6 +894,7 @@
             'lv': 'Dažādas vienumus',
             'pl': 'Różne pozycje',
             'nl': 'Diversen',
+            'he': 'Miscellaneous items', // --- needs translation
         },
         DLG_NF_BLOCK: {
             'en': 'News Feed - text filter',
@@ -863,6 +908,7 @@
             'lv': 'Ziņu plūsma - teksta filtrs',
             'pl': 'Kanał aktualności - filtr tekstu',
             'nl': 'Nieuwsfeed - tekstfilter',
+            'he': 'News Feed - text filter', // --- needs translation
         },
         DLG_GF_BLOCK: {
             'en': 'Groups Feed - text filter',
@@ -875,7 +921,8 @@
             'it': 'Feed di gruppo - filtro di testo',
             'lv': 'Grupu plūsma - teksta filtrs',
             'pl': 'Kanał grup - filtr tekstu',
-            'nl': 'Groepsfeed - tekstfilter'
+            'nl': 'Groepsfeed - tekstfilter',
+            'he': 'Groups Feed - text filter', // --- needs translation
         },
         DLG_VF_BLOCK: {
             'en': 'Videos Feed - text filter',
@@ -889,6 +936,7 @@
             'lv': 'Video plūsma - teksta filtrs',
             'pl': 'Kanał wideo - filtr tekstu',
             'nl': 'Videofeed - tekstfilter',
+            'he': 'Videos Feed - text filter', // --- needs translation
         },
         DLG_BLOCK_NEW_LINE: {
             'en': '(separate words or phrases with a line break)',
@@ -902,6 +950,7 @@
             'lv': '(atdaliet vārdus vai frāzes ar rindas pārtraukumu)',
             'pl': '(oddziel słowa lub wyrażenia z podziałem wiersza)',
             'nl': '(scheid woorden of woordgroepen met een regeleinde)',
+            'he': '(separate words or phrases with a line break)', // --- needs translation
         },
         NF_BLOCKED_ENABLED: {
             'en': 'Enabled',
@@ -914,6 +963,7 @@
             'it': 'Abilita opzione',
             'lv': 'Iespējots',
             'pl': 'Włączone',
+            'he': 'Enabled', // --- needs translation
         },
         GF_BLOCKED_ENABLED: {
             'en': 'Enabled',
@@ -927,6 +977,7 @@
             'lv': 'Iespējots',
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
+            'he': 'Enabled', // --- needs translation
         },
         VF_BLOCKED_ENABLED: {
             'en': 'Enabled',
@@ -940,6 +991,7 @@
             'lv': 'Iespējots',
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
+            'he': 'Enabled', // --- needs translation
         },
         DLG_VERBOSITY: {
             'en': 'Verbosity',
@@ -953,6 +1005,7 @@
             'lv': 'Runīgums',
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
+            'he': 'Verbosity', // --- needs translation
         },
         DLG_VERBOSITY_MESSAGE: {
             'en': 'Display a message if a post is hidden',
@@ -966,6 +1019,7 @@
             'lv': 'Parādīt ziņojumu, ja raksts ir paslēpts',
             'pl': 'Wyświetlaj wiadomość, jeśli wpis jest ukryty',
             'nl': 'Een bericht weergeven als een artikel verborgen is',
+            'he': 'Display a message if a post is hidden', // --- needs translation
         },
         VERBOSITY_NO_MESSAGE: {
             'en': 'no message',
@@ -979,6 +1033,7 @@
             'lv': 'Nekādu ziņojumu',
             'pl': 'nie ma wiadomości',
             'nl': 'geen bericht',
+            'he': 'no message', // --- needs translation
         },
         VERBOSITY_COLOUR: {
             'en': 'Text colour',
@@ -992,6 +1047,7 @@
             'lv': 'Teksta krāsa',
             'pl': 'Kolor tekstu',
             'nl': 'Tekstkleur',
+            'he': 'Text colour', // --- needs translation
         },
         VERBOSITY_BG_COLOUR: {
             'en': 'Background colour',
@@ -1005,6 +1061,7 @@
             'lv': 'Fona krāsa',
             'pl': 'Kolor tła',
             'nl': 'Achtergrondkleur',
+            'he': 'Background colour', // --- needs translation
         },
         VERBOSITY_DEBUG: {
             'en': 'Highlight "hidden" posts',
@@ -1018,6 +1075,7 @@
             'lv': 'Izceliet "slēptos" rakstus',
             'pl': 'Wyróżnij „ukryte” posty',
             'nl': 'Highlight "verborgen" artikelen',
+            'he': 'Highlight "hidden" posts', // --- needs translation
         },
         // CMF's customisations
         CMF_CUSTOMISATIONS: {
@@ -1032,6 +1090,7 @@
             'lv': 'Personalizēšana',
             'pl': 'Personalizacja',
             'nl': 'Personalisaties',
+            'he': 'Customisations', // --- needs translation
         },
         CMF_BTN_LOCATION: {
             'en': 'Location of Clean my feeds\' button',
@@ -1045,6 +1104,7 @@
             'lv': 'Pogas Tīrīt manas plūsmas atrašanās vieta',
             'pl': 'Lokalizacja przycisku Wyczyść moje kanały',
             'nl': 'Locatie van de knop Mijn feeds opschonen',
+            'he': 'Location of Clean my feeds\' button', // --- needs translation
         },
         CMF_BTN_OPTION: {
             'en': ['bottom left', 'top right'],
@@ -1058,6 +1118,7 @@
             'lv': ['apakšējā kreisajā stūrī', 'augšējā labajā stūrī'],
             'pl': ['lewy dolny róg', 'prawy górny róg'],
             'nl': ['linksonder', 'rechtsboven'],
+            'he': ['שמאל למטה', 'ימינה למעלה'],
             'defaultValue': 0,
         },
         CMF_DIALOG_LOCATION: {
@@ -1072,6 +1133,7 @@
             'lv': 'Dialoglodziņa Tīrīt manas plūsmas atrašanās vieta',
             'pl': 'Lokalizacja okna dialogowego Wyczyść moje kanały',
             'nl': 'Locatie van het dialoogvenster Mijn feeds opschonen',
+            'he': 'Location of Clean my feeds\' dialog box', // --- needs translation
         },
         CMF_DIALOG_OPTION: {
             'en': ['left side', 'right side'],
@@ -1085,6 +1147,7 @@
             'lv': ['kreisā puse', 'labā puse'],
             'pl': ['lewa strona', 'prawa strona'],
             'nl': ['linkerkant', 'rechterkant'],
+            'he': ['צד שמאל', 'צד ימין'],
             'defaultValue': 0,
         },
         CMF_BORDER_COLOUR: {
@@ -1099,12 +1162,13 @@
             'lv': 'Apmales krāsa',
             'pl': 'Kolor obramowania',
             'nl': 'Randkleur',
+            'he': 'צבע גבול',
         },
         CMF_BORDER_OPTION: {
             'defaultValue': 'orangered',
         },
         DLG_TIPS: {
-            'en': 'Tips"',
+            'en': 'Tips',
             'pt': 'Pontas',
             'de': 'Tipps',
             'fr': 'Des astuces',
@@ -1114,7 +1178,8 @@
             'it': 'Suggerimenti',
             'lv': 'Padomi',
             'pl': 'Sugestia',
-            'nl': 'Tips'
+            'nl': 'Tips',
+            'he': 'טיפים',
         },
         DLG_TIPS_CONTENT: {
             'en': 'Clearing your browser\'s cache will reset your settings to their default values.\n\nUse the "Export" and "Import" buttons to backup and restore your customised settings.',
@@ -1128,6 +1193,7 @@
             'lv': 'Iztīrot pārlūkprogrammas kešatmiņu, iestatījumi tiks atiestatīti uz noklusējuma vērtībām.\n\nIzmantojiet pogas "Eksportēt" un "Importēt", lai dublētu un atjaunotu pielāgotos iestatījumus.',
             'pl': 'Wyczyszczenie pamięci podręcznej przeglądarki spowoduje zresetowanie ustawień do wartości domyślnych.\n\nUżyj przycisków „Eksportuj” i „Importuj”, aby wykonać kopię zapasową i przywrócić niestandardowe ustawienia.',
             'nl': 'Als u de cache van uw browser wist, worden uw instellingen teruggezet naar hun standaardwaarden.\n\nGebruik de knoppen "Exporteren" en "Importeren" om een back-up te maken van uw aangepaste instellingen en deze te herstellen.',
+            'he': 'מחיקת ההיסטורה בדפדפן תנקה את ההגדרות ותחזיר אותם לברירת המחדל.\n\nהשתמש ב"ייצא" ו"ייבא" כדי לגבות ולהחזיר את ההגדרות שלך',
         },
         DLG_BUTTONS: {
             'en': ['Save', 'Close', 'Export', 'Import'],
@@ -1141,6 +1207,7 @@
             'lv': ['Saglabājiet', 'Aizveriet', 'Eksportēt', 'Importēt'],
             'pl': ['Zapisz', 'Zamknij', 'Eksport', 'Import'],
             'nl': ['Opslaan', 'Sluiten', 'Exporteren', 'Importeren'],
+            'he': ['שמור', 'סגור', 'ייצא', 'ייבא'],
         },
     };
     // *** *** end of language components *** ***
@@ -2455,10 +2522,10 @@
 
         // -- try the Flex/Order structure
         let elWrapper = post.querySelector( 'span > span > span > a[href^="?"] > span > span[class] > [style*="order"], ' +
-                                            'span > span > span > a[href="#"] > span > span[class] > [style*="order"], ' + 
-                                            'span > span > span > a[href^="?"] > span > span[class] > [style*="display"], ' + 
+                                            'span > span > span > a[href="#"] > span > span[class] > [style*="order"], ' +
+                                            'span > span > span > a[href^="?"] > span > span[class] > [style*="display"], ' +
                                             'span > span > span > a[href="#"] > span > span[class] > [style*="display"], '+
-                                            'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +                                            
+                                            'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +
                                             'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]');
         if (elWrapper) {
             // -- found a regular post structure
