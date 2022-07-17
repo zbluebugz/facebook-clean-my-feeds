@@ -465,7 +465,7 @@
             'lv': 'Ieteiktās grupas',
             'pl': 'Proponowane grupy',
             'nl': 'Voorgestelde groepen',
-            'he': 'Suggested groups', // --- needs translation
+            'he': 'הצעות לקבוצות',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
