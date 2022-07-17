@@ -183,7 +183,7 @@
             'lv': 'Stāsti',
             'pl': 'Historie',
             'nl': 'Verhalen',
-            'he': 'Stories', // --- needs translation?
+            'he': 'סטוריז', // --- needs translation?
             'isSuggestion': false,
             'defaultEnabled': false,
         },
