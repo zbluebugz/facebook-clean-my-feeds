@@ -1462,7 +1462,7 @@
         styleEl.appendChild(document.createTextNode('.__fb-dark-mode .fb-cmf {background-color:var(--web-wash) !important;}'));
 
         // -- header
-        css = 'display:flex; justify-content: space-between;';
+        css = 'display:flex; justify-content:space-between; direction:rtl;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf header {${css}}`));
 
         css = 'flex-grow:0; align-self:auto; width:75px; text-align:left;';
