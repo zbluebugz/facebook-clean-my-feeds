@@ -183,7 +183,7 @@
             'lv': 'Stāsti',
             'pl': 'Historie',
             'nl': 'Verhalen',
-            'he': 'Stories', // --- needs translation?
+            'he': 'סטוריז',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -200,7 +200,7 @@
             'lv': 'Izveidot istabu',
             'pl': 'Utwórz pokój',
             'nl': 'Ruimte maken',
-            'he': 'צור חדר',
+            'he': 'יצירת חדר',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
@@ -447,7 +447,7 @@
             'lv': 'Apmaksāta sadarbība', // (Paid cooperation)
             'pl': 'Post sponsorowany', // (Sponsored post)
             'nl': 'Betaald partnerschap',
-            'he':  'שותפות בתשלום', 
+            'he':  'שותפות בתשלום',
             'isSuggestion': true,
             'defaultEnabled': true,
         },
@@ -465,7 +465,7 @@
             'lv': 'Ieteiktās grupas',
             'pl': 'Proponowane grupy',
             'nl': 'Voorgestelde groepen',
-            'he': 'Suggested groups', // --- needs translation
+            'he': 'הצעות לקבוצות',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
@@ -694,7 +694,7 @@
             'lv': 'Koronavīruss (informācijas lodziņš)',
             'pl': 'Koronawirus (skrzynka informacyjna)',
             'nl': 'Coronavirus (informatiebox)',
-            'he': 'וירוס קורונה (תיבת מידע)', 
+            'he': 'וירוס קורונה (תיבת מידע)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/', // -- the partial path name to match.
