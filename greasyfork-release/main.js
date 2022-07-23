@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.25-beta
+// @version      3.25
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -14,7 +14,10 @@
 // ==/UserScript==
 /*
     v3.25 :: July 2022
+        Updated detection code for: Sponsored posts in News Feed
         Added עִברִית (Hebrew - thanks to https://github.com/Crapy)
+        Added code to pause some animating GIFs in posts/comments
+        Added detection code for "Stories | Reels | Rooms" tabs list box
         Code tweaks
     v3.24 :: July 2022
         Updated detection code for: Sponsored posts in News Feed
@@ -252,7 +255,7 @@
             'lv': 'Apmaksāta reklāma · Apmaksā ______',
             'pl': 'Sponsorowane · Opłacona przez ______',
             'nl': 'Gesponsord · Betaald door ______',
-            'he': '______ ממומן - על ידי',
+            'he': 'ממומן · שולם על ידי ______',
             'isSuggestion': false,
             'defaultEnabled': true
         },
@@ -361,6 +364,25 @@
             'isSuggestion': true,
             'defaultEnabled': false,
         },
+        // - Stories | Reels | Rooms tab list box
+        // -- must have the "Stories | Reels | Rooms" pattern (including double quotes)
+        // -- those words must match fb's words.
+        NF_TABLIST_STORIES_REELS_ROOMS: {
+            'en': '"Stories | Reels | Rooms" tab list box',
+            'pt': 'Caixa de listagem da guia "Histórias | Vídeos do Reels | Salas"',
+            'de': 'Listenfeld der Registerkarte "Stories | Reels | Rooms"',
+            'fr': 'Zone de liste de l\'onglet "Stories | Reels | Salons"',
+            'es': 'Cuadro de lista de la pestaña "Historias | Reels | Salas"',
+            'cs': 'Seznam karet "Stories | Reels | Místnosti"',
+            'vi': 'Hộp danh sách tab "Tin | Reels | Phòng họp mặt"',
+            'it': 'Casella di riepilogo della scheda "Storie | Reels | Stanze"',
+            'lv': 'Cilnes "Stāsti | Video rullīši | Rooms" sarakstlodziņš',
+            'pl': 'Pole listy zakładki "Relacje | Reels | Pokoje"',
+            'nl': 'Keuzelijst tabblad "Verhalen | Reels | Ruimtes"',
+            'he': 'תיבת רשימה של כרטיסיות "סטוריז | Reels | חדרים"',
+            'isTabList': true,
+            'defaultEnabled': false,
+        },
         // - Sponsored box in right-hand / left-hand column (language - rtl & ltr)
         NF_THIRD_COLUMN_SPONSORED: {
             'en': 'Sponsored box (right-hand column)',
@@ -374,7 +396,7 @@
             'lv': 'Sponsorētā kaste (labā kolonna)',
             'pl': 'Boks sponsorowany (prawa kolumna)',
             'nl': 'Gesponsorde doos (rechterkolom)',
-            'he': 'תיבה ממומנת (עמודה שמאל)',  // left-hand column
+            'he': 'תיבה ממומנת (עמודה שמאל)', // left-hand column
             'defaultEnabled': true,
         },
         // - Suggested for you
@@ -391,6 +413,25 @@
             'pl': 'Propozycje dla Ciebie (prawa kolumna)',
             'nl': 'Voorgesteld voor jou (rechterkolom)',
             'he': 'הוצע עבורך (עמודה שמאל)', // left-hand column
+            'defaultEnabled': false,
+        },
+        // - pause animated GIFs
+        // -- descriptive label in dialog box
+        // -- actual text to find is in PAUSE_ANIMATED_GIFS
+        NF_ANIMATED_GIFS: {
+            'en': 'Pause animated GIFs',
+            'pt': 'Pausar GIFs animados',
+            'de': 'Animierte GIFs pausieren',
+            'fr': 'Mettre en pause les GIF animés',
+            'es': 'Pausar GIF animados',
+            'cs': 'Pozastavit animované GIFy',
+            'vi': 'Tạm dừng các ảnh GIF động',
+            'it': 'Metti in pausa le GIF animate',
+            'lv': 'Apturiet animētos GIF',
+            'pl': 'Wstrzymaj animowane GIF-y',
+            'nl': 'Geanimeerde GIF\'s pauzeren',
+            'he': 'השהה קובצי GIF מונפשים',
+            'isAnimatedGIF': true,
             'defaultEnabled': false,
         },
 
@@ -627,6 +668,25 @@
             'isSuggestion': true,
             'defaultEnabled': false,
         },
+        // - pause animated GIFs
+        // -- descriptive label in dialog box
+        // -- actual text to find is in PAUSE_ANIMATED_GIFS
+        GF_ANIMATED_GIFS: {
+            'en': 'Pause animated GIFs',
+            'pt': 'Pausar GIFs animados',
+            'de': 'Animierte GIFs pausieren',
+            'fr': 'Mettre en pause les GIF animés',
+            'es': 'Pausar GIF animados',
+            'cs': 'Pozastavit animované GIFy',
+            'vi': 'Tạm dừng các ảnh GIF động',
+            'it': 'Metti in pausa le GIF animate',
+            'lv': 'Apturiet animētos GIF',
+            'pl': 'Wstrzymaj animowane GIF-y',
+            'nl': 'Geanimeerde GIF\'s pauzeren',
+            'he': 'השהה קובצי GIF מונפשים',
+            'isAnimatedGIF': true,
+            'defaultEnabled': false,
+        },
 
         // *** Watch Videos Feed
         // - Paid partnership
@@ -679,9 +739,28 @@
             'isSuggestion': false,
             'defaultEnabled': false,
         },
+        // - pause animated GIFs
+        // -- descriptive label in dialog box
+        // -- actual text to find is in PAUSE_ANIMATED_GIFS
+        VF_ANIMATED_GIFS: {
+            'en': 'Pause animated GIFs',
+            'pt': 'Pausar GIFs animados',
+            'de': 'Animierte GIFs pausieren',
+            'fr': 'Mettre en pause les GIF animés',
+            'es': 'Pausar GIF animados',
+            'cs': 'Pozastavit animované GIFy',
+            'vi': 'Tạm dừng các ảnh GIF động',
+            'it': 'Metti in pausa le GIF animate',
+            'lv': 'Apturiet animētos GIF',
+            'pl': 'Wstrzymaj animowane GIF-y',
+            'nl': 'Geanimeerde GIF\'s pauzeren',
+            'he': 'השהה קובצי GIF מונפשים',
+            'isAnimatedGIF': true,
+            'defaultEnabled': false,
+        },
 
         // *** Miscellaneous/Other items
-        // -- info box - coronavirus
+        // - info box - coronavirus
         OTHER_INFO_BOX_CORONAVIRUS: {
             'en': 'Coronavirus (information box)',
             'pt': 'Coronavírus (caixa de informações)',
@@ -699,7 +778,7 @@
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/', // -- the partial path name to match.
         },
-        // -- info box - climate science
+        // - info box - climate science
         OTHER_INFO_BOX_CLIMATE_SCIENCE: {
             'en': 'Climate Science (information box)',
             'pt': 'Ciência do Clima (caixa de informações)',
@@ -717,7 +796,7 @@
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
         },
-        // -- info box - subscribe
+        // - info box - subscribe
         OTHER_INFO_BOX_SUBSCRIBE: {
             'en': 'Subscribe (information box)',
             'pt': 'Assine (caixa de informações)',
@@ -735,7 +814,7 @@
             'defaultEnabled': false,
             'pathMatch': '/support/',
         },
-        // -- nf - top of feed - "invitation to a survey"
+        // - nf - top of feed - "invitation to a survey"
         OTHER_SURVEY: {
             'en': 'See Survey Details',
             'pt': 'Veja os detalhes da pesquisa',
@@ -753,7 +832,7 @@
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
         },
-        // -- nf - top of feed - "fb 2 m"
+        // - nf - top of feed - "fb 2 m"
         OTHER_FB_RENAMED: {
             'en': 'The Facebook company is now called Meta',
             'pt': 'A empresa do Facebook agora se chama Meta',
@@ -772,7 +851,7 @@
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
         },
-        // -- nf - top of feed - "fb/meta updated privacy & terms" - won't shut up.
+        // - nf - top of feed - "fb/meta updated privacy & terms" - won't shut up.
         OTHER_FB_PRIVACY_TERMS: {
             'en': 'We\'ve updated the Meta Privacy Policy and Terms of Service',
             'pt': 'Atualizámos a Política de Privacidade e os Termos de Serviço da Meta',
@@ -789,6 +868,25 @@
             'pathMatch': '/privacy_policy_notice/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
+        },
+
+        // - animated gifs - pausing
+        // -- not to be used in dialog box
+        // -- actual text to find in [aria-label]
+        // -- used in the function pauseGIFAnimations()
+        PAUSE_ANIMATED_GIFS: {
+            'en': ['pause GIF', 'Pause GIF'],
+            'pt': ['Pausar GIF'],
+            'de': ['Pause-GIF'],
+            'fr': ['pause GIF'],
+            'es': ['pausa GIF'],
+            'cs': ['pozastavit GIF'],
+            'vi': ['tạm dừng GIF'],
+            'it': ['mettere in pausa GIF'],
+            'lv': ['pauzēt GIF'],
+            'pl': ['wstrzymaj GIF'],
+            'nl': ['pauzeer GIF'],
+            'he': ['השהיית GIF'],
         },
 
         // *** Dialog box
@@ -1254,8 +1352,9 @@
 
         // - Query String selectors for getting a collection of Feed posts / elements
         QS: '',
-        newsFeedQS: 'div[role="feed"] > div',
-        groupsFeedQS: 'div[role="feed"] > div',
+        // -- July 2022, changed - using SPAN
+        newsFeedQS: 'div[role="feed"] > span, div[role="feed"] > div',
+        groupsFeedQS: 'div[role="feed"] > div, div[role="feed"] > span',
         // - News and Groups feeds post's blocks (posts have 1-4 blocks)
         // -- used by the fn extractTextContent() and fn doMoppingInfoBox()
         postBlocksQS: ':scope > div > div > div > div > div > div > div > div > div > div > div > div > div',
@@ -1333,9 +1432,13 @@
         storiesFound: false,
         // indicate if create-room was found and stop looking for it
         crFound: false,
+        // indicate if tab-list was found and stop looking for it
+        tabListFound: false,
+        tabListFoundCount: 0,
         // indicate if right-rail was found and stop looking for it
         // (code will set to true to stop hunting for third column)
         tcFound: false,
+        tcFoundCount: 0,
         // indicate if fb-meta was found and stop looking for it
         f2mFound: false,
         // indicate if survey was found and stop looking for it
@@ -1462,15 +1565,15 @@
         styleEl.appendChild(document.createTextNode('.__fb-dark-mode .fb-cmf {background-color:var(--web-wash) !important;}'));
 
         // -- header
-        css = 'display:flex; justify-content:space-between; direction:rtl;';
+        css = 'display:flex; justify-content:space-between; direction:ltr;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf header {${css}}`));
 
-        css = 'flex-grow:0; align-self:auto; width:75px; text-align:left;';
+        css = 'flex-grow:0; align-self:auto; width:75px; text-align:left; order:1;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-icon {${css}}`));
         css = 'width:64px; height:64px; margin:2px 0;'
         styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-icon svg {${css}}`));
 
-        css = 'flex-grow:2; align-self:auto;';
+        css = 'flex-grow:2; align-self:auto; order:2;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-title {${css}}`));
         css = 'padding-top:1.25rem;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-lang-1 {${css}}`));
@@ -1482,7 +1585,7 @@
         css = 'display:block; font-size:0.8rem; text-align:center;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-title > small {${css}}`));
 
-        css = 'flex-grow:0; align-self:auto; width:75px; text-align:right; padding: 1.5rem 0 0 0;';
+        css = 'flex-grow:0; align-self:auto; width:75px; text-align:right; padding: 1.5rem 0 0 0; order:3;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-close {${css}}`));
         css = 'width:1.75rem; height:1.5rem; font-family: monospace;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-close button {${css}}`));
@@ -1692,6 +1795,20 @@
             }
             else if (KeyWords[key].isTopOfNFFeed) {
                 // -- top of nf (appears @ top of nf, not a regular post - e.g. f2m)
+                if (!VARS.Options.hasOwnProperty(key)) {
+                    VARS.Options[key] = KeyWords[key].defaultEnabled;
+                    changed = true;
+                }
+            }
+            else if (KeyWords[key].isAnimatedGIF) {
+                // -- pause animating gifs
+                if (!VARS.Options.hasOwnProperty(key)) {
+                    VARS.Options[key] = KeyWords[key].defaultEnabled;
+                    changed = true;
+                }
+            }
+            else if (KeyWords[key].isTabList) {
+                // -- tab list (i.e. 3 tabs list box)
                 if (!VARS.Options.hasOwnProperty(key)) {
                     VARS.Options[key] = KeyWords[key].defaultEnabled;
                     changed = true;
@@ -1908,6 +2025,8 @@
             fs.appendChild(createCB('cbNF', 'NF_SPONSORED_PAID'));
             fs.appendChild(createCB('cbNF', 'NF_THIRD_COLUMN_SPONSORED', false));
             fs.appendChild(createCB('cbNF', 'NF_THIRD_COLUMN_SUGGESTED_FOR_YOU', false));
+            fs.appendChild(createCB('cbNF', 'NF_ANIMATED_GIFS'));
+            fs.appendChild(createCB('cbNF', 'NF_TABLIST_STORIES_REELS_ROOMS'));
             cnt.appendChild(fs);
 
             // -- Groups Feed options
@@ -1921,6 +2040,7 @@
                     fs.appendChild(createCB('cbGF', key));
                 }
             }
+            fs.appendChild(createCB('cbGF', 'GF_ANIMATED_GIFS'));
             cnt.appendChild(fs);
 
             // -- Watch/Videos Feed options
@@ -1935,6 +2055,7 @@
                 }
             }
             fs.appendChild(createCB('cbVF', 'VF_LIVE'));
+            fs.appendChild(createCB('cbVF', 'VF_ANIMATED_GIFS'));
             cnt.appendChild(fs);
 
             // -- MarketPlace option(s)
@@ -2399,10 +2520,15 @@
             VARS.storiesFound = (VARS.Options.NF_STORIES === false);
             // - reset create-room found flag
             VARS.crFound = (VARS.Options.NF_CREATE_ROOM === false);
+            // - reset tab-list found flag
+            VARS.tabListFound = (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS === false);
+            VARS.tabListFoundCount = 0;
             // - reset third-column found flags
             // (set to true to stop mopping up the tc)
             VARS.tcFound_Sponsored = (VARS.Options.NF_THIRD_COLUMN_SPONSORED === false);
             VARS.tcFound_Suggested4U = (VARS.Options.NF_THIRD_COLUMN_SUGGESTED_FOR_YOU === false);
+
+            VARS.tcFoundCount = 0;
 
             // - reset f2m, survey, privacy found flags
             VARS.f2mFound = (VARS.Options.OTHER_FB_RENAMED === false);
@@ -2612,6 +2738,7 @@
         // - check for blocked text - partial text match
         // -- regular posts - scan first 1st & 3rd blocks
         let ptexts = (VARS.isVF) ? extractTextContent(post, VARS.videoBlockQS, 1) : extractTextContent(post, VARS.postBlocksQS, 3);
+        // console.info(log+'isBlockedText:', ptexts, post);
         ptexts = ptexts.join(' ').toLowerCase();
         let blockedIndex = -1;
         for (let b = 0, btL = VARS.blockTextMatchLC.length; b < btL; b++) {
@@ -2654,7 +2781,22 @@
         }
         return false;
     }
-
+    function pauseGIFAnimations(post, caller) {
+        // - scan the post for any gifs that is animating
+        KeyWords.PAUSE_ANIMATED_GIFS[VARS.language].forEach(ptext => {
+            let agifs = Array.from(post.querySelectorAll(`div[role="button"][aria-label="${ptext}"]:not([msz-gif])`));
+            //console.info(log+"pausing:", caller, agifs.length, `div[role="button"][aria-label="${ptext}"]:not([msz-gif])`);
+            if (agifs.length) {
+                agifs.forEach( gif => {
+                    // mimic user clicking on animating gif
+                    // - which will trigger fb's click event.
+                    gif.setAttribute(postAtt + '-gif', 'gifa');
+                    // console.info(log + ' pausing', caller, gif);
+                    gif.click();
+                });
+            }
+        })
+    }
     function doMoppingStories() {
         if (VARS.Options.NF_STORIES) {
             let stories = Array.from(document.querySelectorAll(VARS.storiesQS2));
@@ -2707,7 +2849,6 @@
             }
         }
     }
-    let tcCountFound = 0;
     function doMoppingThirdColumn(tcEntry, tcbox) {
         //console.info(log+'dMoppingThirdCol:', tcEntry, tcbox);
         // - third column, sponsored box.
@@ -2720,8 +2861,8 @@
                         VARS.echoCount = 0;
                         hide(tcbox, VARS.sponsoredWord);
                         // make it stop checking third-col.
-                        tcCountFound++;
-                        if (tcCountFound > 3) {
+                        VARS.tcFoundCount++;
+                        if (VARS.tcFoundCount > 4) {
                             VARS.tcFound_Sponsored = true;
                         }
                     }
@@ -2739,8 +2880,8 @@
                         VARS.echoCount = 0;
                         hide(tcbox, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]);
                         // make it stop checking third-col.
-                        tcCountFound++;
-                        if (tcCountFound > 3) {
+                        VARS.tcFoundCount++;
+                        if (VARS.tcFoundCount > 4) {
                             VARS.tcFound_Suggested4U = true;
                         }
                     }
@@ -2794,7 +2935,28 @@
             }
         }
     }
-
+    function doMoppingTabList() {
+        // tablist : stories | reels | rooms
+        // - appears at top of NF
+        let tabList = document.querySelectorAll('div[role="tablist"]:not([msz])');
+        if (tabList.length) {
+            let tabsText = scanTreeForText(tabList[0]);
+            if (tabsText.length) {
+                tabsText = tabsText.join(' | ');
+                let kwTexts = KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language].split('"');
+                if (kwTexts.indexOf(tabsText) >= 0) {
+                    tabList[0].setAttribute(postAtt, tabList[0].innerHTML.length);
+                    tabList[0].setAttribute(`${postAtt}-rule`, 'tablist');
+                    let container = tabList[0].parentElement.parentElement.parentElement.parentElement;
+                    hide(container, '');
+                    VARS.tabListFoundCount++;
+                    if (VARS.tabListFoundCount > 5) {
+                        VARS.tabListFound = true;
+                    }
+                }
+            }
+        }
+    }
     function doMoppingOthers() {
         // hide fb is meta and survey boxes
         let mainFeed = document.querySelector('div[role="feed"]');
@@ -2880,6 +3042,11 @@
                         // post size has not changed
                         // (if already hidden, previous rule would have caught it)
                         hiding = false;
+
+                        // -- pause animated gifs? - the comments block could be expanding ...
+                        if ((VARS.isNF || VARS.isGF || VARS.isVF) && VARS.Options.NF_ANIMATED_GIFS) {
+                            pauseGIFAnimations(post, 2);
+                        }
                     }
                     else {
                         // - post just added or or updated
@@ -2929,6 +3096,10 @@
                             if (!hiding) {
                                 // -- info boxes that appear between post article and comments.
                                 doMoppingInfoBoxes(post);
+                                // -- pause animated gifs?
+                                if (VARS.Options.NF_ANIMATED_GIFS) {
+                                    pauseGIFAnimations(post, 1);
+                                }
                             }
                         }
                         else if (VARS.isSF) {
@@ -3042,7 +3213,8 @@
                             }
                         }
                     }
-                }            }
+                }
+            }
 
             if (VARS.mpItem) {
                 doMoppingMPItem();
@@ -3125,9 +3297,9 @@
                     for (let i = 0; i < mutation.addedNodes.length; i++) {
                         let mnode = mutation.addedNodes[i];
                         // -- There's a MarketPlace SPAN node that has Sponsored text ...
-                        // -- NF, GF & VF don't need to check SPAN nodes ... so exclude those NODES for performance reasons.
+                        // -- NF, GF & VF don't need to check SPAN nodes ... so exclude those NODES for performance reasons (July 2022 - ignored)
                         let safeNode = (['SCRIPT', 'LINK', undefined, 'FORM'].indexOf(mnode.tagName) < 0);
-                        let doCleaning = safeNode ? ((VARS.isMP) ? true : (mnode.tagName === 'DIV')) : false;
+                        let doCleaning = safeNode ? ((VARS.isMP) ? true : (mnode.tagName === 'DIV' || mnode.tagName === 'SPAN')) : false;
                         if (doCleaning) {
                             // console.info(`${log}m.an:`, VARS.isMP, mnode.innerHTML.length, mnode.textContent.length, mnode);
                             if ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0)) {
@@ -3140,6 +3312,9 @@
                                 }
                                 if (VARS.crFound === false) {
                                     doMoppingCreateRoom();
+                                }
+                                if (VARS.tabListFound === false) {
+                                    doMoppingTabList();
                                 }
                                 if ((VARS.tcFound_Sponsored === false) || (VARS.tcFound_Suggested4U === false)) {
                                     let tcbox = document.querySelector(VARS.thirdColQS1);
