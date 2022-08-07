@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.25
+// @version      3.26
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,11 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.26 :: August 2022
+        Added Português (Brazil) - used in conjunction with Português (Portugal)
+        Added لعربية  (Arabic)
+        Added Bahasa Indonesia (Indonesia)
+        Code tweaks
     v3.25 :: July 2022
         Updated detection code for: Sponsored posts in News Feed
         Added עִברִית (Hebrew - thanks to https://github.com/Crapy)
@@ -112,35 +117,42 @@
 
         // *** Which languages have been setup:
         // - 'en' is default.
-        LANGUAGES: ['en', 'pt', 'de', 'fr', 'es', 'cs', 'vi', 'it', 'lv', 'pl', 'nl', 'he'],
+        LANGUAGES: [
+            'en', // English
+            'pt', // Português (Portugal and Brazil)
+            'de', // Deutsch (Germany)
+            'fr', // Français (France)
+            'es', // Espanol (Spain)
+            'cs', // Čeština (Czechia)
+            'vi', // Tiếng Việt (Vietnam)
+            'it', // Italino (Italy)
+            'lv', // Latviešu (Latvia)
+            'pl', // Polski (Poland)
+            'nl', // Nederlands (Netherlands)
+            'he', // עִברִית (Hebrew)
+            'ar', // العربية (Arabic)
+            'id', // Bahasa Indonesia (Indonesia)
+        ],
 
+        // - Sponsored: text to find:
         SPONSORED: {
-            // English
             'en': 'Sponsored',
-            // Português (Portugal)
             'pt': 'Patrocinado',
-            // Deutsch (Germany)
             'de': 'Gesponsert',
-            // Français (France)
             'fr': 'Sponsorisé',
-            // Espanol (Spain)
             'es': 'Publicidad',
-            // Čeština (Czechia)
             'cs': 'Sponzorováno',
-            // Tiếng Việt (Vietnam)
             'vi': 'Được tài trợ',
-            // Italino (Italy)
             'it': 'Sponsorizzato',
-            // Latviešu (Latvia)
             'lv': 'Apmaksāta reklāma',
-            // Polski (Poland)
             'pl': 'Sponsorowane',
-            // Nederlands (Netherlands)
             'nl': 'Gesponsord',
-            // Hebrew
             'he': 'ממומן',
+            'ar': 'مُموَّل',
+            'id': 'Bersponsor',
         },
-        // marketplace 'sponsored' word ... somtimes fb has a different spelling
+
+        // - Marketplace: 'sponsored' word ... somtimes fb has a different spelling
         MP_SPONSORED: {
             'en': 'Sponsored',
             'pt': 'Patrocinado',
@@ -154,26 +166,13 @@
             'pl': 'Sponsorowane',
             'nl': 'Gesponsord',
             'he': 'ממומן',
+            'ar': 'مُموَّل',
+            'id': 'Bersponsor',
         },
-        // *** Verbosity:
-        VERBOSITY: {
-            'en': ['1 post hidden. Rule: ', ' posts hidden'],
-            'pt': ['1 postagem oculta. Regra: ', ' postagens ocultas'],
-            'de': ['1 Beitrag ausgeblendet. Regel: ', ' Beiträge versteckt'],
-            'fr': ['1 poste caché. Règle: ', ' posts cachés'],
-            'es': ['1 publicación oculta. Regla: ', ' publicaciones ocultas'],
-            'cs': ['1 příspěvek byl skryt. Pravidlo: ', ' příspěvků skrytých'],
-            'vi': ['1 bài bị ẩn. Quy tắc: ', ' bài viết ẩn'],
-            'it': ['1 post nascosto Regola: ', ' post nascosti'],
-            'lv': ['1 ziņa ir paslēpta. Noteikums: ', ' ziņas ir paslēptas'],
-            'pl': ['Ukryto 1 post. Reguła: ', ' posty ukryte'],
-            'nl': ['1 post verborgen. Regel: ', ' posts verborgen'],
-            'he': ['פוסט אחד מוסתר. כלל: ', ' פוסטים מוסתרים'],
-        },
-
 
         // *** News Feed ::
-        // - Stories
+
+        // - Stories:
         NF_STORIES: {
             'en': 'Stories',
             'pt': 'Histórias',
@@ -187,10 +186,13 @@
             'pl': 'Historie',
             'nl': 'Verhalen',
             'he': 'סטוריז',
+            'ar': 'القصص',
+            'id': 'Cerita',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
-        // - create room
+
+        // - Create Room:
         NF_CREATE_ROOM: {
             'en': 'Create room',
             'pt': 'Criar sala',
@@ -204,13 +206,16 @@
             'pl': 'Utwórz pokój',
             'nl': 'Ruimte maken',
             'he': 'יצירת חדר',
+            'ar': 'إنشاء غرفة',
+            'id': 'Buat Forum',
             'isSuggestion': false,
             'defaultEnabled': false,
         },
-        // - People you may know
+
+        // - People you may know:
         NF_PEOPLE_YOU_MAY_KNOW: {
             'en': 'People you may know',
-            'pt': 'Pessoas que talvez conheças',
+            'pt': ['Pessoas que talvez conheças', 'Pessoas que você talvez conheça'],
             'de': 'Personen, die du kennen könntest',
             'fr': 'Connaissez-vous...',
             'es': 'Personas que quizá conozcas',
@@ -221,11 +226,14 @@
             'pl': 'Osoby, które możesz znać',
             'nl': 'Mensen die je misschien kent',
             'he': 'אנשים שאולי אתה מכיר',
+            'ar': 'أشخاص قد تعرفهم',
+            'id': 'Orang yang Mungkin Anda Kenal',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Paid partnership
-        // -- page you follow is "sponsoring" another page's post (e.g. job)
+
+        // - Paid partnership:
+        // - page you follow is "sponsoring" another page's post (e.g. job)
         NF_PAID_PARTNERSHIP: {
             'en': 'Paid partnership',
             'pt': 'Parceria paga',
@@ -239,10 +247,14 @@
             'pl': 'Post sponsorowany',
             'nl': 'Betaald partnerschap',
             'he': 'שותפות בתשלום',
+            'ar': 'شراكة مدفوعة',
+            'id': 'Paid partnership', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': true,
         },
-        // Sponsored · Paid for by ______  (paid advertising)
+
+        // - Sponsored · Paid for by ______  :
+        // - (paid advertising)
         NF_SPONSORED_PAID: {
             'en': 'Sponsored · Paid for by ______',
             'pt': 'Patrocinado · Financiado por ______',
@@ -256,13 +268,16 @@
             'pl': 'Sponsorowane · Opłacona przez ______',
             'nl': 'Gesponsord · Betaald door ______',
             'he': 'ממומן · שולם על ידי ______',
+            'ar': 'Sponsored * Paid for by ______', // --- needs translation
+            'id': 'Sponsored · Paid for by ______', // --- needs translation
             'isSuggestion': false,
-            'defaultEnabled': true
+            'defaultEnabled': true,
         },
-        // - Suggested for you
+
+        // - Suggested for you:
         NF_SUGGESTED_FOR_YOU: {
             'en': 'Suggested for you',
-            'pt': 'Sugestões para ti',
+            'pt': ['Sugestões para ti', 'Sugestões para você'],
             'de': 'Vorschläge für dich',
             'fr': 'Suggestions pour vous',
             'es': 'Sugerencias para ti',
@@ -270,13 +285,17 @@
             'vi': 'Gợi ý cho bạn',
             'it': 'Suggeriti per te', // --- correct translation?
             'lv': 'Ieteikts tev',
-            'pl': 'Propozycje dla Ciebie', // 'Proponowane dla Ciebie', ?
+            'pl': 'Propozycje dla Ciebie', // Proponowane dla Ciebie ?
             'nl': 'Suggested for you', // --- needs translation
             'he': 'הצעות בשבילך',
+            'ar': 'اقتراحات قد تعجبك', // suggestion you may like
+            'id': 'Suggested for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Recommended post (usually appears on fresh accounts)
+
+        // - Recommended post:
+        // - (usually appears on fresh accounts)
         NF_RECOMMENDED_POST: {
             'en': 'Recommended post',
             'pt': 'Publicação recomendada',
@@ -290,10 +309,13 @@
             'pl': 'Polecany post',
             'nl': 'Aanbevolen bericht',
             'he': 'מומלץ בשבילך',
+            'ar': 'Recommended post', // --- needs translation
+            'id': 'Disarankan untuk Anda',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Suggested pages
+
+        // - Suggested pages:
         NF_SUGGESTED_PAGES: {
             'en': 'Suggested Pages',
             'pt': 'Páginas sugeridas',
@@ -307,10 +329,13 @@
             'pl': 'Suggested Pages', // --- needs translation
             'nl': 'Suggested Pages', // --- needs translation
             'he': 'Suggested Pages', // --- needs translation
+            'ar': 'Suggested pages', // --- needs translation
+            'id': 'Suggested pages', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Suggested events
+
+        // - Suggested events:
         NF_SUGGESTED_EVENTS: {
             'en': 'Suggested Events',
             'pt': 'Eventos Sugeridos',
@@ -324,10 +349,13 @@
             'pl': 'Proponowane wydarzenia',
             'nl': 'Voorgestelde evenementen',
             'he': 'Suggested Events', // --- needs translation
+            'ar': 'Suggested Events', // --- needs translation
+            'id': 'Saran Acara',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Events you may like
+
+        // - Events you may like:
         NF_EVENTS_YOU_MAY_LIKE: {
             'en': 'Events you may like',
             'pt': 'Events you may like', // --- needs translation
@@ -341,16 +369,16 @@
             'pl': 'Events you may like', // --- needs translation
             'nl': 'Events you may like', // --- needs translation
             'he': 'Events you may like', // --- needs translation
+            'ar': 'Events you may like', // --- needs translation
+            'id': 'Events you may like', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - June 2022: removed News Feed's "Videos just for you" & "Page you could subscribe to"
 
-        // - Reels and short videos
+        // - Reels and short videos:
         NF_REELS_SHORT_VIDEOS: {
             'en': 'Reels and short videos',
-            //'pt': 'Vídeos do Reels e vídeos curtos',
-            'pt': 'Vídeos do Reels e vídeos de curta duração',
+            'pt': ['Vídeos do Reels e vídeos de curta duração', 'Vídeos curtos/do Reels'], // Vídeos do Reels e vídeos curtos?
             'de': 'Reels und Kurzvideos',
             'fr': 'Reels et vidéos courtes',
             'es': 'Reels y vídeos cortos',
@@ -361,14 +389,17 @@
             'pl': 'Rolki i krótkie filmy',
             'nl': 'Reels en korte video\'s',
             'he': 'סרטוני Reels וקטעי וידאו קצרים',
+            'ar': 'ريلز ومقاطع الفيديو القصيرة',
+            'id': 'Reels dan Video Pendek',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Stories | Reels | Rooms tab list box
-        // -- must have the "Stories | Reels | Rooms" pattern (including double quotes)
+
+        // - "Stories | Reels | Rooms" tablist box
+        // - must have the "Stories | Reels | Rooms" pattern (including double quotes)
         // -- those words must match fb's words.
         NF_TABLIST_STORIES_REELS_ROOMS: {
-            'en': '"Stories | Reels | Rooms" tab list box',
+            'en': '"Stories | Reels | Rooms" tabs list box',
             'pt': 'Caixa de listagem da guia "Histórias | Vídeos do Reels | Salas"',
             'de': 'Listenfeld der Registerkarte "Stories | Reels | Rooms"',
             'fr': 'Zone de liste de l\'onglet "Stories | Reels | Salons"',
@@ -380,10 +411,14 @@
             'pl': 'Pole listy zakładki "Relacje | Reels | Pokoje"',
             'nl': 'Keuzelijst tabblad "Verhalen | Reels | Ruimtes"',
             'he': 'תיבת רשימה של כרטיסיות "סטוריז | Reels | חדרים"',
+            'ar': '"القصص | ريلز | الغرف" مربع قائمة علامات تبويب',
+            'id': 'Kotak daftar tab "Cerita | Reels | Forum"',
             'isTabList': true,
             'defaultEnabled': false,
         },
-        // - Sponsored box in right-hand / left-hand column (language - rtl & ltr)
+
+        // - Sponsored box in right-hand / left-hand column:
+        // - (language - rtl & ltr)
         NF_THIRD_COLUMN_SPONSORED: {
             'en': 'Sponsored box (right-hand column)',
             'pt': 'Caixa patrocinada (coluna da direita)',
@@ -397,9 +432,12 @@
             'pl': 'Boks sponsorowany (prawa kolumna)',
             'nl': 'Gesponsorde doos (rechterkolom)',
             'he': 'תיבה ממומנת (עמודה שמאל)', // left-hand column
+            'ar': 'مربع برعاية (العمود الأيسر)', // left-hand column
+            'id': 'Kotak bersponsor (kolom kanan)',
             'defaultEnabled': true,
         },
-        // - Suggested for you
+
+        // - Suggested for you:
         NF_THIRD_COLUMN_SUGGESTED_FOR_YOU: {
             'en': 'Suggested for you (right-hand column)',
             'pt': 'Sugestões para ti (coluna da direita)',
@@ -413,11 +451,14 @@
             'pl': 'Propozycje dla Ciebie (prawa kolumna)',
             'nl': 'Voorgesteld voor jou (rechterkolom)',
             'he': 'הוצע עבורך (עמודה שמאל)', // left-hand column
+            'ar': 'مقترح لك (العمود الأيسر)', // left-hand column
+            'id': 'Disarankan untuk Anda (kolom kanan)', // --- correct translation?
             'defaultEnabled': false,
         },
-        // - pause animated GIFs
-        // -- descriptive label in dialog box
-        // -- actual text to find is in PAUSE_ANIMATED_GIFS
+
+        // - pause animated GIFs:
+        // - descriptive label in dialog box
+        // - actual text to find is in PAUSE_ANIMATED_GIFS
         NF_ANIMATED_GIFS: {
             'en': 'Pause animated GIFs',
             'pt': 'Pausar GIFs animados',
@@ -431,16 +472,16 @@
             'pl': 'Wstrzymaj animowane GIF-y',
             'nl': 'Geanimeerde GIF\'s pauzeren',
             'he': 'השהה קובצי GIF מונפשים',
+            'ar': 'وقفة GIF المتحركة',
+            'id': 'Jeda GIF animasi',
             'isAnimatedGIF': true,
             'defaultEnabled': false,
         },
 
         // *** Groups Feed ::
-        // -- nb: some of these rules overlap each other
-        // -- "Join" and "Join Group" are listed in most non-subscribed group posts,
-        //    if both of these keywords are enabled, then the other keywords are "redundant"
-        // - New for you
-        // -- usually shows up at top of feed.
+
+        // - New for you:
+        // - usually shows up at top of feed.
         GF_NEW_FOR_YOU: {
             'en': 'New for you',
             'pt': 'Novidades para ti',
@@ -454,15 +495,18 @@
             'pl': 'New for you', // --- needs translation
             'nl': 'New for you', // --- needs translation
             'he': 'New for you', // --- needs translation
+            'ar': 'New for you', // --- needs translation
+            'id': 'New for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Suggested for you / Groups you might be interested in.
+
+        // - Suggested for you / Groups you might be interested in:
         GF_SUGGESTED_FOR_YOU_GROUPS: {
             'en': 'Suggested for you',
-            'pt': 'Sugestões para ti',
+            'pt': ['Sugestões para ti', 'Sugestões para você'],
             'de': 'Vorschläge für dich',
-            'fr': ['Suggestions pour vous', 'Groupes qui pourraient vous intéresser.'],
+            'fr': ['Suggestions pour vous', 'Groupes qui pourraient vous intéresser'],
             'es': 'Sugerencias para ti',
             'cs': 'Návrhy pro vás',
             'vi': 'Gợi ý cho bạn',
@@ -471,11 +515,14 @@
             'pl': 'Proponowane dla Ciebie',
             'nl': 'Voorgesteld voor jou',
             'he': 'הצעות בשבילך',
+            'ar': 'اقتراحات قد تعجبك',
+            'id': 'Disarankan untuk Anda', // recommended for you
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Paid partnership
-        // -- a page you follow is "sponsoring" another page's post (e.g. job)
+
+        // - Paid partnership:
+        // - a page you follow is "sponsoring" another page's post (e.g. job)
         GF_PAID_PARTNERSHIP: {
             'en': 'Paid partnership',
             'pt': 'Parceria paga',
@@ -488,12 +535,15 @@
             'lv': 'Apmaksāta sadarbība', // (Paid cooperation)
             'pl': 'Post sponsorowany', // (Sponsored post)
             'nl': 'Betaald partnerschap',
-            'he':  'שותפות בתשלום',
+            'he': 'שותפות בתשלום',
+            'ar': 'شراكة مدفوعة',
+            'id': 'Paid partnership', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': true,
         },
+
         // - Suggested groups
-        // -- box of groups - may need to use the view/see more keyword
+        // - collection of suggested groups - may need to use the view/see more keyword
         GF_SUGGESTED_GROUPS: {
             'en': 'Suggested groups',
             'pt': 'Grupos sugeridos',
@@ -507,11 +557,16 @@
             'pl': 'Proponowane grupy',
             'nl': 'Voorgestelde groepen',
             'he': 'הצעות לקבוצות',
+            'ar': 'Suggested groups', // --- needs translation
+            'id': 'Suggested groups', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - See More Groups - from post's heading "More like XYZ" / "Others similar to XYZ" (where XYZ is a group you've joined)
-        // -- nb: some non-subscribed group posts also have this keyword.
+
+        // - See More Groups:
+        // - from post's heading "More like XYZ" / "Others similar to XYZ"
+        // - where XYZ is a group you've joined
+        // - nb: some non-subscribed group posts also have this keyword.
         GF_SEE_MORE_GROUPS: {
             'en': 'See More Groups',
             'pt': 'Ver mais grupos',
@@ -525,31 +580,38 @@
             'pl': 'Wyświetl więcej grup',
             'nl': 'Meer groepen bekijken',
             'he': 'See More Groups', // --- needs translation
+            'ar': 'See More Groups', // --- needs translation
+            'id': 'See More Groups', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Suggested post from a public group
-        // -- lots of posts from groups not subscribed too
+
+        // - Suggested post from a public group:
+        // - lots of posts from groups not subscribed too
         GF_SUGGESTED_POST_PUBLIC_GROUP: {
             'en': ['Suggested post from a public group', 'Post from public group'],
             'pt': ['Publicação sugerida de um grupo público', 'Postagem de grupo público'],
             'de': 'Vorgeschlagener Beitrag aus einer öffentlichen Gruppe',
             'fr': 'Publication suggérée d’un groupe public',
             'es': 'Publicación sugerida de un grupo público',
-            'cs': 'Navrhovaný příspěvek z veřejné skupiny', // proposed contribution from public group
+            'cs': 'Navrhovaný příspěvek z veřejné skupiny',
             'vi': 'Bài viết gợi ý từ nhóm công khai',
             'it': 'Post suggerito di un gruppo pubblico',
             'lv': 'Ieteikts ieraksts no publiskas grupas',
             'pl': 'Proponowany post z grupy publicznej',
             'nl': 'Voorgesteld bericht van een openbare groep',
-            'he': 'הצעה של פוסט מקבוצה ציבורית', // proposal of  a post from a public group
+            'he': 'הצעה של פוסט מקבוצה ציבורית',
+            'ar': 'منشور مقترح من مجموعة عامة',
+            'id': 'Saran postingan dari grup publik',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Because you viewed a similar post (but not from a subscribed group)
+
+        // - Because you viewed a similar post:
+        // - but not from a subscribed group
         GF_BECAUSE_YOU_VIEWED_A_SIMILAR_POST: {
             'en': 'Because you viewed a similar post',
-            'pt': 'Porque viste uma publicação semelhante',
+            'pt': ['Porque viste uma publicação semelhante', 'Porque você visualizou uma publicação semelhante'],
             'de': 'Weil du dir einen ähnlichen Beitrag angesehen hast',
             'fr': 'Parce que vous avez consulté une publication similaire',
             'es': 'Porque has visto una publicación similar',
@@ -560,13 +622,16 @@
             'pl': 'Ponieważ wyświetliłaś podobny post',
             'nl': 'Because you viewed a similar post', // --- needs translation
             'he': 'בגלל שצפית בפוסט דומה',
+            'ar': 'لأنك شاهدت منشورًا مشابهًا',
+            'id': 'Because you viewed a similar post', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Because you viewed a similar group
+
+        // - Because you viewed a similar group:
         GF_BECAUSE_YOU_VIEWED_A_SIMILAR_GROUP: {
             'en': 'Because you viewed a similar group',
-            'pt': 'Porque viste um grupo semelhante',
+            'pt': ['Porque viste um grupo semelhante', 'Porque você visualizou um grupo semelhante'],
             'de': 'Weil du dir eine ähnliche Gruppe angesehen hast',
             'fr': 'Parce que vous avez consulté un groupe similaire',
             'es': 'Porque has visto un grupo similar',
@@ -577,10 +642,13 @@
             'pl': ['Ponieważ wyświetliłaś podobną grupę', 'Ponieważ wyświetliłeś podobną grupę'],
             'nl': 'Omdat je een vergelijkbare groep hebt bekeken',
             'he': 'בגלל שצפית בקבוצה דומה',
+            'ar': 'لأنك شاهدت مجموعة مشابهة',
+            'id': 'Karena Anda melihat grup serupa',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Based on your recent activity
+
+        // - Based on your recent activity:
         GF_YOUR_RECENT_ACTIVITY: {
             'en': 'Based on your recent activity',
             'pt': 'Com base na tua atividade recente',
@@ -594,10 +662,13 @@
             'pl': 'Na podstawie Twojej ostatniej aktywności',
             'nl': 'Gebaseerd op je recente activiteit',
             'he': 'Based on your recent activity', // --- needs translation
+            'ar': 'Based on your recent activity', // --- needs translation
+            'id': 'Based on your recent activity', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - From a group that your friend is in
+
+        // - From a group that your friend is in:
         GF_FROM_A_GROUP_YOUR_FRIEND_IS_IN: {
             'en': 'From a group that your friend is in',
             'pt': 'De um grupo em que o teu amigo/a é membro',
@@ -611,11 +682,14 @@
             'pl': 'From a group that your friend is in', // --- needs translation
             'nl': 'From a group that your friend is in', // --- needs translation
             'he': 'From a group that your friend is in', // --- needs translation
+            'ar': 'From a group that your friend is in', // --- needs translation
+            'id': 'From a group that your friend is in', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Friends' groups
-        // -- usually shows up at top of feed.
+
+        // - Friends' groups:
+        // - usually shows up at top of feed.
         GF_FRIENDS_GROUPS: {
             'en': 'Friends\' groups',
             'pt': 'Grupos dos amigos',
@@ -629,13 +703,16 @@
             'pl': 'Friends\' groups', // --- needs translation
             'nl': 'Friends\' groups', // --- needs translation
             'he': 'Friends\' groups', // --- needs translation
+            'ar': 'Friends\' groups', // --- needs translation
+            'id': 'Friends\' groups', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Popular near you / in your area
+
+        // - Popular near you / in your area:
         GF_POPULAR_NEAR_YOU: {
             'en': 'Popular near you',
-            'pt': 'Populares perto de ti',
+            'pt': ['Populares perto de ti', 'Populares perto de você'],
             'de': 'Beliebt in deiner Nähe',
             'fr': 'Popular near you', // --- needs translation
             'es': 'Popular near you', // --- needs translation
@@ -646,15 +723,18 @@
             'pl': 'Popular near you', // --- needs translation
             'nl': 'Popular near you', // --- needs translation
             'he': 'פופולרי באזורך',
+            'ar': 'الأكثر رواجًا بالجوار',
+            'id': 'Populer di Sekitar Anda',
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - Join Group
-        // -- two options for joining a group (includes sign up, subscribe)
-        // -- (bit like a catch-all rule - placed these to rules @ end of list.)
+
+        // - Join Group:
+        // - 2-3 options for joining a group (includes sign up, subscribe)
+        // - nb: this acts a like a catch-all rule - placed this rule at end of list.
         GF_JOIN_GROUP: {
             'en': ['Join Group', 'Join'],
-            'pt': ['Aderir ao grupo', 'Aderir'],
+            'pt': ['Aderir ao grupo', 'Aderir', 'Participar', 'Participar do grupo'],
             'de': ['Gruppe beitreten', 'Beitreten'],
             'fr': ['Rejoindre le groupe', 'Rejoindre'],
             'es': ['Unirte al grupo', 'Unirte', 'Unirse al grupo'],
@@ -663,14 +743,17 @@
             'it': ['Iscriviti al gruppo', 'Iscriviti'],
             'lv': ['Pievienoties grupai', 'Pievienoties'],
             'pl': ['Dołącz do grupy', 'Dołącz'],
-            'nl': 'Lid worden',
-            'he': ['הצטרף לקבוצה', 'הצטרפי', 'הצטרף'], // join group / join / join up
+            'nl': ['Lid worden'],
+            'he': ['הצטרף לקבוצה', 'הצטרפי', 'הצטרף'],
+            'ar': ['انضمام إلى المجموعة', 'انضمام'],
+            'id': ['Gabung Grup', 'Gabung'],
             'isSuggestion': true,
             'defaultEnabled': false,
         },
-        // - pause animated GIFs
-        // -- descriptive label in dialog box
-        // -- actual text to find is in PAUSE_ANIMATED_GIFS
+
+        // - pause animated GIFs:
+        // - descriptive label in dialog box
+        // - actual text to find is in PAUSE_ANIMATED_GIFS
         GF_ANIMATED_GIFS: {
             'en': 'Pause animated GIFs',
             'pt': 'Pausar GIFs animados',
@@ -684,13 +767,16 @@
             'pl': 'Wstrzymaj animowane GIF-y',
             'nl': 'Geanimeerde GIF\'s pauzeren',
             'he': 'השהה קובצי GIF מונפשים',
+            'ar': 'وقفة GIF المتحركة',
+            'id': 'Jeda GIF animasi',
             'isAnimatedGIF': true,
             'defaultEnabled': false,
         },
 
-        // *** Watch Videos Feed
+        // *** Watch Videos Feed ::
+
         // - Paid partnership
-        //   -- page you follow is "sponsoring" another page's video post (e.g. job)
+        // - page you follow is "sponsoring" another page's video post (e.g. job)
         VF_PAID_PARTNERSHIP_VIDEOS: {
             'en': 'Paid partnership',
             'pt': 'Parceria paga',
@@ -704,9 +790,13 @@
             'pl': 'Post sponsorowany', // (Sponsored post)
             'nl': 'Betaald partnerschap',
             'he': 'שותפות בתשלום',
+            'ar': 'شراكة مدفوعة',
+            'id': 'Paid partnership',
             'isSuggestion': true,
             'defaultEnabled': true,
         },
+
+        // - New(recent) videos:
         VF_NEW_FOR_YOU_VIDEOS: {
             'en': 'New for you',
             'pt': 'Novidades para ti',
@@ -720,9 +810,13 @@
             'pl': 'New for you', // --- needs translation
             'nl': 'Nieuwe video\'s voor jou',
             'he': 'New for you', // --- needs translation
+            'ar': 'New for you', // --- needs translation
+            'id': 'New for you', // --- needs translation
             'isSuggestion': true,
             'defaultEnabled': false,
         },
+
+        // - LIVE videos:
         VF_LIVE: {
             'en': 'LIVE',
             'pt': 'DIRETO',
@@ -736,12 +830,15 @@
             'pl': 'NA ŻYWO',
             'nl': 'LIVE',
             'he': 'שידור חי',
+            'ar': 'مباشر',
+            'id': 'LIVE', // --- needs translation
             'isSuggestion': false,
             'defaultEnabled': false,
         },
-        // - pause animated GIFs
-        // -- descriptive label in dialog box
-        // -- actual text to find is in PAUSE_ANIMATED_GIFS
+
+        // - pause animated GIFs:
+        // - descriptive label in dialog box
+        // - actual text to find is in PAUSE_ANIMATED_GIFS
         VF_ANIMATED_GIFS: {
             'en': 'Pause animated GIFs',
             'pt': 'Pausar GIFs animados',
@@ -755,12 +852,15 @@
             'pl': 'Wstrzymaj animowane GIF-y',
             'nl': 'Geanimeerde GIF\'s pauzeren',
             'he': 'השהה קובצי GIF מונפשים',
+            'ar': 'وقفة GIF المتحركة',
+            'id': 'Jeda GIF animasi',
             'isAnimatedGIF': true,
             'defaultEnabled': false,
         },
 
-        // *** Miscellaneous/Other items
-        // - info box - coronavirus
+        // *** Miscellaneous/Other items ::
+
+        // - Info box - coronavirus:
         OTHER_INFO_BOX_CORONAVIRUS: {
             'en': 'Coronavirus (information box)',
             'pt': 'Coronavírus (caixa de informações)',
@@ -774,11 +874,14 @@
             'pl': 'Koronawirus (skrzynka informacyjna)',
             'nl': 'Coronavirus (informatiebox)',
             'he': 'וירוס קורונה (תיבת מידע)',
+            'ar': 'فيروس كورونا (صندوق المعلومات)',
+            'id': 'Virus Corona (kotak informasi)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/', // -- the partial path name to match.
         },
-        // - info box - climate science
+
+        // - Info box - climate science
         OTHER_INFO_BOX_CLIMATE_SCIENCE: {
             'en': 'Climate Science (information box)',
             'pt': 'Ciência do Clima (caixa de informações)',
@@ -792,17 +895,20 @@
             'pl': 'Nauka o klimacie (skrzynka informacyjna)',
             'nl': 'Klimaatwetenschap (informatiebox)',
             'he': 'מדע האקלים (תיבת מידע)',
+            'ar': 'علوم المناخ (صندوق المعلومات)',
+            'id': 'Ilmu iklim (kotak informasi)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
         },
-        // - info box - subscribe
+
+        // - Info box - subscribe
         OTHER_INFO_BOX_SUBSCRIBE: {
             'en': 'Subscribe (information box)',
             'pt': 'Assine (caixa de informações)',
             'de': 'Abonnieren (Infobox)',
             'fr': 'S’abonner (encadré d\'information)',
-            'es': 'Suscribir  (cuadro de información)',
+            'es': 'Suscribir (cuadro de información)',
             'cs': 'Odebírat (informační box)',
             'vi': 'Đăng kí (hộp thông tin)',
             'it': 'Iscriviti (casella informativa)',
@@ -810,11 +916,15 @@
             'pl': 'Subskrybuj (pole informacyjne)',
             'nl': 'Abonneren (informatievak)',
             'he': 'הירשם (תיבת מידע)',
+            'ar': '(صندوق المعلومات) الاشتراك',
+            'id': 'Berlangganan (kotak informasi)',
             'isInfoBox': true,
             'defaultEnabled': false,
             'pathMatch': '/support/',
         },
-        // - nf - top of feed - "invitation to a survey"
+
+        // - "invitation to a survey":
+        // - appears above the feed
         OTHER_SURVEY: {
             'en': 'See Survey Details',
             'pt': 'Veja os detalhes da pesquisa',
@@ -828,11 +938,15 @@
             'pl': 'Zobacz szczegóły ankiety',
             'nl': 'Bekijk de details van het onderzoek',
             'he': 'ראה פרטי הסקר',
+            'ar': 'انظر تفاصيل الاستطلاع',
+            'id': 'Lihat Detail Survei',
             'pathMatch': '/survey/',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
         },
-        // - nf - top of feed - "fb 2 m"
+
+        // - "fb 2 m":
+        // - appears above the feed
         OTHER_FB_RENAMED: {
             'en': 'The Facebook company is now called Meta',
             'pt': 'A empresa do Facebook agora se chama Meta',
@@ -845,13 +959,16 @@
             'lv': 'Facebook uzņēmumu tagad sauc par Meta',
             'pl': 'Firma Facebook nazywa się teraz Meta',
             'nl': 'Het Facebook-bedrijf heet nu Meta',
-            'he': 'The Facebook company is now called Meta', // --- needs translation
-            //'urlMatch': 'about.facebook.com/meta/',
-            'urlMatch': 'facebook.com/meta/',
+            'he': 'לחברת פייסבוק קוראים כיום Meta',
+            'ar': 'شركة Facebook تسمى الآن Meta',
+            'id': 'Perusahaan Facebook sekarang bernama Meta',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
+            'urlMatch': 'facebook.com/meta/',
         },
-        // - nf - top of feed - "fb/meta updated privacy & terms" - won't shut up.
+
+        // - "fb/ meta updated privacy & terms":
+        // - appears above the feed
         OTHER_FB_PRIVACY_TERMS: {
             'en': 'We\'ve updated the Meta Privacy Policy and Terms of Service',
             'pt': 'Atualizámos a Política de Privacidade e os Termos de Serviço da Meta',
@@ -865,15 +982,17 @@
             'pl': 'Zaktualizowaliśmy Politykę prywatności Meta i Warunki korzystania z usługi Meta',
             'nl': 'We hebben het Meta Privacybeleid en de Servicevoorwaarden bijgewerkt',
             'he': 'עדכנו את מדיניות הפרטיות ותנאי השירות של Meta',
-            'pathMatch': '/privacy_policy_notice/',
+            'ar': 'لقد أجرينا تحديثات على سياسة خصوصية وشروط خدمة Meta',
+            'id': 'Kami telah memperbarui Meta Privacy Policy dan Terms of Service',
             'isTopOfNFFeed': true,
             'defaultEnabled': false,
+            'pathMatch': '/privacy_policy_notice/',
         },
 
-        // - animated gifs - pausing
-        // -- not to be used in dialog box
-        // -- actual text to find in [aria-label]
-        // -- used in the function pauseGIFAnimations()
+        // - animated gifs: - pausing
+        // - not to be used in dialog box
+        // - actual text to find in [aria-label]
+        // - used in the function pauseGIFAnimations()
         PAUSE_ANIMATED_GIFS: {
             'en': ['pause GIF', 'Pause GIF'],
             'pt': ['Pausar GIF'],
@@ -887,10 +1006,13 @@
             'pl': ['wstrzymaj GIF'],
             'nl': ['pauzeer GIF'],
             'he': ['השהיית GIF'],
+            'ar': ['إيقاف صورة GIF مؤقتًا'],
+            'id': ['Jeda GIF'],
         },
 
-        // *** Dialog box
-        // - Title
+        // *** Dialog box ::
+
+        // - CMF's dialog title:
         DLG_TITLE: {
             'en': 'Clean my feeds',
             'pt': 'Limpe meus feeds',
@@ -904,7 +1026,11 @@
             'pl': 'Wyczyść moje kanały',
             'nl': 'Schoon mijn feeds',
             'he': 'תנקה את הזנות שלי',
+            'ar': 'تنظيف خلاصاتي',
+            'id': 'Bersihkan feed saya',
         },
+
+        // - label for News Feed:
         DLG_NF: {
             'en': 'News Feed',
             'pt': 'Feed de notícias',
@@ -918,7 +1044,11 @@
             'pl': 'Kanał aktualności',
             'nl': 'Nieuwsfeed',
             'he': 'ניוז פיד',
+            'ar': 'الأخبار تغذية',
+            'id': 'Umpan Berita',
         },
+
+        // - label for Groups Feed:
         DLG_GF: {
             'en': 'Groups Feed',
             'pt': 'Feed de grupos',
@@ -932,7 +1062,11 @@
             'pl': 'Kanał grup',
             'nl': 'Groepsfeed',
             'he': 'פיד קבוצות',
+            'ar': 'مجموعات تغذية',
+            'id': 'Umpan Grup',
         },
+
+        // - label for Videos Feed:
         DLG_VF: {
             'en': 'Videos Feed',
             'pt': 'Feed de vídeos',
@@ -946,7 +1080,11 @@
             'pl': 'Kanał wideo',
             'nl': 'Videofeed',
             'he': 'צפה בפיד הסרטונים', // Watch the video feed
+            'ar': 'الفيديو تغذية',
+            'id': 'Umpan Video',
         },
+
+        // - label for Marketplace Feed:
         DLG_MP: {
             'en': 'Marketplace Feed',
             'pt': 'Feed de mercado',
@@ -960,7 +1098,11 @@
             'pl': 'Kanał Marketplace',
             'nl': 'Marktplaatsfeed',
             'he': 'זירת מסחר',
+            'ar': 'السوق تغذية',
+            'id': 'Umpan Marketplace',
         },
+
+        // - label for Miscellaneous/Other items:
         DLG_OTHER: {
             'en': 'Miscellaneous items',
             'pt': 'Itens miscelâneos',
@@ -974,7 +1116,11 @@
             'pl': 'Różne pozycje',
             'nl': 'Diversen',
             'he': 'פריטים שונים',
+            'ar': 'عناصر متنوعة',
+            'id': 'Barang lain-lain',
         },
+
+        // - text filter for News Feed:
         DLG_NF_BLOCK: {
             'en': 'News Feed - text filter',
             'pt': 'Feed de notícias - filtro de texto',
@@ -988,7 +1134,11 @@
             'pl': 'Kanał aktualności - filtr tekstu',
             'nl': 'Nieuwsfeed - tekstfilter',
             'he': 'מסנן טקסט - ניוז פיד',
+            'ar': 'موجز الأخبار - مرشح النص',
+            'id': 'Umpan Berita - filter teks',
         },
+
+        // - text filter for Groups Feed:
         DLG_GF_BLOCK: {
             'en': 'Groups Feed - text filter',
             'pt': 'Feed de grupos - filtro de texto',
@@ -1002,13 +1152,17 @@
             'pl': 'Kanał grup - filtr tekstu',
             'nl': 'Groepsfeed - tekstfilter',
             'he': 'פיד קבוצות - מסנן טקסט',
+            'ar': 'تغذية المجموعات - مرشح النص',
+            'id': 'Umpan Grup - filter teks',
         },
+
+        // - text filter for Vidoes Feed:
         DLG_VF_BLOCK: {
             'en': 'Videos Feed - text filter',
             'pt': 'Feed de vídeos - filtro de texto',
             'de': 'Video-Feed - Textfilter',
             'fr': 'Flux de vidéos - filtre de texte',
-            'es': 'Feed de videos - filtro de texto',
+            'es': 'Feed de videos: filtro de texto',
             'cs': 'Video kanál - textový filtr',
             'vi': 'Nguồn cấp dữ liệu video - bộ lọc văn bản',
             'it': 'Feed di video - filtro di testo',
@@ -1016,7 +1170,11 @@
             'pl': 'Kanał wideo - filtr tekstu',
             'nl': 'Videofeed - tekstfilter',
             'he': 'צפה בפיד סרטונים - מסנן טקסט',
+            'ar': 'تغذية الفيديو - مرشح النص',
+            'id': 'Umpan Video - filter teks',
         },
+
+        // - text filter - separate keywords with new line:
         DLG_BLOCK_NEW_LINE: {
             'en': '(separate words or phrases with a line break)',
             'pt': '(separe palavras ou frases com quebras de linha)',
@@ -1030,7 +1188,10 @@
             'pl': '(oddziel słowa lub wyrażenia z podziałem wiersza)',
             'nl': '(scheid woorden of woordgroepen met een regeleinde)',
             'he': '(הפרד מילים או ביטויים עם מעבר שורה)',
+            'ar': '(افصل الكلمات أو العبارات بفاصل أسطر)',
+            'id': '(pisahkan kata atau frasa dengan jeda baris)',
         },
+
         NF_BLOCKED_ENABLED: {
             'en': 'Enabled',
             'pt': 'Habilidoso',
@@ -1044,7 +1205,10 @@
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
             'he': 'מופעל',
+            'ar': 'تمكين',
+            'id': 'Diaktifkan',
         },
+
         GF_BLOCKED_ENABLED: {
             'en': 'Enabled',
             'pt': 'Habilidoso',
@@ -1058,7 +1222,10 @@
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
             'he': 'מופעל',
+            'ar': 'تمكين',
+            'id': 'Diaktifkan',
         },
+
         VF_BLOCKED_ENABLED: {
             'en': 'Enabled',
             'pt': 'Habilidoso',
@@ -1072,7 +1239,11 @@
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
             'he': 'מופעל',
+            'ar': 'تمكين',
+            'id': 'Diaktifkan',
         },
+
+        // - label for Verbosity
         DLG_VERBOSITY: {
             'en': 'Verbosity',
             'pt': 'Verbosidade',
@@ -1086,7 +1257,11 @@
             'pl': 'Włączone',
             'nl': 'Ingeschakeld',
             'he': 'ורבוסיטי',
+            'ar': 'الإسهاب',
+            'id': 'Verbositas',
         },
+
+        // - label for display a message if a post is hidden:
         DLG_VERBOSITY_MESSAGE: {
             'en': 'Display a message if a post is hidden',
             'pt': 'Exibir uma mensagem se uma postagem estiver oculta',
@@ -1100,7 +1275,11 @@
             'pl': 'Wyświetlaj wiadomość, jeśli wpis jest ukryty',
             'nl': 'Een bericht weergeven als een artikel verborgen is',
             'he': 'הצג הודעה אם פוסט מוסתר',
+            'ar': 'اعرض رسالة إذا كانت المشاركة مخفية',
+            'id': 'Tampilkan pesan jika kiriman disembunyikan',
         },
+
+        // - Verbosity - say nothing:
         VERBOSITY_NO_MESSAGE: {
             'en': 'no message',
             'pt': 'nenhuma mensagem',
@@ -1114,8 +1293,30 @@
             'pl': 'nie ma wiadomości',
             'nl': 'geen bericht',
             'he': 'אין הודעה',
+            'ar': 'لا توجد رسالة',
+            'id': 'tidak ada pesan',
         },
-        VERBOSITY_COLOUR: {
+
+        // - Verbosity - say something:
+        VERBOSITY_MESSAGE: {
+            'en': ['1 post hidden. Rule: ', ' posts hidden'],
+            'pt': ['1 postagem oculta. Regra: ', ' postagens ocultas'],
+            'de': ['1 Beitrag ausgeblendet. Regel: ', ' Beiträge versteckt'],
+            'fr': ['1 poste caché. Règle: ', ' posts cachés'],
+            'es': ['1 publicación oculta. Regla: ', ' publicaciones ocultas'],
+            'cs': ['1 příspěvek byl skryt. Pravidlo: ', ' příspěvků skrytých'],
+            'vi': ['1 bài bị ẩn. Quy tắc: ', ' bài viết ẩn'],
+            'it': ['1 post nascosto Regola: ', ' post nascosti'],
+            'lv': ['1 ziņa ir paslēpta. Noteikums: ', ' ziņas ir paslēptas'],
+            'pl': ['Ukryto 1 post. Reguła: ', ' posty ukryte'],
+            'nl': ['1 post verborgen. Regel: ', ' posts verborgen'],
+            'he': ['פוסט אחד מוסתר. כלל: ', ' פוסטים מוסתרים'],
+            'ar': ['مشاركة واحدة مخفية. حكم: ', ' المشاركات المخفية'],
+            'id': ['1 pos disembunyikan. Aturan: ', ' postingan disembunyikan'],
+        },
+
+        // - colour of the verbosity message:
+        VERBOSITY_MESSAGE_COLOUR: {
             'en': 'Text colour',
             'pt': 'Cor do texto',
             'de': 'Textfarbe',
@@ -1128,8 +1329,12 @@
             'pl': 'Kolor tekstu',
             'nl': 'Tekstkleur',
             'he': 'צבע טקסט',
+            'ar': 'لون النص',
+            'id': 'Warna teks',
         },
-        VERBOSITY_BG_COLOUR: {
+
+        // - background colour of the verbosity message:
+        VERBOSITY_MESSAGE_BG_COLOUR: {
             'en': 'Background colour',
             'pt': 'Cor de fundo',
             'de': 'Hintergrundfarbe',
@@ -1142,7 +1347,11 @@
             'pl': 'Kolor tła',
             'nl': 'Achtergrondkleur',
             'he': 'צבע הרקע',
+            'ar': 'لون الخلفية',
+            'id': 'Warna latar belakang',
         },
+
+        // - debugging - show "hidden" posts
         VERBOSITY_DEBUG: {
             'en': 'Highlight "hidden" posts',
             'pt': 'Destacar postagens "ocultas"',
@@ -1156,8 +1365,11 @@
             'pl': 'Wyróżnij „ukryte” posty',
             'nl': 'Highlight "verborgen" artikelen',
             'he': 'הדגש פוסטים "מוסתרים"',
+            'ar': 'تسليط الضوء على المشاركات "المخفية"',
+            'id': 'Sorot postingan "tersembunyi"',
         },
-        // CMF's customisations
+
+        // - customisation of cmf's dialog box:
         CMF_CUSTOMISATIONS: {
             'en': 'Customisations',
             'pt': 'Personalizações',
@@ -1171,7 +1383,11 @@
             'pl': 'Personalizacja',
             'nl': 'Personalisaties',
             'he': 'התאמות אישיות',
+            'ar': 'التخصيصات',
+            'id': 'Kustomisasi',
         },
+
+        // - label for location of button:
         CMF_BTN_LOCATION: {
             'en': 'Location of Clean my feeds\' button',
             'pt': 'Localização do botão Limpe meus feeds',
@@ -1185,7 +1401,11 @@
             'pl': 'Lokalizacja przycisku Wyczyść moje kanały',
             'nl': 'Locatie van de knop Mijn feeds opschonen',
             'he': 'תנקה את הזנות שלי מיקום הכפתור',
+            'ar': 'موقع الزر "تنظيف خلاصاتي"',
+            'id': 'Lokasi tombol Bersihkan umpan saya',
         },
+
+        // - location of button:
         CMF_BTN_OPTION: {
             'en': ['bottom left', 'top right'],
             'pt': ['inferior esquerdo', 'superior direito'],
@@ -1199,8 +1419,12 @@
             'pl': ['lewy dolny róg', 'prawy górny róg'],
             'nl': ['linksonder', 'rechtsboven'],
             'he': ['שמאל למטה', 'ימינה למעלה'],
+            'ar': ['أسفل اليسار', 'أعلى اليمين'],
+            'id': ['kiri bawah', 'kanan atas'],
             'defaultValue': 0,
         },
+
+        // - label for location of dialog:
         CMF_DIALOG_LOCATION: {
             'en': 'Location of Clean my feeds\' dialog box',
             'pt': 'Localização da caixa de diálogo Limpe meus feeds',
@@ -1214,7 +1438,11 @@
             'pl': 'Lokalizacja okna dialogowego Wyczyść moje kanały',
             'nl': 'Locatie van het dialoogvenster Mijn feeds opschonen',
             'he': 'מיקום תיבת הדו-שיח "נקה את ההזנות שלי"',
+            'ar': 'موقع مربع الحوار "تنظيف موجز ويباتي"',
+            'id': 'Lokasi kotak dialog Bersihkan umpan saya',
         },
+
+        // - location of dialog:
         CMF_DIALOG_OPTION: {
             'en': ['left side', 'right side'],
             'pt': ['lado esquerdo', 'lado direito'],
@@ -1228,8 +1456,12 @@
             'pl': ['lewa strona', 'prawa strona'],
             'nl': ['linkerkant', 'rechterkant'],
             'he': ['צד שמאל', 'צד ימין'],
+            'ar': ['الجهه اليسرى', 'الجانب الصحيح'],
+            'id': ['sisi kiri', 'sisi kanan'],
             'defaultValue': 0,
         },
+
+        // - label for dialog's border colour:
         CMF_BORDER_COLOUR: {
             'en': 'Border colour',
             'pt': 'Cor da borda',
@@ -1243,10 +1475,16 @@
             'pl': 'Kolor obramowania',
             'nl': 'Randkleur',
             'he': 'צבע גבול',
+            'ar': 'لون الحدود',
+            'id': 'Warna perbatasan',
         },
+
+        // - dialog's border colour:
         CMF_BORDER_OPTION: {
             'defaultValue': 'orangered',
         },
+
+        // - label for tips:
         DLG_TIPS: {
             'en': 'Tips',
             'pt': 'Pontas',
@@ -1260,7 +1498,11 @@
             'pl': 'Sugestia',
             'nl': 'Tips',
             'he': 'טיפים',
+            'ar': 'تلميحات',
+            'id': 'Tips',
         },
+
+        // - tip's content:
         DLG_TIPS_CONTENT: {
             'en': 'Clearing your browser\'s cache will reset your settings to their default values.\n\nUse the "Export" and "Import" buttons to backup and restore your customised settings.',
             'pt': 'Limpar o cache do navegador redefinirá suas configurações para os valores padrão.\n\nUse os botões "Exportar" e "Importar" para fazer backup e restaurar suas configurações personalizadas.',
@@ -1268,13 +1510,17 @@
             'fr': 'Vider le cache de votre navigateur réinitialisera vos paramètres à leurs valeurs par défaut.\n\nUtilisez les boutons "Exporter" et "Importer" pour sauvegarder et restaurer vos paramètres personnalisés.',
             'es': 'Limpiar la memoria caché de su navegador restablecerá la configuración a sus valores predeterminados.\n\nUtilice los botones "Exportar" e "Importar" para hacer una copia de seguridad y restaurar su configuración personalizada.',
             'cs': 'Vymazáním mezipaměti prohlížeče obnovíte výchozí hodnoty nastavení.\n\nPomocí tlačítek "Export" a "Import" zálohujte a obnovte svá přizpůsobená nastavení.',
-            'vi': 'Xóa bộ nhớ cache của trình duyệt sẽ đặt lại cài đặt của bạn về các giá trị mặc định của chúng. Sử dụng các nút "Xuất" và "Nhập" để sao lưu và khôi phục cài đặt tùy chỉnh của bạn.',
+            'vi': 'Xóa bộ nhớ cache của trình duyệt sẽ đặt lại cài đặt của bạn về các giá trị mặc định của chúng.\n\nSử dụng các nút "Xuất" và "Nhập" để sao lưu và khôi phục cài đặt tùy chỉnh của bạn.',
             'it': 'La cancellazione della cache del browser ripristinerà le impostazioni ai valori predefiniti.\n\nUtilizza i pulsanti "Esporta" e "Importa" per eseguire il backup e ripristinare le impostazioni personalizzate.',
             'lv': 'Iztīrot pārlūkprogrammas kešatmiņu, iestatījumi tiks atiestatīti uz noklusējuma vērtībām.\n\nIzmantojiet pogas "Eksportēt" un "Importēt", lai dublētu un atjaunotu pielāgotos iestatījumus.',
             'pl': 'Wyczyszczenie pamięci podręcznej przeglądarki spowoduje zresetowanie ustawień do wartości domyślnych.\n\nUżyj przycisków „Eksportuj” i „Importuj”, aby wykonać kopię zapasową i przywrócić niestandardowe ustawienia.',
             'nl': 'Als u de cache van uw browser wist, worden uw instellingen teruggezet naar hun standaardwaarden.\n\nGebruik de knoppen "Exporteren" en "Importeren" om een back-up te maken van uw aangepaste instellingen en deze te herstellen.',
             'he': 'מחיקת ההיסטורה בדפדפן תנקה את ההגדרות ותחזיר אותם לברירת המחדל.\n\nהשתמש ב"ייצא" ו"ייבא" כדי לגבות ולהחזיר את ההגדרות שלך',
+            'ar': 'سيؤدي مسح ذاكرة التخزين المؤقت للمتصفح إلى إعادة تعيين الإعدادات إلى قيمها الافتراضية.\n\nاستخدم الزرين "تصدير" و "استيراد" للنسخ الاحتياطي واستعادة الإعدادات المخصصة.',
+            'id': 'Menghapus cache browser Anda akan mengatur ulang pengaturan Anda ke nilai defaultnya.\n\nGunakan tombol "Ekspor" dan "Impor" untuk mencadangkan dan memulihkan pengaturan khusus Anda.',
         },
+
+        // - dailog's action buttons:
         DLG_BUTTONS: {
             'en': ['Save', 'Close', 'Export', 'Import'],
             'pt': ['Salvar', 'Fechar', 'Exportar', 'Importar'],
@@ -1288,8 +1534,11 @@
             'pl': ['Zapisz', 'Zamknij', 'Eksport', 'Import'],
             'nl': ['Opslaan', 'Sluiten', 'Exporteren', 'Importeren'],
             'he': ['שמור', 'סגור', 'ייצא', 'ייבא'],
+            'ar': ['حفظ', 'قريب', 'يصدّر', 'يستورد'],
+            'id': ['Simpan', 'Tutup', 'Ekspor', 'Impor'],
         },
     };
+
     // *** *** end of language components *** ***
 
     // - console log "label" - used for filtering console logs.
@@ -1357,7 +1606,8 @@
         groupsFeedQS: 'div[role="feed"] > div, div[role="feed"] > span',
         // - News and Groups feeds post's blocks (posts have 1-4 blocks)
         // -- used by the fn extractTextContent() and fn doMoppingInfoBox()
-        postBlocksQS: ':scope > div > div > div > div > div > div > div > div > div > div > div > div > div',
+        //postBlocksQS: ':scope > div > div > div > div > div > div > div > div > div > div > div > div > div',
+        postBlocksQS: '[role="article"] > div > div > div > div > div > div > div > div',
         // - groups feed intro posts - exclude procseed post(s)
         // --- two variations in stucture
         groupsNonFeedsQS: `div[role="main"] > div > div > div > div:nth-of-type(2) > div:not([${postAtt}]) ,
@@ -1667,7 +1917,7 @@
         else {
             // - cmfBtnLocation === "0"
             // - bottom left - has the buttons running down the side of the page (May 2022 ->).
-            css = 'position:fixed; bottom:3.2rem; left:1.1rem; display:none;';
+            css = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
         }
         styleEl.appendChild(document.createTextNode(`.fb-cmf-toggle {${css}}`));
         // btn - basic styling.
@@ -2135,11 +2385,11 @@
             s.appendChild(document.createTextNode(`${KeyWords.DLG_VERBOSITY_MESSAGE[VARS.language]}:`));
             fs.appendChild(s);
             fs.appendChild(createRB('VERBOSITY_LEVEL', '0', `<${KeyWords.VERBOSITY_NO_MESSAGE[VARS.language]}>`));
-            fs.appendChild(createRB('VERBOSITY_LEVEL', '1', `${KeyWords.VERBOSITY[VARS.language][0]}______`));
-            fs.appendChild(createRB('VERBOSITY_LEVEL', '2', `7${KeyWords.VERBOSITY[VARS.language][1]}`));
+            fs.appendChild(createRB('VERBOSITY_LEVEL', '1', `${KeyWords.VERBOSITY_MESSAGE[VARS.language][0]}______`));
+            fs.appendChild(createRB('VERBOSITY_LEVEL', '2', `7${KeyWords.VERBOSITY_MESSAGE[VARS.language][1]}`));
             fs.appendChild(document.createElement('br'));
-            fs.appendChild(createInput('VERBOSITY_COLOUR', `${KeyWords.VERBOSITY_COLOUR[VARS.language]}:`));
-            fs.appendChild(createInput('VERBOSITY_BG_COLOUR', `${KeyWords.VERBOSITY_BG_COLOUR[VARS.language]}:`));
+            fs.appendChild(createInput('VERBOSITY_COLOUR', `${KeyWords.VERBOSITY_MESSAGE_COLOUR[VARS.language]}:`));
+            fs.appendChild(createInput('VERBOSITY_BG_COLOUR', `${KeyWords.VERBOSITY_MESSAGE_BG_COLOUR[VARS.language]}:`));
             fs.appendChild(document.createElement('br'));
             fs.appendChild(createCB('cbVD', 'VERBOSITY_DEBUG'));
             cnt.appendChild(fs);
@@ -2409,7 +2659,7 @@
             VARS.isVF = false;
             VARS.isMP = false;
             VARS.isSF = false;
-            if (VARS.prevPathname === '/') {
+            if ((VARS.prevPathname === '/') || (VARS.prevPathname === '/home.php')) {
                 VARS.isNF = true;
                 VARS.QS = VARS.newsFeedQS;
                 VARS.suggestions = VARS.nfSuggestions;
@@ -2486,7 +2736,7 @@
                 VARS.mpType = 'commerce';
                 VARS.mpItem = false;
             }
-            else if (['/search/top/', '/search/top', '/search/posts/', '/search/posts'].indexOf(VARS.prevPathname) >= 0) {
+            else if (['/search/top/', '/search/top', '/search/posts/', '/search/posts', '/search/pages/'].indexOf(VARS.prevPathname) >= 0) {
                 // -- search results page : "All" and "Posts"
                 VARS.isSF = true;
                 VARS.QS = VARS.searchTopQS;
@@ -2566,6 +2816,7 @@
         //    selector: querySelector's query
         //    maxBlocks: max number of blocks to scan
         let blocks = Array.from(post.querySelectorAll(selector));
+        //console.info(log+'extractTC:', selector, maxBlocks, blocks, post);
         let arrayTextValues = [];
         if (blocks.length) {
             // - process first maxBlocks blocks
@@ -2612,7 +2863,7 @@
             if (VARS.echoCount < 2) {
                 // - 1 post hidden
                 let echoEl = document.createElement('p');
-                echoEl.textContent = KeyWords.VERBOSITY[VARS.language][0] + reason;
+                echoEl.textContent = KeyWords.VERBOSITY_MESSAGE[VARS.language][0] + reason;
                 // - add after post being hidden (issue with first post being hidden & fb updating it)
                 post = post.querySelector(':scope div:first-of-type');
                 if (post) {
@@ -2627,7 +2878,7 @@
             }
             else {
                 // - 2+ posts hidden
-                VARS.echoEl.textContent = VARS.echoCount + KeyWords.VERBOSITY[VARS.language][1];
+                VARS.echoEl.textContent = VARS.echoCount + KeyWords.VERBOSITY_MESSAGE[VARS.language][1];
                 return true;
             }
         }
@@ -2655,12 +2906,12 @@
         let daText = '';
 
         // -- try the Flex/Order structure
-        let elWrapper = post.querySelector( 'span > span > span > a[href^="?"] > span > span[class] > [style*="order"], ' +
-                                            'span > span > span > a[href="#"] > span > span[class] > [style*="order"], ' +
-                                            'span > span > span > a[href^="?"] > span > span[class] > [style*="display"], ' +
-                                            'span > span > span > a[href="#"] > span > span[class] > [style*="display"], '+
-                                            'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +
-                                            'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]');
+        let elWrapper = post.querySelector('span > span > span > a[href^="?"] > span > span[class] > [style*="order"], ' +
+            'span > span > span > a[href="#"] > span > span[class] > [style*="order"], ' +
+            'span > span > span > a[href^="?"] > span > span[class] > [style*="display"], ' +
+            'span > span > span > a[href="#"] > span > span[class] > [style*="display"], ' +
+            'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +
+            'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]');
         if (elWrapper) {
             // -- found a regular post structure
             let arrText = [];
@@ -2685,9 +2936,9 @@
         }
         else {
             // -- try the non-Flex/Order structure
-            elWrapper = post.querySelector( 'span > span > span > a[href^="?"] > span > span[class] > [class], ' +
-                                            'span > span > span > a[href="#"] > span > span[class] > [class], ' +
-                                            'span > span > span > a[href*="/ads/"] > span > span[class] > [class] ' );
+            elWrapper = post.querySelector('span > span > span > a[href^="?"] > span > span[class] > [class], ' +
+                'span > span > span > a[href="#"] > span > span[class] > [class], ' +
+                'span > span > span > a[href*="/ads/"] > span > span[class] > [class] ');
             if (elWrapper) {
                 // -- found a regular post structure (Portugese, Italian)
                 daText = '';
@@ -2787,7 +3038,7 @@
             let agifs = Array.from(post.querySelectorAll(`div[role="button"][aria-label="${ptext}"]:not([msz-gif])`));
             //console.info(log+"pausing:", caller, agifs.length, `div[role="button"][aria-label="${ptext}"]:not([msz-gif])`);
             if (agifs.length) {
-                agifs.forEach( gif => {
+                agifs.forEach(gif => {
                     // mimic user clicking on animating gif
                     // - which will trigger fb's click event.
                     gif.setAttribute(postAtt + '-gif', 'gifa');
@@ -2874,8 +3125,20 @@
             if (tcbox) {
                 if (!tcbox.classList.contains(VARS.cssHide)) {
                     let ptexts = scanTreeForText(tcbox);
-                    //console.info(`${log}tcbox scanTreeForText():`, VARS.language, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language], ptexts);
-                    let pidx = ptexts.indexOf(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]);
+                    let pidx = -1;
+                    if (Array.isArray(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language])) {
+                        for (let i = 0; i < KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language].length ; i++ ){
+                            // console.info(log + 'checking:',i, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language][i], ptexts);
+                            pidx = ptexts.indexOf(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language][i]);
+                            if (pidx > -1) {
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        pidx = ptexts.indexOf(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]);
+                    }
+                    //console.info(`${log}tcbox scanTreeForText():`, VARS.language, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language], ptexts, pidx);
                     if (pidx === 0 || pidx === 1) {
                         VARS.echoCount = 0;
                         hide(tcbox, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language]);
@@ -2891,6 +3154,7 @@
     }
     function doMoppingInfoBoxes(post) {
         // hide the info boxes that appear in posts having a certain topic.
+        //console.info(log+'mopping info:', VARS.infoBoxes, VARS.infoBoxesPaths, VARS.postBlocksQS);
         if ((VARS.infoBoxes) && (VARS.infoBoxesPaths.length > 0)) {
             let blocks; // - post's major blocks (sections)
             let minNumBlocks; // - minimum number of blocks in this post that has an info box
@@ -2941,9 +3205,11 @@
         let tabList = document.querySelectorAll('div[role="tablist"]:not([msz])');
         if (tabList.length) {
             let tabsText = scanTreeForText(tabList[0]);
+            //console.info(log + 'doMoppintTabList() : tabsText:', tabsText);
             if (tabsText.length) {
                 tabsText = tabsText.join(' | ');
                 let kwTexts = KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language].split('"');
+                //console.info(log + 'doMoppintTabList() : tabsText ~ kwTexts ~ indexOf():', tabsText, kwTexts, kwTexts.indexOf(tabsText));
                 if (kwTexts.indexOf(tabsText) >= 0) {
                     tabList[0].setAttribute(postAtt, tabList[0].innerHTML.length);
                     tabList[0].setAttribute(`${postAtt}-rule`, 'tablist');
@@ -3013,13 +3279,14 @@
     function doMopping() {
         // News/Groups/Videos/Search Feed
         let posts = Array.from(document.querySelectorAll(VARS.QS));
-        if (posts.length) {
+        if (posts.length > 0) {
             // - consecutive hidden posts count
             VARS.echoCount = 0;
             // - skip the first lot of posts already processed
+            let skipPostsCount = VARS.isSF ? 50 : VARS.inspectPostCount;
             let quickScanCount = 0;
-            if (posts.length - VARS.inspectPostCount > 0) {
-                quickScanCount = posts.length - VARS.inspectPostCount;
+            if (posts.length - skipPostsCount > 0) {
+                quickScanCount = posts.length - skipPostsCount;
                 for (let i = 0; i < quickScanCount; i++) {
                     if (posts[i].classList.contains(VARS.cssHide)) {
                         VARS.echoCount++;
