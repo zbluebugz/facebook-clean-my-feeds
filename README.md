@@ -4,7 +4,7 @@ Mainly hides sponsored and certain suggested posts in Facebook's News Feed, Grou
 
 Languages supported:
 - English
-- Português (Portugal)
+- Português (Portugal & Brazl)
 - Deutsch (Germany)
 - Français (France)
 - Espanol (Spain)
@@ -15,8 +15,10 @@ Languages supported:
 - Polski (Poland)
 - Nederlands (Netherlands)
 - עִברִית (Hebrew)
+- العربية (Arabic)
+- Bahasa Indonesia (Indonesia)
 
-JavaScript code to use with Tampermonkey, Greasemonkey, Violentmonkey, etc to hide certain parts of FB.
+JavaScript code to use with Tampermonkey, Greasemonkey, Violentmonkey, Firemonkey, etc to hide certain parts of FB.
 
 Files in the "greasyfork-release" folder are the versions released to [Greasy Fork](https://greasyfork.org/en/scripts/431970-facebook-ad-block-v3) for other people to use.
 
