@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.26
+// @version      3.27
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,9 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.27 :: September 2022
+        Updated detection code for: Sponsored posts
+        Keywords and code tweaks
     v3.26 :: August 2022
         Added Português (Brazil) - used in conjunction with Português (Portugal)
         Added لعربية  (Arabic)
@@ -400,7 +403,8 @@
         // -- those words must match fb's words.
         NF_TABLIST_STORIES_REELS_ROOMS: {
             'en': '"Stories | Reels | Rooms" tabs list box',
-            'pt': 'Caixa de listagem da guia "Histórias | Vídeos do Reels | Salas"',
+            //'pt': 'Caixa de listagem da guia "Histórias | Vídeos do Reels | Salas"',
+            'pt': ['Caixa de listagem da guia "Histórias | Vídeos do Reels | Salas"', 'Caixa de listagem da guia "Stories | Vídeos do Reels | Salas"'],
             'de': 'Listenfeld der Registerkarte "Stories | Reels | Rooms"',
             'fr': 'Zone de liste de l\'onglet "Stories | Reels | Salons"',
             'es': 'Cuadro de lista de la pestaña "Historias | Reels | Salas"',
@@ -2905,68 +2909,93 @@
 
         let daText = '';
 
-        // -- try the Flex/Order structure
-        let elWrapper = post.querySelector('span > span > span > a[href^="?"] > span > span[class] > [style*="order"], ' +
-            'span > span > span > a[href="#"] > span > span[class] > [style*="order"], ' +
-            'span > span > span > a[href^="?"] > span > span[class] > [style*="display"], ' +
-            'span > span > span > a[href="#"] > span > span[class] > [style*="display"], ' +
-            'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +
-            'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]');
-        if (elWrapper) {
-            // -- found a regular post structure
-            let arrText = [];
-            let cs = window.getComputedStyle(elWrapper);
-            // wrapper's order - set to 0 if has a value (css will ignore other values)
-            let wrapperOrder = (cs.order !== "") ? 0 : -1;
-            elWrapper.childNodes.forEach((cn) => {
-                if (cn.nodeType === Node.ELEMENT_NODE) {
-                    let cs = window.getComputedStyle(cn);
-                    if ((cs.position === 'relative') && (cs.display != 'none')) {
-                        arrText[parseInt(cs.order, 10)] = cn.textContent;
+        // -- which main method is FB using?
+        let elSVGsText = Array.from(document.querySelectorAll('div > svg > text[id]'));
+        if (elSVGsText.length > 0) {
+            // -- using the shadow-root method (Sept 2022)
+            // -- get the collection of "svg text" elements having the sponsored word
+            let arrElText = elSVGsText.filter(elText => elText.textContent === VARS.sponsoredWord);
+            if (arrElText.length > 0) {
+                // -- then see if the post has the "svg use" element
+                let postSVGUse = post.querySelector('span[id] > span > span > a[href] span > span > svg > use');
+                if (postSVGUse != null) {
+                    // -- then compare the post's svg use's href with the list of sponsored "svg text" elements ...
+                    let theID = postSVGUse.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+                    for (let elText of arrElText) {
+                        if (('#' + elText.id) == theID) {
+                            return true;
+                        }
                     }
                 }
-                else if ((cn.nodeType === Node.TEXT_NODE) && (wrapperOrder >= 0)) {
-                    let nv = cn.nodeValue.replaceAll(String.fromCharCode(10), '');
-                    if (nv.length > 0) {
-                        arrText[wrapperOrder] = nv;
-                    }
-                }
-            });
-            daText = checkText(arrText.join('')).trim();
+            }
+            return false;
         }
         else {
-            // -- try the non-Flex/Order structure
-            elWrapper = post.querySelector('span > span > span > a[href^="?"] > span > span[class] > [class], ' +
-                'span > span > span > a[href="#"] > span > span[class] > [class], ' +
-                'span > span > span > a[href*="/ads/"] > span > span[class] > [class] ');
+            // -- using the various obfuscating methods (pre Sept 2022)
+
+            // -- try the Flex/Order structure
+            let elWrapper = post.querySelector('span > span > span > a[href^="?"] > span > span[class] > [style*="order"], ' +
+                'span > span > span > a[href="#"] > span > span[class] > [style*="order"], ' +
+                'span > span > span > a[href^="?"] > span > span[class] > [style*="display"], ' +
+                'span > span > span > a[href="#"] > span > span[class] > [style*="display"], ' +
+                'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +
+                'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]');
             if (elWrapper) {
-                // -- found a regular post structure (Portugese, Italian)
-                daText = '';
+                // -- found a regular post structure
+                let arrText = [];
+                let cs = window.getComputedStyle(elWrapper);
+                // wrapper's order - set to 0 if has a value (css will ignore other values)
+                let wrapperOrder = (cs.order !== "") ? 0 : -1;
                 elWrapper.childNodes.forEach((cn) => {
                     if (cn.nodeType === Node.ELEMENT_NODE) {
                         let cs = window.getComputedStyle(cn);
                         if ((cs.position === 'relative') && (cs.display != 'none')) {
-                            daText += cn.textContent;
+                            arrText[parseInt(cs.order, 10)] = cn.textContent;
                         }
                     }
-                    else if (cn.nodeType === Node.TEXT_NODE) {
+                    else if ((cn.nodeType === Node.TEXT_NODE) && (wrapperOrder >= 0)) {
                         let nv = cn.nodeValue.replaceAll(String.fromCharCode(10), '');
                         if (nv.length > 0) {
-                            daText += nv;
+                            arrText[wrapperOrder] = nv;
                         }
                     }
                 });
-                daText = checkText(daText).trim();
+                daText = checkText(arrText.join('')).trim();
             }
             else {
-                // --- try the non-obfuscated structure
-                elWrapper = post.querySelector('span > span > span > a[href="#"] > span, span > span > span > a[href*="/ads/"] > span');
-                if (elWrapper && elWrapper.children.length == 0) {
-                    daText = elWrapper.textContent;
+                // -- try the non-Flex/Order structure
+                elWrapper = post.querySelector('span > span > span > a[href^="?"] > span > span[class] > [class], ' +
+                    'span > span > span > a[href="#"] > span > span[class] > [class], ' +
+                    'span > span > span > a[href*="/ads/"] > span > span[class] > [class] ');
+                if (elWrapper) {
+                    // -- found a regular post structure (Portugese, Italian)
+                    daText = '';
+                    elWrapper.childNodes.forEach((cn) => {
+                        if (cn.nodeType === Node.ELEMENT_NODE) {
+                            let cs = window.getComputedStyle(cn);
+                            if ((cs.position === 'relative') && (cs.display != 'none')) {
+                                daText += cn.textContent;
+                            }
+                        }
+                        else if (cn.nodeType === Node.TEXT_NODE) {
+                            let nv = cn.nodeValue.replaceAll(String.fromCharCode(10), '');
+                            if (nv.length > 0) {
+                                daText += nv;
+                            }
+                        }
+                    });
+                    daText = checkText(daText).trim();
+                }
+                else {
+                    // --- try the non-obfuscated structure
+                    elWrapper = post.querySelector('span > span > span > a[href="#"] > span, span > span > span > a[href*="/ads/"] > span');
+                    if (elWrapper && elWrapper.children.length == 0) {
+                        daText = elWrapper.textContent;
+                    }
                 }
             }
+            //console.info(`${log}is Sponsored post:`, `>${VARS.sponsoredWord}<`, `>${daText}<`, elWrapper);
         }
-        //console.info(`${log}is Sponsored post:`, `>${VARS.sponsoredWord}<`, `>${daText}<`, elWrapper);
         return ((daText.length > 0) && (VARS.sponsoredWord === daText));
 
     }
@@ -3127,7 +3156,7 @@
                     let ptexts = scanTreeForText(tcbox);
                     let pidx = -1;
                     if (Array.isArray(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language])) {
-                        for (let i = 0; i < KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language].length ; i++ ){
+                        for (let i = 0; i < KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language].length; i++) {
                             // console.info(log + 'checking:',i, KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language][i], ptexts);
                             pidx = ptexts.indexOf(KeyWords.NF_SUGGESTED_FOR_YOU[VARS.language][i]);
                             if (pidx > -1) {
@@ -3208,18 +3237,28 @@
             //console.info(log + 'doMoppintTabList() : tabsText:', tabsText);
             if (tabsText.length) {
                 tabsText = tabsText.join(' | ');
-                let kwTexts = KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language].split('"');
-                //console.info(log + 'doMoppintTabList() : tabsText ~ kwTexts ~ indexOf():', tabsText, kwTexts, kwTexts.indexOf(tabsText));
-                if (kwTexts.indexOf(tabsText) >= 0) {
-                    tabList[0].setAttribute(postAtt, tabList[0].innerHTML.length);
-                    tabList[0].setAttribute(`${postAtt}-rule`, 'tablist');
-                    let container = tabList[0].parentElement.parentElement.parentElement.parentElement;
-                    hide(container, '');
-                    VARS.tabListFoundCount++;
-                    if (VARS.tabListFoundCount > 5) {
-                        VARS.tabListFound = true;
-                    }
+                let kwTabList = [];
+                if (!Array.isArray(KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language])) {
+                    kwTabList.push(KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]);
                 }
+                else {
+                    kwTabList = [...KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]];
+                }
+                // console.info(log + 'kwTabList:', kwTabList);
+                kwTabList.forEach(keyWord => {
+                    let kwTexts = keyWord.split('"');
+                    //console.info(log + 'doMoppintTabList() : tabsText ~ kwTexts ~ indexOf():', tabsText, kwTexts, kwTexts.indexOf(tabsText));
+                    if (kwTexts.indexOf(tabsText) >= 0) {
+                        tabList[0].setAttribute(postAtt, tabList[0].innerHTML.length);
+                        tabList[0].setAttribute(`${postAtt}-rule`, 'tablist');
+                        let container = tabList[0].parentElement.parentElement.parentElement.parentElement;
+                        hide(container, '');
+                        VARS.tabListFoundCount++;
+                        if (VARS.tabListFoundCount > 5) {
+                            VARS.tabListFound = true;
+                        }
+                    }
+                });
             }
         }
     }
