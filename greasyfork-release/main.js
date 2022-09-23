@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      3.27
+// @version      3.28
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,8 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v3.28 :: September 2022
+        Code tweaks
     v3.27 :: September 2022
         Updated detection code for: Sponsored posts
         Keywords and code tweaks
@@ -2907,34 +2909,25 @@
         // -- find the block of code that usually holds the post's timestamp / sponsored text.
         // -- there are various methods for displaying sponsored text.
 
+        let elWrapper;
         let daText = '';
 
         // -- which main method is FB using?
-        let elSVGsText = Array.from(document.querySelectorAll('div > svg > text[id]'));
-        if (elSVGsText.length > 0) {
-            // -- using the shadow-root method (Sept 2022)
-            // -- get the collection of "svg text" elements having the sponsored word
-            let arrElText = elSVGsText.filter(elText => elText.textContent === VARS.sponsoredWord);
-            if (arrElText.length > 0) {
-                // -- then see if the post has the "svg use" element
-                let postSVGUse = post.querySelector('span[id] > span > span > a[href] span > span > svg > use');
-                if (postSVGUse != null) {
-                    // -- then compare the post's svg use's href with the list of sponsored "svg text" elements ...
-                    let theID = postSVGUse.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
-                    for (let elText of arrElText) {
-                        if (('#' + elText.id) == theID) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
+
+        // -- try the shadow-root
+        // -- querySelector cannot find attribute: xlink:href, so we trick it ..
+        // [*|href] will match both html href and svg xlink:href, then use :not([href]) to exclude html href
+        elWrapper = post.querySelector('span[id] > span > span > a[href] span > span > svg > use[*|href]:not([href]');
+        if (elWrapper !== null) {
+            let theID = elWrapper.getAttributeNS('http://www.w3.org/1999/xlink', 'href'); // the attribute has the "#" ...
+            let elSRB = document.querySelector('div > svg > ' + theID); // -- a Text element has the id field.
+            daText = elSRB.textContent;
         }
         else {
             // -- using the various obfuscating methods (pre Sept 2022)
 
             // -- try the Flex/Order structure
-            let elWrapper = post.querySelector('span > span > span > a[href^="?"] > span > span[class] > [style*="order"], ' +
+            elWrapper = post.querySelector('span > span > span > a[href^="?"] > span > span[class] > [style*="order"], ' +
                 'span > span > span > a[href="#"] > span > span[class] > [style*="order"], ' +
                 'span > span > span > a[href^="?"] > span > span[class] > [style*="display"], ' +
                 'span > span > span > a[href="#"] > span > span[class] > [style*="display"], ' +
@@ -2994,10 +2987,9 @@
                     }
                 }
             }
-            //console.info(`${log}is Sponsored post:`, `>${VARS.sponsoredWord}<`, `>${daText}<`, elWrapper);
         }
+        //console.info(`${log}is Sponsored post:`, `>${VARS.sponsoredWord}<`, `>${daText}<`, elWrapper);
         return ((daText.length > 0) && (VARS.sponsoredWord === daText));
-
     }
     function isSuggested(post, isRegularPost) {
         // - check for suggestions
