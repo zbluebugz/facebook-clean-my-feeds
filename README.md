@@ -2,7 +2,9 @@
 
 Mainly hides sponsored and certain suggested posts in Facebook's News Feed, Groups Feed, Watch (Videos) Feed and Marketplace. Also filters out posts and videos using partial text match.
 
-Languages supported:
+Works with most languages (i.e. not 100% reliant on dictionary of words)
+
+User-interface languages supported:
 - English
 - Português (Portugal & Brazl)
 - Deutsch (Germany)
@@ -17,18 +19,20 @@ Languages supported:
 - עִברִית (Hebrew)
 - العربية (Arabic)
 - Bahasa Indonesia (Indonesia)
+- 簡體中文 (Chinese Simplified)
+- 中國傳統的 (Chinese Traditional)
+- 日本 (Japan)
+- Sumoi (Finland)
+- Türkçe (Turkey)
 
 JavaScript code to use with Tampermonkey, Greasemonkey, Violentmonkey, Firemonkey, etc to hide certain parts of FB.
 
-Files in the "greasyfork-release" folder are the versions released to [Greasy Fork](https://greasyfork.org/en/scripts/431970-facebook-ad-block-v3) for other people to use.
+Files in the "greasyfork-release" folder are the versions released to [Greasy Fork](https://greasyfork.org/en/scripts/431970-fb-clean-my-feeds) for other people to use.
 
-Files in the "beta" folder are the versions still in development. Some of these don't hide items, instead they highlight which items that would be hidden when hide code is enabled.
+Files in the "beta" folder are the backup of previous versions
 
 Versions 3.01 - 3.11: 
 - Change options via the Script manager.
 
-Versions 3.12+: 
+Versions 3.12+ & 4.xx: 
 - Change options via the Clean My Feeds button in Facebook.
-
-
-NB: Original name: "facebook - ad block"
