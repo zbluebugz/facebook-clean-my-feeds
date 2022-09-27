@@ -36,3 +36,6 @@ Versions 3.01 - 3.11:
 
 Versions 3.12+ & 4.xx: 
 - Change options via the Clean My Feeds button in Facebook.
+
+
+Currently, mobile devices, Safari and Internet Explorer are not supported.
