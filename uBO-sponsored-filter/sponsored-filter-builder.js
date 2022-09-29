@@ -36,8 +36,8 @@
                     // - found sponsored (with 99% confidence)
                     let elPostSVGUse = document.querySelector(`span[id] > span > span > a[href] span > span > svg > use[*|href="#${el.id}"]:not([href])`);
                     if (elPostSVGUse) {
-                        // get width of the "USE" element
-                        let bcr = elPostSVGUse.getBoundingClientRect();
+                        // get width of the USE's grand parent element
+                        let bcr = elPostSVGUse.closest('span').getBoundingClientRect();
                         let intWidth = parseInt(bcr.width, 10); // rounds down
                         let roundWidth = Math.round(bcr.width); // rounds up/down
                         // console.info('----***:', daText, bcr.width, intWidth, roundWidth, elPostSVGUse);
