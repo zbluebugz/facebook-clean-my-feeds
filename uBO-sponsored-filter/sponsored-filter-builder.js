@@ -1,16 +1,25 @@
 (function () {
-    // - filter for uBO:
-    const filterComment = '! FB - sponsored text (Sept 2022)\n';
-    const filterBegin = `facebook.com##span[id="ssrb_feed_start"] ~ div > div > div:not([class]) span[id] > span > span > a[href="#"] span > span > svg:has(use[*|href]:not([href])):matches-css(width:/^(`;
-    const filterEnd = `)(\.|p)/i):upward(span[id="ssrb_feed_start"] ~ div > div):style(border:5px dotted pink !important; width:66% !important;)`;
 
     // - pattern for finding sponsored text - no numbers in text (with 2 exceptions - "1 hour" in hebrew and malaylam)
     const pattern = /([0-9]|[\u0660-\u0669]|שעה אחת|ഒരു മണിക്കൂർ|^$)/;
 
+    // post highlight
+    const highlight = ':style(border:5px dotted pink !important; width:66% !important;)';
+    const postContainer = 'span[id="ssrb_feed_start"] ~ div > div';
+    const upward = ':upward(span[id="ssrb_feed_start"] ~ div > div)';
+
+    // -- try various methods ..
+
+    // -- try shadow root method:
     // - get collection of shadow-root's reference elements
     let elementsSVGText = Array.from(document.querySelectorAll('div > svg > text[id]'));
-
     if (elementsSVGText.length > 0) {
+
+        // - filter for uBO:
+        const filterComment = '! FB - sponsored text (Sept 2022)\n';
+        const filterBegin = `facebook.com##${postContainer} > div:not([class]) span[id] > span > span > a[href="#"] span > span:has(:scope > svg > use[*|href]:not([href])):matches-css(width:/^(`;
+        const filterEnd = `)(\.|p)/i)${upward}${highlight}`;
+
         // - collection of widths for sponsored text
         let arWidths = [];
 
@@ -62,7 +71,19 @@
         }
     }
     else {
-        console.clear();
-        console.info('--- Unable to create a "Sponsored" filter for use in uBO. Are you sure that at least Sponsored Post is visible?');
+
+        // - simple / non-abfuscated
+        let elements = Array.from(document.querySelectorAll(postContainer + 'span > span > span > a[href="#"] > span, span > span > span > a[href*="/ads/"] > span'));
+        if (elements.length > 0) {
+            const filterComment = '! FB - sponsored text (non-obfuscated)\n';
+            const filter1 = `facebook.com##${postContainer} > div:not([class]) span > span > span > a[href="#"] > span${upward}${highlight}`;
+            const filter2 = `facebook.com##${postContainer} > div:not([class]) span > span > span > a[href*="/ads/"] > span${upward}${highlight}`;
+            console.clear();
+            console.info('Copy the following lines for the "Sponsored" filter for use in uBO:\n' + filterComment + filter1 + '\n' + filter2);
+        }
+        else {
+            console.clear();
+            console.info('--- Unable to create a "Sponsored" filter for use in uBO. Are you sure that at least Sponsored Post is visible?');
+        }
     }
 })();
