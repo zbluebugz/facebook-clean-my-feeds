@@ -8,5 +8,5 @@ How to use:
 - Press the key "F12" - this will bring up the DevTools window
 - Switch to the "Console" tab in the DevTools
 - Paste the contents of the "sponsored-filter-builder.js" file into the console.
-- If the code is successful in finding at least one sponsored post, it'll display the filter rule ...
+- If the code is successful in finding at least one sponsored post, it'll display the filter rule ... copy the results into uBlock Origin
 - If the code is _not_ successful in finding at least one sponsored post, then either the sponsored post is not there or it uses a different HTML pattern
