@@ -55,7 +55,8 @@
             arWidths.sort();
             let arWidthsRange = []
             arWidths.forEach((n) => {
-                arWidthsRange.push(n, n - 2, n - 1, n + 1, n + 2);
+                // arWidthsRange.push(n, n - 2, n - 1, n + 1, n + 2); // - the -2 & +2 tend to cause a few false-positives (dates formatted as: dd mmmmmm)
+                arWidthsRange.push(n, n - 1, n + 1);
             });
             arWidthsRange.sort();
             // console.info('--- ::', arWidthsRange);
