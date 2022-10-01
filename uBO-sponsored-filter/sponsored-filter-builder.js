@@ -8,10 +8,10 @@
     let rule1 = '';
     let rule2 = '';
 
-
     const postContainer = 'span[id="ssrb_feed_start"] ~ div > div';
     const upward = ':upward(span[id="ssrb_feed_start"] ~ div > div)';
     const highlight = ':style(border:5px dotted pink !important; width:66% !important;)';
+    const live = ':style(width:0 !important; height:0 !important;)';
 
 
     // -- try various methods ..
@@ -74,8 +74,7 @@
             const filterEnd = `)(\.|p)/i)${upward}`;
 
             rule1 = filterComment1 + filterBegin + uniqueWidths.join('|') + filterEnd + highlight;
-            rule2 = filterComment2 + filterBegin + uniqueWidths.join('|') + filterEnd;
-
+            rule2 = filterComment2 + filterBegin + uniqueWidths.join('|') + filterEnd + live;
         }
 
     }
@@ -94,8 +93,8 @@
             rule1 = filterComment1 + `facebook.com##${postContainer} > div:not([class]) span > span > span > a[href="#"] > span${upward}${highlight}\n` +
                                      `facebook.com##${postContainer} > div:not([class]) span > span > span > a[href*="/ads/"] > span${upward}${highlight}`;
             
-            rule2 = filterComment2 + `facebook.com##${postContainer} > div:not([class]) span > span > span > a[href="#"] > span${upward}\n` +
-                                     `facebook.com##${postContainer} > div:not([class]) span > span > span > a[href*="/ads/"] > span${upward}`;
+            rule2 = filterComment2 + `facebook.com##${postContainer} > div:not([class]) span > span > span > a[href="#"] > span${upward}${live}\n` +
+                                     `facebook.com##${postContainer} > div:not([class]) span > span > span > a[href*="/ads/"] > span${upward}${live}`;
 
         }
     }
@@ -122,5 +121,4 @@
         console.clear();
         console.info('--- Unable to create a "Sponsored" filter for use in uBO. Did you see one?');
     }
-
 })();
