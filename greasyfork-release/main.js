@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.03
+// @version      4.04
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,8 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.04 :: October 2022
+        Previous changes did not go through
     v4.03 :: October 2022
         Updated news feed selection code
     v4.02 :: September 2022
@@ -2903,7 +2905,7 @@
         }
 
         // -- news feed stream ...
-        let query = 'span[id="ssrb_feed_start"] ~ div > div';
+        let query = 'span[id="ssrb_feed_start"] ~ * h3 ~ div';
         let posts = Array.from(document.querySelectorAll(query));
         if (posts.length) {
             // console.info(log+'---> mopUpTheNewsFeed()');
