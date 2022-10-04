@@ -110,8 +110,9 @@
         logText += 'This rule is in TEST MODE - it highlights posts that met a certain criteria\n\n';
         logText += rule1 + '\n\n\n';
 
-        logText += 'This rule is in LIVE MODE - it hides the posts\n\n';
-        logText += rule2 + '\n\n';
+//         logText += 'This rule is in LIVE MODE - it hides the posts\n\n';
+//         logText += rule2 + '\n\n';
+        logText += 'See the instructions on how to enable this rule to hide the sponsored posts\n\n';
 
         console.clear();
         console.info(logText);
