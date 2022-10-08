@@ -1,17 +1,17 @@
 /// clean-my-feeds-filter.js
 /// alias cmfs.js
 (function () {
-    var target = '{{1}}'; 
-	var searchExpr = '{{2}}';
-	var replaceText = '{{3}}';
+    	let target = '{{1}}'; 
+	let searchExpr = '{{2}}';
+	let replaceText = '{{3}}';
     
-    const start = () => {
-        console.info(`---cmfs-scriptlet :: target: ${target}; searchExpr: ${searchExpr}; replaceText: ${replaceText}`);
-    };
+    	const start = () => {
+        	console.info(`---cmfs-scriptlet :: target: ${target}; searchExpr: ${searchExpr}; replaceText: ${replaceText}`);
+    	};
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', start, { once: true });
-    } else {
-        start();
-    }
+	if (document.readyState === 'loading') {
+        	document.addEventListener('DOMContentLoaded', start, { once: true });
+    	} else {
+        	start();
+    	}
 })();
