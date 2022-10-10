@@ -105,7 +105,7 @@
     if (methodFound > 0) {
 
         nfDummyRule = `facebook.com##${postContainer} > div div[data-0]:remove()`;
-        nfSuggestionRule = `facebook.com##${postContainer} > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span`;
+        nfSuggestionRule = `facebook.com##${postContainer} > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span:not(>*)`;
         gfSuggestionRule = `facebook.com##div[role="feed"] > div div[aria-posinset] > div > div > div > div > div > div > div > div:nth-of-type(2) h3 > div > span ~ span > span > div > div`;
         
         let logText = 'The following filter rules are for use in uBlock Origin.\n';
