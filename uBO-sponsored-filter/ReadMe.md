@@ -7,7 +7,7 @@
 - DO NOT move the mouse over the "Sponsored" post - if you did by mistake, refresh the page and look for a sponsored post
 - Press the key "__F12__" - this will bring up the __DevTools__ window
 - Switch to the "__Console__" tab in the __DevTools__
-- Paste the contents of the "__sponsored-filter-builder.js__" file into the __Console_
+- Paste the contents of the "__sponsored-filter-builder.js__" file into the __Console__
 - If the code is _successful_ in finding at least one sponsored post, it'll display a filter rule
 - If the code is _not_ successful in finding at least one sponsored post, then either the sponsored post is not there or it uses a different HTML pattern
  
