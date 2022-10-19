@@ -17,3 +17,8 @@
 - If only the sponsored posts have the pink border, then update the rule as follows:
   - replace __:style(border:5px dotted pink !important; width:66% !important;)__ with __:style(width:0 !important; height:0 !important;)__
 - If non-sponsored posts also have the pink border, then the rule needs to be "_tightened_" up - look for the 6 numbers in this format __(##|##|##|##|##|##)__ and remove the first number, save, reload FB, check again. If non-sponsored posts still being marked, remove the last number and try again. Repeat one more time for first and last, until the middle 2 numbers remain. When done, follow the previous step in updating the rule.
+
+#### Last updated ####
+2022-10-19
+- Updated Sponsored detection code
+- Disabled Suggested detection code - too many false-positive hits. Waiting for FB to give me some suggestions (in news feed).
