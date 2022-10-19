@@ -1,5 +1,7 @@
 (function () {
 
+    const ECHO_SUGGESTED = false; // 19/10/2022: disabled due to false-positive hits; waiting for fb to show me some in the news feed.
+
     // - pattern for finding sponsored text - no numbers in text (with 2 exceptions - "1 hour" in hebrew and malaylam)
     const pattern = /([0-9]|[\u0660-\u0669]|שעה אחת|ഒരു മണിക്കൂർ|^$)/;
 
@@ -38,7 +40,8 @@
                 //let 
                 if (!pattern.test(daText)) {
                     // - found sponsored (with 99% confidence)
-                    let elPostSVGUse = document.querySelector(`span[id] > span > span > a[href] span > span > svg > use[*|href="#${el.id}"]:not([href])`);
+                    //let elPostSVGUse = document.querySelector(`span[id] > span > span > a[href] span > span > svg > use[*|href="#${el.id}"]:not([href])`);
+                    let elPostSVGUse = document.querySelector(`svg > use[*|href="#${el.id}"]:not([href])`);
                     if (elPostSVGUse) {
                         // get width of the USE's grand parent element
                         let bcr = elPostSVGUse.closest('span').getBoundingClientRect();
@@ -125,6 +128,7 @@
         logText += 'This rule is in LIVE MODE - it hides the posts\n\n';
         logText += rule2 + '\n\n\n';
 
+        if (ECHO_SUGGESTED) {
         logText += 'News Feed Suggestions/Recommendations filter rule:\n';
         logText += '--------------------------------------------------\n\n';
         logText += '! FB - News Feed - remove "dummy" elements helper (helps the news feed suggestion/recommendation rule to work)\n';
@@ -138,7 +142,7 @@
         logText += gfSuggestionRule + ':upward(div[role="feed"] > div)' + highlight + '\n\n\n';
         logText += '! FB - Groups Feed - suggestions / recommendations (LIVE MODE)\n';
         logText += gfSuggestionRule + ':upward(div[role="feed"] > div)' + live + '\n\n\n';
-        
+        }
         console.clear();
         console.info(logText);
     }
