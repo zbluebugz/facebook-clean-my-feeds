@@ -3,16 +3,27 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.04
+// @version      4.05
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
-// @grant        none
+// @grant        GM.registerMenuCommand
 // @license      MIT; https://opensource.org/licenses/MIT
 // @icon64       data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAanSURBVHic5ZtpjBVFEMd/u8vthsCi3OcGxQWBKJdEDEbuDypqNoGgxGgkWY8YDaIYFQ9MRCOJJ0Y80JhgVESiRpCVIAYIIAQPCEoQZCOIyuIB667IPj/8qzPzhveANzPvvX3LP5nMVHdPT1V3VVd1zQwUNroDK4A/gB3A1Pyyk1sUA18DCeBPoBH4FxiRT6ZyiXFI+C+AFsAdRj+TSSfF8fOVM0y281LgP+BwHnnJC75FM15u9BtGV+aNoxyiG7L5H3xlNUgTyjLpqFBNYDJQBKw0ejDQE9gC1GbSUaEOwCQ7r0pDN2sUA78CDUCpla1G9j86X0zlEqOQsJ8b3RaoQ6pfkmlnhWgCQXW/Ag1CNXAi086awwCcVfbfATgOHEReAGAXMone+WIql7geCbvE6F5G7wjbYaGZQFDdpwToZo99aKHrbPQypAGT0t3QnFCBhN1idAlyff8A7cJ2WkgmEFT/S4GOwDoUB4RCIQ3ARDt/ZudL7LwyRdtmhzbAMZT5aWll5wGzgfb5YiqXmIDsf3ncHReKCQTtfwDwGtA1P+zkHi7708/o142ekvaOZoQeKPvzva8sVPYnFQrBBCahuN+pf+jsTyoUygDAWbr7KwF+J4vZnxZxdJICFYQLTxvQzi5h9HCgE7AGOGp9jgGOAJujs5kd3IAECHvc7+vrYSubY/QUo9+Ni9lsrAG97LwN+NiuDwPvAVuN/s7oA0avBjbatdvpQYHa/1w0S1Xo7W0CT7hZRj9o9IdGX4yX7FhodTnJ/jRlLzAerVGrkNC9UAS4A9gf10Oa8gDkJPvTlAdgIooAXf4/K/YflxssBc5HA9rdynoDQ+z6HGAYnu12N7qD0RUo5AXoAlxtbb9Cb4FaAFeidFid3XschccNMckQGpXIR0dxfemO+faMy9LUH0RvikIjqga0QdvS1sBHQH3E/hzGo3RX0P1twlsAy9BXIq8AQ2N6bsa4CM1EnHaZKvuzyZ4zMNB2P1onWhISURdBp0Fx2uHlKORdg+y8E7L5GmBnoG09ihFCyxHVBH6280jgRsKbwGbgJ7sOrvbj0aaohuTPXzoCfYHfyPNC+CrRF7tdvv7SZX/SHfdEYb7o9E3OqI9K9JHidBTnf5JhH+vsXAE8DexGUV8Rmvmu6PO3BNK07sCzaK9RHY39+DAUMZip8AB3kzyrK5Dwg43e4Gu7By18baIwmw2UIWa/yfC+3iiOqAfeRsGO20AttutHrG2RtTsUnd3s4ChnlqfrjFT5MWA9EvIJqxuFIkC/Royzui5Gb6WJwm1XS9PUlyFbriNZwEa8V18gt1aF8ggJ5G3KUYYogbbRTRLViMGKFHW98AboLxTBzQJewhuEJWiWHc7Fyxk8ihbaBPBCVriPAe5z1QmB8g7Aj1a3DAnm0Bt98Oy04QhwJ/L9RXgmMsPKE8B9WZMgIh5HDN4cKH8e792e+5StL/IY6fz7duApu95m9y3AG4xYEHdWuMbOPX1lA4Bb0QJ5O1rlxyIfXorc2jIkJGjnNw251aHoDdBtdp/LN7rnNDm4rO1io8fiqb6L2AaiPzwSSGNap+hnttXvRKGww5dWXp7inryhGH28vAjvD46jaKFz6vwmnrY5tZ+Xoq9StBdwqv9+oH4vWixTDVpeMA5vZQ8etSjEnYYXco+wut0km18nZN/HAn34w9xi9EvML9kRJXPMRbORANYCM4E+QKs07VuhAUkAN/nKL0T7eqc5y/G8yQe+dt2sbAtNAC52/5tT/6FRhgSsxEtqbMWb/XKU80ugMNjFADM42d+PxPMkecUwpIp1nJyPKwKuRTPnojj/sZHkNz/uReeLJO9MX7bymb6y66zsuZjkCI2VxkhVoHwQml0nbB3a269GMzmVZCHddz970dfeDm1RMOQixlo73Ppwb6zSZIh+xsQekhexCXgMrgeu4tQr9RiU0U1YWz/m4Q1gre9osPLpUYWIgipj4klf2RDEbCPwAMn5ueHI17+FNKEaeQCnJQtJxnD05Wc9cEGg7lO7Z0wMcoSGy8q4ha8EL4U1x9duLMoLpHKPjSheCIazg9A+P4EW2SC2W13f6GKEh0tQuK2rW63X4tn3Ajz3uAFtYEYD/dGq77d3kMbcgvdyZVGaZx9C4XDoFHgcuAsxudQYcWrpdn/zjT4MXHOavvqj312dBp1AW95UecqWVn8gRV0kZJoUbY9Uuw+KAdohM9hHcia3FsX7qdAK+fvgTNaTXsBipPqbifgqLA70AN5B+fhTpavjPhqBh+IW5n827DI9G+eQwwAAAABJRU5ErkJggg==
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.05 :: October 2022
+         Updated News Feed Sponsored rule
+        Updated News Feed suggestion/recommended rule
+        Revised Group suggestion/recommendation rule
+        Updated Chinese text
+        Revised information boxes rule
+        Revised hidden post info/note
+        Added Events you may like rule (News feed)
+        Added Menu item "Settings" to the User Script Commands menu
+        Added option to hide Stories (top of feed)
+        Added option to hide Create Room (top of feed)
     v4.04 :: October 2022
         Previous changes did not go through
     v4.03 :: October 2022
@@ -22,8 +33,8 @@
     v4.01 :: September 2022
         Major rewrite - less dependent on language text for matching component/posts
         Various Suggestions/Recommendations combined into one option
-        Added 簡體中文 (Chinese Simplified)
-        Added 中國傳統的 (Chinese Traditional)
+        Added 简体中文 (Chinese Simplified)
+        Added 繁體中文 (Chinese Traditional)
         Added 日本 (Japan)
         Added Sumoi (Finland)
         Added Türkçe (Turkey)
@@ -32,13 +43,13 @@
     v3.27 :: August 2022
         Keywords and code tweaks
 
-    Attribution: Mop & bucket icon:
+    Attribution: Mop & Bucket icon:
     - made by Freepik (https://www.freepik.com) @ flaticon (https://www.flaticon.com/)
     - page: https://www.flaticon.com/premium-icon/mop_2383747
 
 
     To do :::
-    - investigate Private/Icognito/InPrivate Mode (idb doesn't work in Firefox's private mode)
+    - investigate Private/Incognito/InPrivate Mode (idb doesn't work in Firefox's private mode)
     - review events in news feed
 
     Instructions on how to use:
@@ -48,6 +59,9 @@
     - It is recommended that you Export your settings every now and then.
     (When your browser flushes the cache, your settings are deleted).
 
+    Known issue(s):
+    - Settings are not saved in Private/Incognito mode when using Firefox
+    - For Chrome/Edge, only retained until Private/Incognito mode is closed
 
     \\\ --- No need to amend any of the code below --- ///
 */
@@ -110,8 +124,6 @@
         // *** News Feed ::
 
         // - "Stories | Reels | Rooms" tablist box
-        // - must have the "Stories | Reels | Rooms" pattern (including double quotes)
-        // -- those words must match fb's words.
         NF_TABLIST_STORIES_REELS_ROOMS: {
             'en': '"Stories | Reels | Rooms" tabs list box',
             'pt': 'Caixa de listagem da guia "Stories | Vídeos do Reels | Salas"',
@@ -134,7 +146,53 @@
             'tr': '"Hikayeler | Makaralar | Odalar" sekmeleri liste kutusu',
             'defaultEnabled': false
         },
-
+        // - "Stories" box (same area as the tablist box, standalone)
+        NF_STORIES: {
+            'en': 'Stories',
+            'pt': 'Stories',
+            'de': 'Stories',
+            'fr': 'Stories',
+            'es': 'Historias',
+            'cs': 'Stories',
+            'vi': 'Tin',
+            'it': 'Storie"',
+            'lv': 'Stāsti',
+            'pl': 'Relacje',
+            'nl': 'Verhalen',
+            'he': 'סטוריז ',
+            'ar': 'القصص',
+            'id': 'Cerita',
+            'zh-Hans': '故事',
+            'zh-Hant': '故事',
+            'ja': 'Stories',
+            'fi': 'Tarinat',
+            'tr': 'Hikayeler',
+            'defaultEnabled': false
+        },
+        // - "Create Room" - near top of News Feed, below "What's on your mind, <name>?"
+        NF_CREATE_ROOM: {
+            'en': 'Create room',
+            'pt': 'Criar sala',
+            'de': 'Room erstellen',
+            'fr': 'Créer un salon',
+            'es': 'Crear sala',
+            'cs': 'Vytvořit místnost',
+            'vi': 'Tạo phòng họp mặt',
+            'it': 'Crea stanza',
+            'lv': 'Izveidot istabu',
+            'pl': 'Utwórz pokój',
+            'nl': 'Ruimte maken',
+            // -- needs translation
+            'he': 'צור חדר',
+            'ar': 'إنشاء غرفة',
+            'id': 'Buat ruangan',
+            'zh-Hans': '创建房间',
+            'zh-Hant': '創建房間',
+            'ja': 'ルームを作成',
+            'fi': 'Luo huone',
+            'tr': 'Oda yarat',
+            'defaultEnabled': false
+        },
         // - People you may know:
         NF_PEOPLE_YOU_MAY_KNOW: {
             'en': 'People you may know',
@@ -279,6 +337,30 @@
             'fi': 'Kela/lyhyt video',
             'tr': 'makara/kısa video',
             'defaultEnabled': false
+        },
+
+        // - Events you may like:
+        NF_EVENTS_YOU_MAY_LIKE: {
+            'en': 'Events you may like',
+            'pt': 'Eventos que você pode gostar',
+            'de': 'Veranstaltungen, die Ihnen gefallen könnten',
+            'fr': 'Évènements qui pourraient vous intéresser',
+            'es': 'Eventos que te pueden gustar',
+            'cs': 'Události, které se vám mohou líbit',
+            'vi': 'Sự kiện bạn có thể thích',
+            'it': 'Eventi che potrebbero piacerti',
+            'lv': 'Notikumi, kas jums varētu patikt',
+            'pl': 'Wydarzenia, które mogą Ci się spodobać',
+            'nl': 'Evenementen die je misschien leuk vindt',
+            'he': 'אירועים שאולי תאהבו',
+            'ar': 'أحداث قد تعجبك',
+            'id': 'Acara yang mungkin Anda sukai',
+            'zh-Hans': '您可能喜欢的活动',
+            'zh-Hant': '你可能感興趣的活動',
+            'ja': 'リール/ショートビデオ',
+            'fi': 'Kela/lyhyt video',
+            'tr': 'makara/kısa video',
+            'defaultEnabled': false,
         },
 
         // - pause animated GIFs:
@@ -542,7 +624,7 @@
             'es': 'Feed de noticias',
             'cs': 'Informační kanál',
             'vi': 'Nguồn cấp tin tức',
-            'it': 'Feed di notizie', // news section
+            'it': 'Feed di notizie',
             'lv': 'Ziņu plūsma',
             'pl': 'Kanał aktualności',
             'nl': 'Nieuwsfeed',
@@ -899,7 +981,7 @@
             'zh-Hant': ['1 個貼文已隱藏。 規則： ', ' 個貼文已隱藏'],
             'ja': ['1 件の投稿が非表示になっています。 ルール： ', ' 件の投稿が非表示'],
             'fi': ['1 viesti piilotettu. Sääntö: ', ' viestiä piilotettu'],
-            'tr': ['1 gönderi gizlendi. Kural: ',' gönderi gizlendi'],
+            'tr': ['1 gönderi gizlendi. Kural: ', ' gönderi gizlendi'],
         },
 
         // - colour of the verbosity message:
@@ -1021,26 +1103,48 @@
 
         // - location of button:
         CMF_BTN_OPTION: {
-            'en': ['bottom left', 'top right'],
-            'pt': ['inferior esquerdo', 'superior direito'],
-            'de': ['unten links', 'oben rechts'],
-            'fr': ['en bas à gauche', 'en haut à droite'],
-            'es': ['abajo a la izquierda', 'arriba a la derecha'],
-            'cs': ['vlevo dole', 'vpravo nahoře'],
-            'vi': ['dưới cùng bên trái', 'trên cùng bên phải'],
-            'it': ['in basso a sinistra', 'in alto a destra'],
-            'lv': ['apakšējā kreisajā stūrī', 'augšējā labajā stūrī'],
-            'pl': ['lewy dolny róg', 'prawy górny róg'],
-            'nl': ['linksonder', 'rechtsboven'],
-            'he': ['שמאל למטה', 'ימינה למעלה'],
-            'ar': ['أسفل اليسار', 'أعلى اليمين'],
-            'id': ['kiri bawah', 'kanan atas'],
-            'zh-Hans': ['左下方', '右上'],
-            'zh-Hant': ['左下方', '右上方'],
-            'ja': ['下左', '上右'],
-            'fi': ['alhaalla vasemmalla', 'ylhäällä oikealle'],
-            'tr': ['sol alt', 'sağ üst'],
+            'en': ['bottom left', 'top right', 'disabled (use "Settings" in User Script Commands menu")'],
+            'pt': ['inferior esquerdo', 'superior direito', 'desativado (use "Configurações" no menu Comandos de script do usuário)'],
+            'de': ['unten links', 'oben rechts', 'deaktiviert (verwenden Sie "Einstellungen" im Menü "Benutzerskriptbefehle")'],
+            'fr': ['en bas à gauche', 'en haut à droite', 'désactivé (utilisez "Paramètres" dans le menu Commandes de script utilisateur)'],
+            'es': ['abajo a la izquierda', 'arriba a la derecha', 'deshabilitado (use "Configuración" en el menú Comandos de script de usuario)'],
+            'cs': ['vlevo dole', 'vpravo nahoře', 'zakázáno (použijte "Nastavení" v nabídce Příkazy uživatelského skriptu)'],
+            'vi': ['dưới cùng bên trái', 'trên cùng bên phải', 'bị vô hiệu hóa (sử dụng "Cài đặt" trong menu Lệnh của Tập lệnh Người dùng)'],
+            'it': ['in basso a sinistra', 'in alto a destra', 'disabilitato (usa "Impostazioni" nel menu Comandi script utente)'],
+            'lv': ['apakšējā kreisajā stūrī', 'augšējā labajā stūrī', 'atspējota (lietotāja skripta komandu izvēlnē izmantojiet sadaļu Iestatījumi)'],
+            'pl': ['lewy dolny róg', 'prawy górny róg', 'wyłączone (użyj "Ustawienia" w menu Polecenia skryptu użytkownika)'],
+            'nl': ['linksonder', 'rechtsboven', 'uitgeschakeld (gebruik "Instellingen" in het menu Gebruikersscriptopdrachten)'],
+            'he': ['שמאל למטה', 'ימינה למעלה', 'מושבת (השתמש ב"הגדרות" בתפריט פקודות סקריפט משתמש)'],
+            'ar': ['أسفل اليسار', 'أعلى اليمين', 'معطل (استخدم "الإعدادات" في قائمة أوامر البرنامج النصي للمستخدم)'],
+            'id': ['kiri bawah', 'kanan atas', 'dinonaktifkan (gunakan "Pengaturan" di menu Perintah Skrip Pengguna)'],
+            'zh-Hans': ['左下方', '右上', '禁用（使用用户脚本命令菜单中的“设置”）'],
+            'zh-Hant': ['左下方', '右上方', '禁用（在用户脚本命令菜单中使用“设置”）'],
+            'ja': ['下左', '上右', '無効 ([ユーザー スクリプト コマンド] メニューの [設定] を使用)'],
+            'fi': ['alhaalla vasemmalla', 'ylhäällä oikealle', 'pois käytöstä (käytä "Asetukset" User Script Commands -valikossa)'],
+            'tr': ['sol alt', 'sağ üst', 'devre dışı (Kullanıcı Komut Dosyası Komutları menüsünde "Ayarlar"ı kullanın)'],
             'defaultValue': '0',
+        },
+        // - script manager's menu item "Settings"
+        GM_MENU_SETTINGS: {
+            'en': 'Settings',
+            'pt': 'Configurações',
+            'de': 'Einstellungen',
+            'fr': 'Paramètres',
+            'es': 'Configuración',
+            'cs': 'Nastavení',
+            'vi': 'Cài đặt',
+            'it': 'Impostazioni',
+            'lv': 'Iestatījumi',
+            'pl': 'Ustawienia',
+            'nl': 'Instellingen',
+            'he': 'ההגדרות',
+            'ar': 'الإعدادات',
+            'id': 'Pengaturan',
+            'zh-Hans': '设置',
+            'zh-Hant': '設置',
+            'ja': '設定',
+            'fi': 'Asetukset',
+            'tr': 'Ayarlar',
         },
 
         // - label for location of dialog:
@@ -1088,6 +1192,54 @@
             'fi': ['vasen puoli', 'oikea puoli'],
             'tr': ['sol yan', 'sağ yan'],
             'defaultValue': '0',
+        },
+
+        // - colour of the dialog's text:
+        CMF_DIALOG_COLOUR: {
+            'en': 'Text colour',
+            'pt': 'Cor do texto',
+            'de': 'Textfarbe',
+            'fr': 'Couleur du texte',
+            'es': 'Color del texto',
+            'cs': 'Barva textu',
+            'vi': 'Màu văn bản',
+            'it': 'Colore del testo',
+            'lv': 'Teksta krāsa',
+            'pl': 'Kolor tekstu',
+            'nl': 'Tekstkleur',
+            'he': 'צבע טקסט',
+            'ar': 'لون النص',
+            'id': 'Warna teks',
+            'zh-Hans': '文字颜色',
+            'zh-Hant': '文字顏色',
+            'ja': 'テキストの色',
+            'fi': 'Tekstin väri',
+            'tr': 'Metin rengi',
+            'defaultValue': '',
+        },
+
+        // - background colour of the dialog:
+        CMF_DIALOG_BG_COLOUR: {
+            'en': 'Background colour',
+            'pt': 'Cor de fundo',
+            'de': 'Hintergrundfarbe',
+            'fr': 'Couleur de fond',
+            'es': 'Color de fondo',
+            'cs': 'Barva pozadí',
+            'vi': 'Màu nền',
+            'it': 'Colore di sfondo',
+            'lv': 'Fona krāsa',
+            'pl': 'Kolor tła',
+            'nl': 'Achtergrondkleur',
+            'he': 'צבע הרקע',
+            'ar': 'لون الخلفية',
+            'id': 'Warna latar belakang',
+            'zh-Hans': '背景颜色',
+            'zh-Hant': '背景顏色',
+            'ja': '背景色',
+            'fi': 'Taustaväri',
+            'tr': 'Arka plan rengi',
+            'defaultValue': '',
         },
 
         // - dialog's border colour:
@@ -1181,6 +1333,28 @@
             'ja': ['セーブ', 'クローズ', '輸出する', '輸入'],
             'fi': ['Tallentaa', 'Sulkea', 'Vienti', 'Tuonti'],
             'tr': ['Kaydetmek', 'Kapat', 'İhracat', 'İçe aktarmak'],
+        },
+
+        DLG_FB_COLOUR_HINT: {
+            'en': 'Leave blank to use FB\'s colour scheme',
+            'pt': 'Deixe em branco para usar o esquema de cores do FB',
+            'de': 'Leer lassen, um das Farbschema von FB zu verwenden',
+            'fr': 'Laissez vide pour utiliser le jeu de couleurs de FB',
+            'es': 'Dejar en blanco para usar el esquema de color de FB',
+            'cs': 'Chcete-li použít barevné schéma FB, nechte prázdné',
+            'vi': 'Để trống để sử dụng bảng màu của FB',
+            'it': 'Lascia vuoto per usare la combinazione di colori di FB',
+            'lv': 'Atstājiet tukšu, lai izmantotu FB krāsu shēmu',
+            'pl': 'Pozostaw puste, aby użyć schematu kolorów FB',
+            'nl': 'Laat leeg om het kleurenschema van FB te gebruiken',
+            'he': 'השאר ריק כדי להשתמש בערכת הצבעים של FB',
+            'ar': 'اتركه فارغًا لاستخدام نظام ألوان FB',
+            'id': 'Biarkan kosong untuk menggunakan skema warna FB',
+            'zh-Hans': '留空以使用 FB 的配色方案',
+            'zh-Hant': '留空以使用 FB 的配色方案',
+            'ja': '空白のままにすると、FB の配色が使用されます',
+            'fi': 'Jätä tyhjäksi käyttääksesi FB:n värimaailmaa',
+            'tr': 'FB\'un renk düzenini kullanmak için boş bırakın',
         }
     };
 
@@ -1205,9 +1379,11 @@
     DBVARS.ostore = createStore(DBVARS.DBName, DBVARS.DBStore);
 
     // - post attribute - hidden and reason
-    const postAtt = 'msz';
+    const postAtt = 'cmfr';
+    // - post attribute - consecutive posts id
+    const postAttCPID = 'cmfcpid';
     // - post property - # of light dusting duties done
-    const postPropDS = 'mszDusted';
+    const postPropDS = 'cmfrDusted';
 
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
@@ -1245,8 +1421,13 @@
 
         // element containing echo message about post(s) being hidden
         echoEl: null,
+        echoElFirstNote: null, // for restoring "missing" echo message
+        echoElCreatedCount: 0,
+        echoELFirstPost: null,
         // how many consecutive posts have been hidden
         echoCount: 0,
+        // current consecutive posts id
+        echoCPID: '',
 
         // StyleSheet Id
         cssID: '',
@@ -1279,20 +1460,34 @@
         }
     }
 
-    // -- posts CSS
+    // -- generate a string of random charcters
+    // -- used for css classes
+    // -- used for postAttCPID
+    function generateRandomString() {
+        // - generate random names (first letter must be an alphabet)
+        let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let str = chars.charAt(Math.floor(Math.random() * (chars.length - 10)));
+        for (let i = 0; i < 12; i++) {
+            str += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return str;
+    }
+
+    // function dumpCSS(daSheet) {
+    //     // -- for debugging purposes only
+    //     // -- print out the styles
+    //     let daRules = daSheet.cssRules;
+    //     console.info(log + 'dumping CSS:', daRules.length, daRules);
+    //     for (let i = 0; i < daRules.length; i++) {
+    //         console.info(daRules[i].cssText);
+    //     }
+    // }
+
+
+    // -- various CSS
     function addCSS() {
         // - CSS styles for hiding or highlighting the selected posts / element
-
-        function generateRandomName() {
-            // - generate random names (first letter must be an alphabet)
-            let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let str = chars.charAt(Math.floor(Math.random() * (chars.length - 10)));
-            for (let i = 0; i < 12; i++) {
-                str += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return str;
-        }
-
+        // - CSS styles for dialog panel
         let head, styleEl, css;
         let isNewCSS = true;
 
@@ -1306,17 +1501,17 @@
         }
         if (isNewCSS) {
             // - Create the new Stylesheet head + classnames
-            VARS.cssID = generateRandomName().toUpperCase();
+            VARS.cssID = generateRandomString().toUpperCase();
             head = document.getElementsByTagName('head')[0];
             styleEl = document.createElement('style');
             styleEl.setAttribute('type', 'text/css');
             styleEl.setAttribute('id', VARS.cssID);
 
             // - remember class names (for other functions to use)
-            VARS.cssHide = generateRandomName(); // - the parent element - hides the child element
-            VARS.cssHideEl = generateRandomName(); // - the elment to hide - where there's no child element
-            VARS.cssEcho = generateRandomName();
-
+            VARS.cssHide = generateRandomString(); // - the parent element - hides the nth level down element
+            VARS.cssHideEl = generateRandomString(); // - the element to hide - where there's no child element
+            VARS.cssHideStories = generateRandomString(); // - stories have an odd setup for hide & show with border ...
+            VARS.cssEcho = generateRandomString();
         }
         // - insert Styles (as classes)
         // - NF/GF/VF
@@ -1325,10 +1520,12 @@
             // -- not debugging, remove margins
             styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}, .${VARS.cssHideEl} {margin:0 !important;}`));
         }
-        // -- post wrapper's first child element (either div or span) (mainly for news, groups and video feeds posts)
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div, `));
+        // -- post wrapper (mainly for news, groups and video feeds posts)
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div:not([${postAtt}]) > div[class], `));
         styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > span, `));
-        // -- post wrapper's element (mainly for marketplace posts + some aside boxes)
+        // - stories, hide at upper level, border at few level down
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideStories}, `));
+        // -- non n/f & g/f wrappers (mainly for marketplace posts + some aside boxes)
         styleEl.appendChild(document.createTextNode(`.${VARS.cssHideEl} `));
         // -- which styles to apply?
         // --- (display:block is for those span tags being a nth-of-child element.)
@@ -1340,37 +1537,71 @@
         }
 
         // - echo msg
-        let colourMsg = (VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `;
-        colourMsg += (VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? '' : `background-color: ${VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `;
-        //css = `margin:1.35rem 0 !important; padding:0.75rem 1rem; border-radius:0.55rem; width:85%; font-style:italic; ${colourMsg}`;
-        css = `margin:1.35rem auto; padding:0.75rem 1rem; border-radius:0.55rem; width:85%; font-style:italic; ${colourMsg}`;
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > p {${css}}`));
+        css = `display:flex; margin:1.5rem auto; padding:0.5rem 1rem 0.5rem 0; border-radius:0.55rem; width:85%; font-style:italic; cursor:pointer; `;
+        css += (VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `;
+        css += `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `;
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] {${css}}`));
+        // - echo msg flex boxes
+        css = 'display:flex; align-items: center;';
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] > div {${css}}`));
+        css = 'flex:0 0 3rem; justify-content: center;';
+        // - echo msg's button
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] > div.wbtn {${css}}`));
+        // - ech msg's text
+        css = 'flex:1;';
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] > div.wtxt {${css}}`));
+        // - echo msg hover
+        css = `text-decoration: underline; background-color:white; color:black;`;
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}]:hover {${css}}`));
+        css = 'cursor:pointer;'
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] button:hover {${css}}`));
+        // - echo msg's button's default state
+        css = 'transform: rotate(180deg);transition: transform 0.15s linear;';
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] > div.wbtn > button {${css}}`));
 
-        // - toggle hidden post's visibility ...
-        // -- default (hide)
-        css = 'display:inline-block; padding:0 0.75rem 0 0;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > p > div {${css}}`));
-        css = 'transform: rotate(180deg);transition: transform 0.10s linear;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > p > div > button {${css}}`));
-        // -- visible
-        css = `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:1rem;margin-bottom:1rem !important;`;
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show {${css}}`));
+
+        // - flagged post's mini-tab
+        css = 'border-radius: 0.55rem 0.55rem 0 0; width:75%; margin:0 auto; padding: 0.45rem 0.25rem; font-style:italic; text-align:center; font-weight:normal;'
+        css += (VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `;
+        css += `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `;
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div:not([${postAtt}]) > div > div > h6[${postAtt}] {${css}}`));
+
+        // - reveal a hidden post
+        css = 'display:block !important; ';
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideStories}.show {${css}}`));
+        css += `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.2rem 0.1rem 0.1rem 0.1rem;`; // 4px
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > div:not([${postAtt}]) > div[class] {${css}}`));
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideStories}.show > div > div > div {${css}}`));
+
+        // - echo msg show state
         css = 'margin-top:0.5rem; margin-bottom:0.5rem;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > p {${css}}`));
-        css = 'display:block !important;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > div {${css}}`));
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > div[${postAtt}] {${css}}`));
+
+        // - echo msg's button show state
         css = 'transform: rotate(360deg);transition: transform 0.15s linear;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > p > div > button {${css}}`));
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > div[${postAtt}] > div.wbtn > button {${css}}`));
+        // - non-standard post's show state
+        css = `display: block; border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.1rem;`; // 4px
+        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideEl}.show {${css}}`));
 
         // - dailog box CSS
         // --- dialog box; position + flex
-        let bcolour = (VARS.Options.CMF_BORDER_COLOUR === '') ? KeyWords.CMF_BORDER_COLOUR.defaultValue : VARS.Options.CMF_BORDER_COLOUR;
+        let bColour = (VARS.Options.CMF_BORDER_COLOUR === '') ? KeyWords.CMF_BORDER_COLOUR.defaultValue : VARS.Options.CMF_BORDER_COLOUR;
+        let tColour = ((VARS.Options.CMF_DIALOG_COLOUR === '') || (VARS.Options.CMF_DIALOG_COLOUR === undefined)) ? 'var(--primary-text)' : VARS.Options.CMF_DIALOG_COLOUR;
         // - left / right done in fn addExtraCSS().
-        css = `position:fixed; top:0.15rem; bottom:0.15rem; display:flex; flex-direction:column; width:30rem; padding:0 1rem; z-index:5; color: var(--primary-text); border:2px solid ${bcolour}; border-radius:1rem; opacity:0;`;
+        css = `position:fixed; top:0.15rem; bottom:0.15rem; display:flex; flex-direction:column; max-width:40rem; padding:0 1rem; z-index:5; border:2px solid ${bColour}; border-radius:1rem; opacity:0;`;
+        css += `color:${tColour};`;
         styleEl.appendChild(document.createTextNode(`.fb-cmf {${css}}`));
-        styleEl.appendChild(document.createTextNode('.__fb-light-mode .fb-cmf {background-color:#fefefa !important;}'));
-        styleEl.appendChild(document.createTextNode('.__fb-dark-mode .fb-cmf {background-color:var(--web-wash) !important;}'));
-        styleEl.appendChild(document.createTextNode('.fb-cmf {background-color:floralwhite;}')); // -- fall back colour.
+        if ((VARS.Options.CMF_DIALOG_BG_COLOUR === '') || (VARS.Options.CMF_DIALOG_BG_COLOUR === undefined)) {
+            styleEl.appendChild(document.createTextNode('.__fb-light-mode .fb-cmf {background-color:#fefefa;}'));
+            styleEl.appendChild(document.createTextNode('.__fb-dark-mode .fb-cmf {background-color:var(--web-wash);}'));
+            styleEl.appendChild(document.createTextNode('.fb-cmf {background-color:floralwhite;}')); // -- fall back colour.
+        }
+        else {
+            styleEl.appendChild(document.createTextNode(`.fb-cmf {background-color:${VARS.Options.CMF_DIALOG_BG_COLOUR};}`));
+        }
+
+        //dumpCSS(sheet);
 
         // -- header
         css = 'display:flex; justify-content:space-between; direction:ltr;';
@@ -1399,7 +1630,7 @@
         styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-close button {${css}}`));
 
         // -- content
-        css = `flex:1; overflow:auto; border:2px double ${bcolour}; border-radius:0.5rem; color: var(--primary-text);`;
+        css = `flex:1; overflow:auto; border:2px double ${bColour}; border-radius:0.5rem; color: var(--primary-text);`;
         styleEl.appendChild(document.createTextNode(`.fb-cmf div.content {${css}}`));
         css = 'padding:1rem; text-align:center;';
         styleEl.appendChild(document.createTextNode(`.fb-cmf footer.buttons {${css}}`));
@@ -1457,7 +1688,7 @@
         // Grab the existing Stylesheet and amend it
         let styleEl = document.getElementById(VARS.cssID);
 
-        let css;
+        let css = '';
 
         // - button's location.
         if (cmfBtnLocation === '1') {
@@ -1469,26 +1700,33 @@
             }
             css = 'position:fixed; top:0.5rem; right:0.5rem; display:none;';
         }
+        else if (cmfBtnLocation === '2') {
+            // - disabled, use "Settings" in the user script menu.
+            // - no css
+            css = '';
+        }
         else {
-            // - cmfBtnLocation === "0"
             // - bottom left - has the buttons running down the side of the page (May 2022 ->).
+            // - cmfBtnLocation === "0"
             css = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
         }
-        styleEl.appendChild(document.createTextNode(`.fb-cmf-toggle {${css}}`));
-        // - btn - basic styling.
-        styleEl.appendChild(document.createTextNode('.fb-cmf-toggle {border-radius:0.3rem;}'));
-        styleEl.appendChild(document.createTextNode('.fb-cmf-toggle svg {height:32px; width:32px;}'))
-        styleEl.appendChild(document.createTextNode('.fb-cmf-toggle:hover {cursor:pointer;}'));
-        // - dialog box's display
-        styleEl.appendChild(document.createTextNode('.fb-cmf-toggle.show {display:block;}'));
+        if (css.length > 0) {
+            styleEl.appendChild(document.createTextNode(`.fb-cmf-toggle {${css}}`));
+            // - btn - basic styling.
+            styleEl.appendChild(document.createTextNode('.fb-cmf-toggle {border-radius:0.3rem;}'));
+            styleEl.appendChild(document.createTextNode('.fb-cmf-toggle svg {height:32px; width:32px;}'))
+            styleEl.appendChild(document.createTextNode('.fb-cmf-toggle:hover {cursor:pointer;}'));
+            // - dialog box's display
+            styleEl.appendChild(document.createTextNode('.fb-cmf-toggle.show {display:block;}'));
+        }
         // - dialog box's left/right + animated open/close behaviour
         if (cmfDlgLocation === '1') {
             // - right
-            css = 'right:0.35rem; transform:scale(0);transform-origin:top right;';
+            css = 'right:0.35rem; margin-left:1rem; transform:scale(0);transform-origin:top right;';
         }
         else {
-            // - cmfDlgLocation === '0' (left)
-            css = 'left:5rem; transform:scale(0);transform-origin:center center;';
+            // - left (cmfDlgLocation === '0')
+            css = 'left:4.25rem; margin-right:1rem; transform:scale(0);transform-origin:center center;';
         }
         styleEl.appendChild(document.createTextNode(`.fb-cmf {${css + 'transition:transform .45s ease, opacity .25s ease;'}}`));
     }
@@ -1515,9 +1753,6 @@
         }).catch((err) => {
             console.info(`${log}getuserOptions() > get() - Error:`, err);
         });
-        if (VARS.VERBOSITY_DEBUG) {
-            console.info(`${log}getUserOptions() > get(): ${result}`);
-        }
 
         // -- check that all variables exists ... if not, assign them default values..
         // -- Sponsored (always enabled)
@@ -1544,7 +1779,7 @@
         if ((result === 1) && VARS.Options.hasOwnProperty('NF_CREATE_ROOM')) {
             if (!VARS.Options.hasOwnProperty('NF_SUGGESTIONS')) {
                 VARS.Options.NF_SUGGESTIONS = (
-                    VARS.Options.NF_EVENTS_YOU_MAY_LIKE ||
+                    //VARS.Options.NF_EVENTS_YOU_MAY_LIKE ||
                     VARS.Options.NF_RECOMMENDED_POST ||
                     VARS.Options.NF_SUGGESTED_EVENTS ||
                     VARS.Options.NF_SUGGESTED_FOR_YOU ||
@@ -1573,6 +1808,9 @@
             }
             if (!VARS.Options.hasOwnProperty('VERBOSITY_MESSAGE_BG_COLOUR')) {
                 VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR = VARS.Options.VERBOSITY_BG_COLOUR;
+            }
+            if ((VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR === '') || (VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR === undefined)) {
+                VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR = KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue;
             }
             if (!VARS.Options.hasOwnProperty('CMF_DIALOG_OPTION')) {
                 VARS.Options.CMF_DIALOG_OPTION = VARS.Options.CMF_DIALOG_LOCATION;
@@ -1650,11 +1888,20 @@
             VARS.Options.VERBOSITY_MESSAGE_COLOUR = '';
             changed = true;
         }
-        if (!VARS.Options.hasOwnProperty('VERBOSITY_MESSAGE_BG_COLOUR')) {
+        // - nb: test conditions, undefined needs to be tested before using .toString(), otherwise JS complains...
+        if (
+            (!VARS.Options.hasOwnProperty('VERBOSITY_MESSAGE_BG_COLOUR')) ||
+            (VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR === undefined) ||
+            (VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR.toString() === '')
+        ) {
             VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR = KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue;
             changed = true;
         }
-        if (!VARS.Options.hasOwnProperty('VERBOSITY_DEBUG')) {
+        if (
+            (!VARS.Options.hasOwnProperty('VERBOSITY_DEBUG')) ||
+            (VARS.Options.VERBOSITY_DEBUG === undefined) ||
+            (VARS.Options.VERBOSITY_DEBUG.toString() === '')
+        ) {
             VARS.Options.VERBOSITY_DEBUG = KeyWords.VERBOSITY_DEBUG.defaultValue;
             changed = true;
         }
@@ -1667,14 +1914,27 @@
             VARS.Options.CMF_DIALOG_OPTION = KeyWords.CMF_DIALOG_OPTION.defaultValue;
             changed = true;
         }
-        if (!VARS.Options.hasOwnProperty('CMF_BORDER_COLOUR')) {
+        if (
+            (!VARS.Options.hasOwnProperty('CMF_BORDER_COLOUR')) ||
+            (VARS.Options.CMF_BORDER_COLOUR.toString() === undefined) ||
+            (VARS.Options.CMF_BORDER_COLOUR.toString() === '')
+        ) {
             VARS.Options.CMF_BORDER_COLOUR = KeyWords.CMF_BORDER_COLOUR.defaultValue;
             changed = true;
         }
-        else {
-            if (VARS.Options.CMF_BORDER_COLOUR === '') {
-                VARS.Options.CMF_BORDER_COLOUR = KeyWords.CMF_BORDER_COLOUR.defaultValue;
-            }
+        if (
+            (!VARS.Options.hasOwnProperty('CMF_DIALOG_COLOUR')) ||
+            (VARS.Options.CMF_DIALOG_COLOUR.toString() === undefined)
+        ) {
+            VARS.Options.CMF_DIALOG_COLOUR = KeyWords.CMF_DIALOG_COLOUR.defaultValue;
+            changed = true;
+        }
+        if (
+            (!VARS.Options.hasOwnProperty('CMF_DIALOG_BG_COLOUR')) ||
+            (VARS.Options.CMF_DIALOG_BG_COLOUR.toString() === undefined)
+        ) {
+            VARS.Options.CMF_DIALOG_BG_COLOUR = KeyWords.CMF_DIALOG_BG_COLOUR.defaultValue;
+            changed = true;
         }
 
         if (changed) {
@@ -1758,7 +2018,7 @@
                     label.appendChild(document.createTextNode(Array.from(KeyWords[cbKeyWord][VARS.language]).join(', ')));
                 }
             }
-            else if (['NF_SPONSORED', 'GF_SPONSORED', 'VF_SPONSORED'].indexOf(cbKeyWord) >= 0) {
+            else if (['NF_SPONSORED', 'GF_SPONSORED', 'VF_SPONSORED', 'MP_SPONSORED'].indexOf(cbKeyWord) >= 0) {
                 label.appendChild(document.createTextNode(KeyWords.SPONSORED[VARS.language]));
             }
             else {
@@ -1797,7 +2057,7 @@
         }
 
         function createDialog() {
-            let dlg, hdr, hdr1, hdr2, hdr3, htxt, stxt, btn, cnt, fs, l, s, ta, footer;
+            let dlg, hdr, hdr1, hdr2, hdr3, htxt, stxt, btn, cnt, fs, l, s, ta, footer, elHint;
 
             // -- wrapper
             dlg = document.createElement('div');
@@ -1829,7 +2089,7 @@
             hdr3.className = 'fb-cmf-close';
             btn = document.createElement('button');
             btn.textContent = 'X';
-            btn.addEventListener('click', toggleMD, false);
+            btn.addEventListener('click', toggleDialog, false);
             hdr3.appendChild(btn);
 
             hdr.appendChild(hdr1);
@@ -1970,8 +2230,9 @@
             l.textContent = KeyWords.CMF_CUSTOMISATIONS[VARS.language];
             fs.appendChild(l);
             fs.appendChild(document.createTextNode(`${KeyWords.CMF_BTN_LOCATION[VARS.language]}:`));
-            fs.appendChild(createRB('CMF_BTN_OPTION', '0', KeyWords.CMF_BTN_OPTION[VARS.language][0]));
-            fs.appendChild(createRB('CMF_BTN_OPTION', '1', KeyWords.CMF_BTN_OPTION[VARS.language][1]));
+            for (let i = 0; i < KeyWords.CMF_BTN_OPTION[VARS.language].length; i++) {
+                fs.appendChild(createRB('CMF_BTN_OPTION', i.toString(), KeyWords.CMF_BTN_OPTION[VARS.language][i]));
+            };
             fs.appendChild(document.createElement('br'));
             fs.appendChild(document.createTextNode(`${KeyWords.CMF_DIALOG_LOCATION[VARS.language]}:`));
             fs.appendChild(createRB('CMF_DIALOG_OPTION', '0', KeyWords.CMF_DIALOG_OPTION[VARS.language][0]));
@@ -2001,7 +2262,7 @@
             footer.appendChild(btn);
             btn = document.createElement('button');
             btn.textContent = KeyWords.DLG_BUTTONS[VARS.language][1]; // close
-            btn.addEventListener('click', toggleMD, false);
+            btn.addEventListener('click', toggleDialog, false);
             footer.appendChild(btn);
             btn = document.createElement('button');
             btn.textContent = KeyWords.DLG_BUTTONS[VARS.language][2]; // export
@@ -2129,14 +2390,17 @@
                 console.info(`${log}saveUserOptions() > set() -> Error:`, err);
                 return false;
             });
-            if (VARS.VERBOSITY_DEBUG) {
+            if (VARS.Options.VERBOSITY_DEBUG) {
                 console.info(`${log}saveUserOptions() > set() -> Saved:`, result);
             }
             // - update some variables.
             if (result) {
                 setFeedSettings(true);
+                // - rebuild css - need user's preferences to take effect
                 addCSS();
                 addExtraCSS();
+                // - check if toggling debugging mode.
+                toggleHiddenElements();
             }
             document.querySelector('#fbcmf .fileResults').textContent = `Last Saved @ ${(new Date).toTimeString().slice(0, 8)}`;
 
@@ -2146,7 +2410,7 @@
                 VARS.scanCountStart += 100;
                 VARS.scanCountMaxLoop += 100;
                 // -- "purge" notifications
-                let elements = Array.from(document.querySelectorAll(`p[${postAtt}]`));
+                let elements = Array.from(document.querySelectorAll(`div[${postAtt}="0"]`));
                 if (elements.length > 0) {
                     elements.forEach(el => {
                         let elParent = el.parentElement;
@@ -2239,10 +2503,10 @@
             reader.readAsText(file);
         }
 
-        function toggleMD() {
-            let dlg = document.getElementById('fbcmf');
-            dlg.classList.toggle('show');
-        }
+        // function toggleDialog() {
+        //     let dlg = document.getElementById('fbcmf');
+        //     dlg.classList.toggle('show');
+        // }
 
         function createToggleButton() {
             let btn = document.createElement('button');
@@ -2251,7 +2515,7 @@
             btn.title = KeyWords.DLG_TITLE[VARS.language];
             btn.className = 'fb-cmf-toggle fb-cmf-icon';
             document.body.appendChild(btn);
-            btn.addEventListener('click', toggleMD, false);
+            btn.addEventListener('click', toggleDialog, false);
             VARS.btnToggleEl = btn;
         }
 
@@ -2260,6 +2524,11 @@
     }
     // --- end of dailog code.
 
+    // -- toggleDialog() function placed here to allow a GM.registerMenuCommand(...) to call it.
+    function toggleDialog() {
+        let dlg = document.getElementById('fbcmf');
+        dlg.classList.toggle('show');
+    }
 
     // adjust some settings - if URL has changed.
     function setFeedSettings(forceUpdate = false) {
@@ -2354,7 +2623,7 @@
             // - reset consecutive count of hidden posts
             VARS.echoCount = 0;
 
-            // console.info(`${log}setFeedSettings() :: isAF: ${VARS.isAF}; isNF: ${VARS.isNF}; isGF: ${VARS.isGF}; isVF: ${VARS.isVF}; isMF: ${VARS.isMF}; isSF: ${VARS.isSF}`);
+            // console.info(`${log}setFeedSettings() :: isAF: ${VARS.isAF}; isNF: ${VARS.isNF}; isGF: ${VARS.isGF}; isVF: ${VARS.isVF}; isMF: ${VARS.isMF}; isSF: ${VARS.isSF};`);
             return true;
         }
         else {
@@ -2420,76 +2689,238 @@
         return arrayTextValues;
     }
 
-    function createHiddenNote(reason) {
-        let echoEl = document.createElement('p');
-        echoEl.setAttribute(postAtt, '');
+    function createInfoNote(reason) {
+        let echoEl = document.createElement('div');
+        echoEl.setAttribute(postAtt, '0');
+
         let echoBtnBox = document.createElement('div');
         let echoBtn = document.createElement('button');
+        let echoTxt = document.createElement('div');
+
         echoBtn.textContent = '___';
         echoBtn.addEventListener('click', togglePost, false);
         echoBtnBox.appendChild(echoBtn);
+        echoBtnBox.className = 'wbtn';
+
+        echoTxt.className = 'wtxt';
+        echoTxt.innerText = KeyWords.VERBOSITY_MESSAGE[VARS.language][0] + reason;
+
         echoEl.appendChild(echoBtnBox);
-        echoEl.appendChild(document.createTextNode(KeyWords.VERBOSITY_MESSAGE[VARS.language][0] + reason));
+        echoEl.appendChild(echoTxt);
+
+        echoEl.addEventListener('click', togglePost, false);
         return echoEl;
     }
+    function createMiniTab(reason) {
+        let elMiniTab = document.createElement('h6');
+        elMiniTab.setAttribute(postAtt, '0');
+        elMiniTab.innerText = reason;
+        return elMiniTab;
+    }
 
-    function hideFeature(post, reason) {
-        // hide something - keep it out of the regular feed stuff.
-        // - no counter
+
+    function hideFeature(post, reason, isStories = false) {
+        // -- hide something - keep it out of the regular feed stuff.
+        // -- no counter
         if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
-            let echoEl = createHiddenNote(reason);
+            let echoEl = createInfoNote(reason);
             let postFirstChild = post.querySelector(':scope > :first-child');
             if (postFirstChild) {
                 postFirstChild.before(echoEl);
             }
             else {
-                // post has been changed while being processed (very rare)
+                // -- post has been changed while being processed (very rare)
+            }
+            if (!isStories) {
+                post.classList.add(VARS.cssHide);
+                post.setAttribute(postAtt, reason);
+            }
+            else {
+                post.classList.add(VARS.cssHideStories);
+                post.setAttribute(postAtt, reason);
+            }
+            if (VARS.Options.VERBOSITY_DEBUG) {
+                post.classList.add('show');
             }
         }
-        post.classList.add(VARS.cssHide);
-        post.setAttribute(postAtt, reason);
     }
 
-    function togglePost(evBtn) {
-        let elPost = evBtn.target.parentElement.parentElement.closest('div');
-        elPost.classList.toggle('show');
+    function toggleHiddenElements() {
+        // -- for debugging mode
+        if (VARS.Options.VERBOSITY_DEBUG) {
+            // -- show the hidden posts (if not already showing)
+            let flaggedContainers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
+            if (flaggedContainers.length > 0) {
+                for (let elContainer of flaggedContainers) {
+                    if (elContainer.classList.contains('show') === false) {
+                        elContainer.classList.add('show');
+                    }
+                    let elNote = elContainer.querySelector(`:scope > div[${postAtt}]`);
+                    if (elNote) {
+                        elNote.classList.add('show');
+                    }
+                }
+            }
+            // -- show the hidden stories
+            let storiesBlock = Array.from(document.querySelectorAll('.' + VARS.cssHideStories));
+            if (storiesBlock.length > 0) {
+                for (let elStory of storiesBlock) {
+                    if (elStory.classList.contains('show') === false) {
+                        elStory.classList.add('show');
+                    }
+                }
+            }
+            // -- show the hidden blocks
+            let flaggedBlocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
+            if (flaggedBlocks.length > 0) {
+                for (let elBlock of flaggedBlocks) {
+                    if (elBlock.classList.contains('show') === false) {
+                        elBlock.classList.add('show');
+                    }
+                }
+            }
+        }
+        else {
+            // -- remove the .show class ...
+            // -- hide the posts
+            let flaggedContainers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
+            if (flaggedContainers.length > 0) {
+                for (let elContainer of flaggedContainers) {
+                    if (elContainer.classList.contains('show')) {
+                        elContainer.classList.remove('show');
+                    }
+                    let elNote = elContainer.querySelector(`:scope > div[${postAtt}]`);
+                    if (elNote) {
+                        elNote.classList.remove('show');
+                    }
+                }
+            }
+            // -- hide the hidden stories
+            let storiesBlock = Array.from(document.querySelectorAll('.' + VARS.cssHideStories));
+            if (storiesBlock.length > 0) {
+                for (let elStory of storiesBlock) {
+                    if (elStory.classList.contains('show')) {
+                        elStory.classList.remove('show');
+                    }
+                }
+            }
+            // -- hide the hidden blocks
+            let flaggedBlocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
+            if (flaggedBlocks.length > 0) {
+                for (let elBlock of flaggedBlocks) {
+                    if (elBlock.classList.contains('show')) {
+                        elBlock.classList.remove('show');
+                    }
+                }
+            }
+        }
+    }
+
+    function togglePost(ev) {
+        ev.stopPropagation();
+        // -- grab the note container
+        let elInfoNote = ev.target.closest(`div[${postAtt}]`);
+        // -- grab the note's parent (post)
+        let elPost = elInfoNote.parentElement;
+        // -- then toggle the 'show' class on the post.
+        if (!elInfoNote.hasAttribute(postAttCPID)) {
+            // -- single post being hidden
+            elPost.classList.toggle('show');
+        }
+        else {
+            // -- multiple consecutive posts being hidden
+            let cpid = elInfoNote.getAttribute(postAttCPID);
+            let flaggedPosts = Array.from(document.querySelectorAll(`[${postAttCPID}=${cpid}]`));
+            if (flaggedPosts.length > 0) {
+                // -- cannot use classList.toggle() while posts are still being loaded ...
+                if (elPost.classList.contains('show')) {
+                    for (let fPost of flaggedPosts) {
+                        fPost.classList.remove('show');
+                    }
+                }
+                else {
+                    for (let fPost of flaggedPosts) {
+                        fPost.classList.add('show');
+                    }
+                }
+            }
+        }
     }
 
     function hidePost(post, reason) {
         // -- hide something ..
         // -- if requested, echo post is hidden ..
-        if (VARS.isMF) {
-            // -- marketplace don't display a msg.
-        }
-        else if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
+        // -- (separate function for marketplace)
+        if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
             if (VARS.Options.VERBOSITY_LEVEL === '1') {
+                // - single post level
                 VARS.echoCount = 1;
             }
             if (VARS.echoCount < 2) {
                 // - 1 post hidden
-                let echoEl = createHiddenNote(reason);
+                VARS.echoEl = createInfoNote(reason);
+                VARS.echoElCreatedCount++;
+                if (VARS.echoElCreatedCount === 1) {
+                    VARS.echoElFirstNote = VARS.echoEl;
+                    VARS.echoELFirstPost = post;
+                }
+
                 let postFirstChild = post.querySelector(':scope > :first-child');
                 if (postFirstChild) {
-                    postFirstChild.before(echoEl);
-                    VARS.echoEl = echoEl;
+                    postFirstChild.before(VARS.echoEl);
                 }
                 else {
                     // post has been changed while being processed (very rare)
                 }
+                if (VARS.Options.VERBOSITY_LEVEL === '2') {
+                    // - multipe post level
+                    VARS.echoCPID = generateRandomString();
+                    VARS.echoEl.setAttribute(postAttCPID, VARS.echoCPID);
+                }
+                if (VARS.Options.VERBOSITY_DEBUG) {
+                    VARS.echoEl.parentElement.classList.add('show');
+                }
             }
             else {
                 // - 2+ posts hidden
-                VARS.echoEl.textContent = VARS.echoCount + KeyWords.VERBOSITY_MESSAGE[VARS.language][1];
+                VARS.echoEl.querySelector('.wtxt').textContent = VARS.echoCount + KeyWords.VERBOSITY_MESSAGE[VARS.language][1];
+            }
+            if (VARS.Options.VERBOSITY_LEVEL === '2') {
+                // - multiple post level - flag it as part of a consecutive group
+                post.setAttribute(postAttCPID, VARS.echoCPID);
+            }
+            let elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
+            if (elTabSpot) {
+                elTabSpot.before(createMiniTab(reason));
             }
         }
-        post.classList.add(VARS.cssHide);
+        // - flag the post
         post.setAttribute(postAtt, reason);
+        post.classList.add(VARS.cssHide);
+
+        // - is this consecutive group being told to be shown or are we in debugging mode?
+        if ((VARS.echoEl.parentElement) && (VARS.echoEl.parentElement.classList.contains('show'))) {
+            post.classList.add('show');
+        }
+
+        if (VARS.echoElCreatedCount < 10) {
+            // -- check if the first note went missing ...
+            let elFirstNote = VARS.echoELFirstPost.querySelector(`div[${postAtt}]`);
+            if (!elFirstNote) {
+                let elFirstNote = VARS.echoElFirstNote.cloneNode(true); // include child nodes
+                elFirstNote.addEventListener('click', togglePost, false);
+                VARS.echoELFirstPost.querySelector(':scope > :first-child').before(elFirstNote);
+            }
+        }
+        //console.info(log+'hidePost():', VARS.echoElFirst);
     }
 
-    function hideBlock(block, reason) {
-        //console.info(log + 'hiding block:', reason, block);
-        block.classList.add(VARS.cssHide);
-        block.setAttribute(postAtt, reason);
+    function hideBlock(block, link, reason) {
+        block.classList.add(VARS.cssHideEl);
+        link.setAttribute(postAtt, reason);
+        if (VARS.Options.VERBOSITY_DEBUG) {
+            VARS.block.classList.add('show');
+        }
     }
 
     function cleanText(text) {
@@ -2511,7 +2942,13 @@
         // -- try the shadow-root
         // -- querySelector cannot find attribute "xlink:href", so we trick it ..
         // -- [*|href] will match both html href and svg xlink:href, then use :not([href]) to exclude html href
-        let elWrapper = post.querySelector('span[id] > span > span > a[href] span > span > svg > use[*|href]:not([href]');
+        let elWrapper;
+        // Early Oct 2022
+        elWrapper = post.querySelector('span[id] > span > span > a[href] span > span > svg > use[*|href]:not([href])');
+        if (elWrapper === null) {
+            // Mid Oct 2022
+            elWrapper = post.querySelector('div > div > div > svg > use[*|href]:not([href])');
+        }
         if (elWrapper !== null) {
             let theID = elWrapper.getAttributeNS('http://www.w3.org/1999/xlink', 'href'); // the attribute has the "#" ...
             let elSRB = document.querySelector('div > svg > ' + theID); // -- a TEXT element has the ID field.
@@ -2624,9 +3061,18 @@
 
     function nf_isSuggested(post) {
         // - check if any of the suggestions / recommendations type post
+        // -- nb: <name> commented / <name> replied to a commment posts have similar structure - but have extra elements ...
+        // -- nb: x people recently commented posts have similar structure - suggested/recommended posts don't start with a number ...
         let query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
-        let suggestion = querySelectorAllNoChildren(post, query, 0);
-        return (suggestion.length === 0) ? '' : KeyWords.NF_SUGGESTIONS[VARS.language];
+        let elSuggestion = querySelectorAllNoChildren(post, query, 1);
+        if (elSuggestion.length > 0) {
+            const pattern = /([0-9]|[\u0660-\u0669])/;
+            let firstCharacter = cleanText(elSuggestion[0].textContent).trim().slice(0, 1);
+            return (pattern.test(firstCharacter)) ? '' : KeyWords.NF_SUGGESTIONS[VARS.language];
+        }
+        else {
+            return '';
+        }
     }
 
     function gf_isSuggested(post) {
@@ -2635,13 +3081,22 @@
         // -- (query bypasses the dusty elements)
         let blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div';
         let blocks = post.querySelectorAll(blocksQuery);
+        let results = '';
         if (blocks.length > 0) {
             let suggIcon = blocks[0].querySelector('i[data-visualcompletion="css-img"][style]');
-            return (suggIcon === null) ? '' : KeyWords.GF_SUGGESTIONS[VARS.language];
+            if (suggIcon) {
+                results = KeyWords.GF_SUGGESTIONS[VARS.language];
+            }
+            else {
+                // -- a sneaky group post without the standard suggestion/recommendation header
+                let query = 'h3 > div > span ~ span > span > div > div';
+                let sneakyGroupPost = blocks[1].querySelector(query);
+                if (sneakyGroupPost) {
+                    results = KeyWords.GF_SUGGESTIONS[VARS.language];
+                }
+            }
         }
-        else {
-            return '';
-        }
+        return results;
     }
 
     function nf_isPeopleYouMayKnow(post) {
@@ -2682,6 +3137,13 @@
         let query = 'a[href*="/reel/"]';
         let rsv = Array.from(post.querySelectorAll(query));
         return (rsv.length !== 1) ? '' : KeyWords.NF_SHORT_REEL_VIDEO[VARS.language];
+    }
+
+    function nf_isEventsYouMayLike(post) {
+        // -- events you may linke posts
+        let query = ':scope > div:nth-of-type(2) > div > div >  h3 > span';
+        let events = querySelectorAllNoChildren(post, query, 0);
+        return (events.length === 0) ? '' : KeyWords.NF_EVENTS_YOU_MAY_LIKE[VARS.language];
     }
 
     function nf_isBlockedText(post) {
@@ -2740,17 +3202,17 @@
     }
     function vf_scrubSponsoredBlock(post) {
         // - some videos have a sponsored block beneath the video block/section
-        let query = ':scope > div > div > div > div > div:nth-of-type(2) > div:nth-of-type(3) a';
+        let query = `:scope > div > div > div > div > div:nth-of-type(2) > div:nth-of-type(3) a:not([${postAtt}])`;
         let element = post.querySelector(query);
         if (element !== null) {
             element = element.closest('div');
-            hideBlock(element, KeyWords.SPONSORED[VARS.language]);
+            hideBlock(element, element.querySelector('a'), KeyWords.SPONSORED[VARS.language]);
         }
     }
 
     function swatTheMosquitos(post) {
         // - scan the post for any gifs that is animating (pausing them once)
-        let query = 'div[role="button"][aria-label*="GIF"]:not([msz]) > i:not([data-visualcompletion])';
+        let query = `div[role="button"][aria-label*="GIF"]:not([${postAtt}]) > i:not([data-visualcompletion])`;
         let agifs = Array.from(post.querySelectorAll(query));
         // console.info('pausing, agifs::', agifs);
         if (agifs.length > 0) {
@@ -2787,6 +3249,30 @@
             }
         }
     }
+    function nf_scrubTheStories() {
+        // - stories only
+        // -- appears at top of NF
+        //let query = `span[id="ssrb_stories_start"] ~ div > div:not([${postAtt}]) a[href*="/stories/create"]`;
+        let query = `span[id="ssrb_stories_start"] ~ div:not([${postAtt}]) a[href*="/stories/create"]`;
+        let stories = document.querySelector(query);
+        if (stories !== null) {
+            // - parent is a few levels up.
+            //let par = stories.closest('span[id] ~ div > div');
+            let par = stories.closest('span[id] ~ div');
+            hideFeature(par, KeyWords.NF_STORIES[VARS.language], true);
+        }
+    }
+    function nf_scrubTheRoom() {
+        // - Create Room
+        // -- appears below "What's on your mind, <name>?" box at top of News Feed
+        let query = `div${postAtt} > div > div:not([${postAtt}]) > div[data-visualcompletion="ignore-dynamic"] div > i[data-visualcompletion="css-img"]`
+        let createRoom = document.querySelector(query);
+        if (createRoom !== null) {
+            let par = createRoom.closest('div > div > div > div[data-visualcompletion="ignore-dynamic"]');
+            par = par.parentElement.parentElement;
+            hideFeature(par, KeyWords.NF_CREATE_ROOM[VARS.language]);
+        }
+    }
 
     function nf_cleanTheConsoleTable(item = 'Sponsored') {
         // -- mopping up the news feed aside panel. item values: Sponosored | Suggestions
@@ -2809,8 +3295,9 @@
                     if (elItem.innerHTML.length > 0) {
                         if (elItem.querySelectorAll('a[href="/events/birthdays/"]').length === 0) {
                             // -- not a birthday event
-                            elItem.classList.add(VARS.cssHideEl);
-                            elItem.setAttribute(postAtt, reason);
+                            // elItem.classList.add(VARS.cssHideEl);
+                            // elItem.setAttribute(postAtt, reason);
+                            hideFeature(elItem, reason);
                         }
                     }
                 }
@@ -2841,49 +3328,39 @@
     function scrubInfoBoxes(post) {
         // hide the "truth" info boxes that appear in posts having a certain topic.
 
-        // -- post needs 5 blocks / sections.
-        // -- info box sometimes appear in block 3.
-
-        // - block 0 = friend posted then commented | shop added | suggested
-        // - block 1 = title/heading, date/time | group name, author, date/time
-        // - block 2 = content
-        // - block 3 = info box OR comments
-        // - block 4 = comments (if no info box)
+        // - previous version of this code looked for "blocks"
+        // - however, structure has change
+        // - now using a more "heavy handed" approach
 
         let hiding = false;
-        let query = `[role="article"] > div > div > div > div > div > div > div > div:not([${postAtt}])`;
 
         if (VARS.Options.OTHER_INFO_BOX_CLIMATE_SCIENCE) {
-            let blocks = post.querySelectorAll(query);
-            if (blocks.length >= 5) {
-                let block = blocks[3];
-                let link = block.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE.pathMatch}"]`);
-                if (link !== null) {
-                    hideBlock(block, KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE[VARS.language]);
-                    hiding = true;
-                }
+            let link = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE.pathMatch}"]:not([${postAtt}])`);
+            if (link !== null) {
+                // - block @ 5 levels up.
+                let block = link.parentElement.parentElement.parentElement.parentElement.parentElement;
+                hideBlock(block, link, KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE[VARS.language]);
+                hiding = true;
             }
         }
+        //console.info(log+'scrubInfoBoxes():', hiding, VARS.Options.OTHER_INFO_BOX_CORONAVIRUS, KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch, post);
         if (!hiding && VARS.Options.OTHER_INFO_BOX_CORONAVIRUS) {
-            let blocks = post.querySelectorAll(query);
-            if (blocks.length >= 5) {
-                let block = blocks[3];
-                let link = block.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch}"]`);
-                if (link !== null) {
-                    hideBlock(block, KeyWords.OTHER_INFO_BOX_CORONAVIRUS[VARS.language]);
-                    hiding = true;
-                }
+            let link = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch}"]:not([${postAtt}])`);
+            link = post.querySelector(`a[href*="/coronavirus_info/"]`);
+            if (link !== null) {
+                // - block @ 5 levels up.
+                let block = link.parentElement.parentElement.parentElement.parentElement.parentElement;
+                hideBlock(block, link, KeyWords.OTHER_INFO_BOX_CORONAVIRUS[VARS.language]);
+                hiding = true;
             }
         }
         if (!hiding && VARS.Options.OTHER_INFO_BOX_SUBSCRIBE) {
-            let blocks = post.querySelectorAll(query);
-            if (blocks.length >= 5) {
-                let block = blocks[3];
-                let link = block.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_SUBSCRIBE.pathMatch}"]`);
-                if (link !== null) {
-                    hideBlock(block, KeyWords.OTHER_INFO_BOX_SUBSCRIBE[VARS.language]);
-                    hiding = true;
-                }
+            let link = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_SUBSCRIBE.pathMatch}"]:not([${postAtt}])`);
+            if (link !== null) {
+                // - block @ 5 levels up.
+                let block = link.parentElement.parentElement.parentElement.parentElement.parentElement;
+                hideBlock(block, link, KeyWords.OTHER_INFO_BOX_SUBSCRIBE[VARS.language]);
+                hiding = true;
             }
         }
     }
@@ -2902,6 +3379,16 @@
         // -- tab list - not part of the general news feed stream
         if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS) {
             nf_scrubTheTabbies();
+        }
+
+        // -- stories - not part of the general news feed stream
+        if (VARS.Options.NF_STORIES) {
+            nf_scrubTheStories();
+        }
+
+        // -- create room - not part of the general news feed stream
+        if (VARS.Options.NF_CREATE_ROOM) {
+            nf_scrubTheRoom();
         }
 
         // -- news feed stream ...
@@ -2946,6 +3433,9 @@
                         if (hideReason === '' && VARS.Options.NF_SHORT_REEL_VIDEO) {
                             hideReason = nf_isShortReelVideo(post);
                         }
+                        if (hideReason === '' && VARS.Options.NF_EVENTS_YOU_MAY_LIKE) {
+                            hideReason = nf_isEventsYouMayLike(post);
+                        }
                         if (hideReason === '' && VARS.Options.NF_BLOCKED_ENABLED) {
                             hideReason = nf_isBlockedText(post);
                         }
@@ -2981,7 +3471,7 @@
     function mopUpTheGroupsFeed() {
         // mopping up the groups feed page
 
-        // console.info(log+'mopUpTheGroupsFeed(), gfType:', VARS.gfType);
+        // console.info(log+'mopUpTheGroupsFeed(), gfType:', VARS.gfType, '; hide an info box:', VARS.hideAnInfoBox);
 
         if (VARS.gfType === 'groups' || VARS.gfType === 'search') {
             // - main groups feed.
@@ -3083,7 +3573,7 @@
                             if (hideReason === '' && VARS.Options.GF_SHORT_REEL_VIDEO) {
                                 hideReason = gf_isShortReelVideo(post);
                             }
-                            if (VARS.Options.GF_BLOCKED_ENABLED) {
+                            if (hideReason === '' && VARS.Options.GF_BLOCKED_ENABLED) {
                                 hideReason = gf_isBlockedText(post);
                             }
                         }
@@ -3241,6 +3731,9 @@
     function mp_hideBox(box, reason) {
         box.classList.add(VARS.cssHideEl);
         box.setAttribute(postAtt, reason);
+        if (VARS.Options.VERBOSITY_DEBUG) {
+            box.classList.add('show');
+        }
     }
 
     function mopUpTheMarketplaceFeed() {
@@ -3412,6 +3905,7 @@
         // or when page url has changed ...
         if (document.head && document.body && DBVARS.optionsReady) {
             if (firstRun) {
+                GM.registerMenuCommand(KeyWords.GM_MENU_SETTINGS[VARS.language], toggleDialog);
                 addCSS();
                 window.setTimeout(addExtraCSS, 150); // fb is sometimes laggy ...
                 buildMoppingDialog();
