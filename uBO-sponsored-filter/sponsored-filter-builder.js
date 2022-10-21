@@ -13,8 +13,8 @@
     let gfSuggestionRule = '';
     let nfDummyRule = '';
 
-    const postContainer = 'span[id="ssrb_feed_start"] ~ * h3 ~ div';
-    const upward = ':upward(span[id="ssrb_feed_start"] ~ * h3 ~ div)';
+    const postContainer = 'span[id="ssrb_feed_start"] ~ * h3 ~ div > div';
+    const upward = ':upward(span[id="ssrb_feed_start"] ~ * h3 ~ div > div)';
     const highlight = ':style(border:5px dotted pink !important; width:66% !important;)';
     const live = ':style(width:0 !important; height:0 !important;)';
 
