@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.05
+// @version      4.06
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,8 +13,11 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.06 :: October 2022
+        Updated News Feed rules
+        Updates News Feed side columnn's Suggested rule
     v4.05 :: October 2022
-         Updated News Feed Sponsored rule
+        Updated News Feed Sponsored rule
         Updated News Feed suggestion/recommended rule
         Revised Group suggestion/recommendation rule
         Updated Chinese text
@@ -3280,26 +3283,31 @@
         let asideBoxes = Array.from(document.querySelectorAll(query));
         // console.info(log + 'aside:', asideBoxes);
         if (asideBoxes.length > 0) {
+            // -- only interested in the first container.
             if (asideBoxes[0].childElementCount > 0) {
                 let elItem = null;
                 let reason = '';
                 if (item === 'Sponsored') {
                     elItem = asideBoxes[0].querySelector(`:scope > span:not([${postAtt}])`);
-                    reason = KeyWords.SPONSORED[VARS.language];
+                    if (elItem && elItem.innerHTML.length > 0) {
+                        reason = KeyWords.SPONSORED[VARS.language];
+                    }
                 }
                 else if (item === 'Suggestions') {
                     elItem = asideBoxes[0].querySelector(`:scope > div:not([${postAtt}])`);
-                    reason = KeyWords.NF_SUGGESTIONS[VARS.language];
-                }
-                if (elItem) {
-                    if (elItem.innerHTML.length > 0) {
-                        if (elItem.querySelectorAll('a[href="/events/birthdays/"]').length === 0) {
-                            // -- not a birthday event
-                            // elItem.classList.add(VARS.cssHideEl);
-                            // elItem.setAttribute(postAtt, reason);
-                            hideFeature(elItem, reason);
+                    if (elItem && elItem.innerHTML.length > 0) {
+                        // -- check for birthdays
+                        let birthdays = Array.from(elItem.querySelectorAll('a[href="/events/birthdays/"]')).length > 0;
+                        // -- check for "your pages and profiles"
+                        let pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 0;
+
+                        if (birthdays === false && pagesAndProfiles === false){
+                            reason = KeyWords.NF_SUGGESTIONS[VARS.language];
                         }
                     }
+                }
+                if (reason.length > 0) {
+                    hideFeature(elItem, reason);
                 }
             }
         }
@@ -3394,7 +3402,11 @@
         // -- news feed stream ...
         let query = 'span[id="ssrb_feed_start"] ~ * h3 ~ div';
         let posts = Array.from(document.querySelectorAll(query));
-        if (posts.length) {
+        if (posts.length == 1) {
+            // -- 21/10/2022 - fb tweaked the structure
+            posts = Array.from(document.querySelectorAll(query + ' > div'));
+        }
+        if (posts.length > 0) {
             // console.info(log+'---> mopUpTheNewsFeed()');
             for (let post of posts) {
 
