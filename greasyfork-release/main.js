@@ -15,7 +15,7 @@
 /*
     v4.07 :: October 2022
         Updated News Feed selection rule
-        Reduced false-positive hits for Feed sponsored rule
+        Reduced false-positive hits for News Feed sponsored rule
         Updated Friends you may know rule 
     v4.06 :: October 2022
         Updated News Feed rules
