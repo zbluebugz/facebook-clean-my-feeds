@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.06
+// @version      4.07
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,10 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.07 :: October 2022
+        Updated News Feed selection rule
+        Reduced false-positive hits for Feed sponsored rule
+        Updated Friends you may know rule 
     v4.06 :: October 2022
         Updated News Feed rules
         Updates News Feed side columnn's Suggested rule
@@ -3400,10 +3404,10 @@
         }
 
         // -- news feed stream ...
-        let query = 'span[id="ssrb_feed_start"] ~ * h3 ~ div';
+        let query = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div';
         let posts = Array.from(document.querySelectorAll(query));
-        if (posts.length == 1) {
-            // -- 21/10/2022 - fb tweaked the structure
+        if (posts.length < 2) {
+            // -- 21-22/10/2022 - fb tweaked the structure
             posts = Array.from(document.querySelectorAll(query + ' > div'));
         }
         if (posts.length > 0) {
@@ -3424,7 +3428,11 @@
                     else {
                         doLightDusting(post);
 
-                        if (isSponsored(post)) {
+                        // -- check short reel video post before sponsored (has hidden 'Learn more' text)
+                        if (hideReason === '' && VARS.Options.NF_SHORT_REEL_VIDEO) {
+                            hideReason = nf_isShortReelVideo(post);
+                        }
+                        if (hideReason === '' && isSponsored(post)) {
                             hideReason = KeyWords.SPONSORED[VARS.language];
                         }
                         if (hideReason === '' && VARS.Options.NF_PAID_PARTNERSHIP) {
@@ -3441,9 +3449,6 @@
                         }
                         if (hideReason === '' && VARS.Options.NF_SPONSORED_PAID) {
                             hideReason = nf_isSponsoredPaidBy(post);
-                        }
-                        if (hideReason === '' && VARS.Options.NF_SHORT_REEL_VIDEO) {
-                            hideReason = nf_isShortReelVideo(post);
                         }
                         if (hideReason === '' && VARS.Options.NF_EVENTS_YOU_MAY_LIKE) {
                             hideReason = nf_isEventsYouMayLike(post);
