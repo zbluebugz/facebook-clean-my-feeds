@@ -12,12 +12,14 @@
     let nfSuggestionRule = '';
     let gfSuggestionRule = '';
     let nfDummyRule = '';
+    let isFalsePositive = false;
 
-    const postContainer = 'span[id="ssrb_feed_start"] ~ * h3 ~ div > div';
-    const upward = ':upward(span[id="ssrb_feed_start"] ~ * h3 ~ div > div)';
+    const postContainer = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div > div';
+    const upward = ':upward(span[id="ssrb_feed_start"] ~ div > h3 ~ div > div)';
     const highlight = ':style(border:5px dotted pink !important; width:66% !important;)';
     const live = ':style(width:0 !important; height:0 !important;)';
 
+    const falseHitQuery = 'a[href*="/friends/suggestions/"][role="link"]'; // has 'learn more' text.
 
     // -- try various methods ..
 
@@ -31,7 +33,8 @@
 
         // - look for the sponsored text and get the widths
         elementsSVGText.forEach((el) => {
-            if (el.textContent.length > 0) {
+            isFalsePositive = (Array.from(el.querySelectorAll(falseHitQuery)).length > 0);
+            if (!isFalsePositive && el.textContent.length > 0) {
                 // - have some text, grab it
                 let daText = el.textContent;
                 // - fb sometimes use ASCII code 160 for whitespace ... and trim it
