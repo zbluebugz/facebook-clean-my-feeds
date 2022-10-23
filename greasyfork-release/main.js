@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.08
+// @version      4.09
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,8 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.09 :: October 2022
+        Fixed bug in previous fix for News Feed sponsored posts
     v4.08 :: October 2022
         Updated News Feed sponsored posts rule
         Updateds News Feed suggestion posts rule
@@ -2959,7 +2961,9 @@
         }
         if (elWrapper !== null) {
             // console.info(log+'isSponsored(), ',elWrapper.parentElement.tagName, elWrapper);
-            if (elWrapper.parentElement.tagName === 'OBJECT') {
+            let elLink = elWrapper.closest('a[href="#"]');
+            let elParent = elLink.parentElement;
+            if (elParent.tagName === 'OBJECT') {
                 // not interested in this one.
                 elWrapper = null;
             }
