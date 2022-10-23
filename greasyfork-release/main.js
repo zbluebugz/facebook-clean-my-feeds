@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.07
+// @version      4.08
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,10 +13,14 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.08 :: October 2022
+        Updated News Feed sponsored posts rule
+        Updateds News Feed suggestion posts rule
+        Code tweaks
     v4.07 :: October 2022
         Updated News Feed selection rule
         Reduced false-positive hits for News Feed sponsored rule
-        Updated Friends you may know rule 
+        Updated Friends you may know rule
     v4.06 :: October 2022
         Updated News Feed rules
         Updates News Feed side columnn's Suggested rule
@@ -1480,17 +1484,6 @@
         return str;
     }
 
-    // function dumpCSS(daSheet) {
-    //     // -- for debugging purposes only
-    //     // -- print out the styles
-    //     let daRules = daSheet.cssRules;
-    //     console.info(log + 'dumping CSS:', daRules.length, daRules);
-    //     for (let i = 0; i < daRules.length; i++) {
-    //         console.info(daRules[i].cssText);
-    //     }
-    // }
-
-
     // -- various CSS
     function addCSS() {
         // - CSS styles for hiding or highlighting the selected posts / element
@@ -2428,6 +2421,10 @@
                 elements = Array.from(document.querySelectorAll(`[${postAtt}]`));
                 if (elements.length > 0) {
                     elements.forEach(el => {
+                        if (el.tagName === "H6") {
+                            let elParent = el.parentElement;
+                            elParent.removeChild(el);
+                        }
                         el.removeAttribute(postAtt);
                         el.classList.remove(VARS.cssHide);
                         el.classList.remove(VARS.cssHideEl);
@@ -2955,6 +2952,17 @@
         if (elWrapper === null) {
             // Mid Oct 2022
             elWrapper = post.querySelector('div > div > div > svg > use[*|href]:not([href])');
+            // Late Oct 2022
+            if (elWrapper === null) {
+                elWrapper = post.querySelector('a[href="#"] svg > use[*|href]:not([href])');
+            }
+        }
+        if (elWrapper !== null) {
+            // console.info(log+'isSponsored(), ',elWrapper.parentElement.tagName, elWrapper);
+            if (elWrapper.parentElement.tagName === 'OBJECT') {
+                // not interested in this one.
+                elWrapper = null;
+            }
         }
         if (elWrapper !== null) {
             let theID = elWrapper.getAttributeNS('http://www.w3.org/1999/xlink', 'href'); // the attribute has the "#" ...
@@ -3072,9 +3080,11 @@
         // -- nb: x people recently commented posts have similar structure - suggested/recommended posts don't start with a number ...
         let query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
         let elSuggestion = querySelectorAllNoChildren(post, query, 1);
+        // console.info(log+'isSuggested:', elSuggestion.length, elSuggestion);
         if (elSuggestion.length > 0) {
             const pattern = /([0-9]|[\u0660-\u0669])/;
             let firstCharacter = cleanText(elSuggestion[0].textContent).trim().slice(0, 1);
+            // console.info(log+'isSuggested - match test:', firstCharacter, pattern.test(firstCharacter), pattern.test(firstCharacter) ? 'No': 'Yes' );
             return (pattern.test(firstCharacter)) ? '' : KeyWords.NF_SUGGESTIONS[VARS.language];
         }
         else {
@@ -3305,7 +3315,7 @@
                         // -- check for "your pages and profiles"
                         let pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 0;
 
-                        if (birthdays === false && pagesAndProfiles === false){
+                        if (birthdays === false && pagesAndProfiles === false) {
                             reason = KeyWords.NF_SUGGESTIONS[VARS.language];
                         }
                     }
@@ -3432,9 +3442,6 @@
                         if (hideReason === '' && VARS.Options.NF_SHORT_REEL_VIDEO) {
                             hideReason = nf_isShortReelVideo(post);
                         }
-                        if (hideReason === '' && isSponsored(post)) {
-                            hideReason = KeyWords.SPONSORED[VARS.language];
-                        }
                         if (hideReason === '' && VARS.Options.NF_PAID_PARTNERSHIP) {
                             hideReason = nf_isPaidPartnership(post);
                         }
@@ -3452,6 +3459,10 @@
                         }
                         if (hideReason === '' && VARS.Options.NF_EVENTS_YOU_MAY_LIKE) {
                             hideReason = nf_isEventsYouMayLike(post);
+                        }
+                        // -- testing for sponsored here - it can be a bit aggressive in taking out some of the above rules (a hit for the wrong reason.)
+                        if (hideReason === '' && isSponsored(post)) {
+                            hideReason = KeyWords.SPONSORED[VARS.language];
                         }
                         if (hideReason === '' && VARS.Options.NF_BLOCKED_ENABLED) {
                             hideReason = nf_isBlockedText(post);
