@@ -83,8 +83,8 @@
             extraComment = 'NB: There is a small chance that there will be some false positives, as the rule is detecting if a certain element has a certain width.\n\n';
 
             // - filter for uBO:
-            const filterComment1 = '! FB - sponsored text (October 2022) *** IN TEST MODE - highlights post that met a certain criteria ***\n';
-            const filterComment2 = '! FB - sponsored text (October 2022)\n';
+            const filterComment1 = '! FB - sponsored text (Late October 2022) *** IN TEST MODE - highlights post that met a certain criteria ***\n';
+            const filterComment2 = '! FB - sponsored text (Late October 2022)\n';
             const filterBegin = `facebook.com##${postContainer} > div:not([class]) span[id] > span > span > a[href="#"] span > span[class]:has(svg > use[*|href]:not([href])):matches-css(width:/^(`;
             const filterEnd = `)(\.|p)/i)${upward}`;
 
