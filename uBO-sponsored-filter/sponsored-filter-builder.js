@@ -46,16 +46,19 @@
                     // test if nearest A's href is "#".
                     let aTag = elPostSVGUse.closest('a');
                     if (aTag.href.indexOf("#") >= 0) {
-                        if (elPostSVGUse) {
-                            // get width of the USE's grand parent element
-                            let grandPar = elPostSVGUse.parentElement.parentElement; // either div or span.
-                            let bcr = grandPar.getBoundingClientRect();
-                            let intWidth = parseInt(bcr.width, 10); // rounds down
-                            let roundWidth = Math.round(bcr.width); // rounds up/down
-                            //console.info('----***:', daText, bcr.width, intWidth, roundWidth, grandPar);
-                            if (intWidth > 0) {
-                                arWidths.push(intWidth);
-                                arWidths.push(roundWidth);
+                        // test for a false hit
+                        if (aTag.parentElement.tagName !== 'OBJECT') {
+                            if (elPostSVGUse) {
+                                // get width of the USE's grand parent element
+                                let grandPar = elPostSVGUse.parentElement.parentElement; // either div or span.
+                                let bcr = grandPar.getBoundingClientRect();
+                                let intWidth = parseInt(bcr.width, 10); // rounds down
+                                let roundWidth = Math.round(bcr.width); // rounds up/down
+                                //console.info('----***:', daText, bcr.width, intWidth, roundWidth, grandPar);
+                                if (intWidth > 0) {
+                                    arWidths.push(intWidth);
+                                    arWidths.push(roundWidth);
+                                }
                             }
                         }
                     }
