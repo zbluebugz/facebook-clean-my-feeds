@@ -1,7 +1,5 @@
 (function () {
 
-    const ECHO_SUGGESTED = false; // 19/10/2022: disabled due to false-positive hits; waiting for fb to show me some in the news feed.
-
     // - pattern for finding sponsored text - no numbers in text (with 2 exceptions - "1 hour" in hebrew and malaylam)
     const pattern = /([0-9]|[\u0660-\u0669]|שעה אחת|ഒരു മണിക്കൂർ|^$)/;
 
@@ -9,13 +7,13 @@
     let extraComment = '';
     let rule1 = '';
     let rule2 = '';
-    let nfSuggestionRule = '';
-    let gfSuggestionRule = '';
     let nfDummyRule = '';
     let isFalsePositive = false;
 
-    const postContainer = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div > div';
-    const upward = ':upward(span[id="ssrb_feed_start"] ~ div > h3 ~ div > div)';
+    // const postContainer = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div > div';
+    const postContainer = 'h3[dir="auto"] ~ div:not([class]) > div[class] > div';
+    // const upward = ':upward(span[id="ssrb_feed_start"] ~ div > h3 ~ div > div)';
+    const upward = ':upward(h3[dir="auto"] ~ div:not([class]) > div[class] > div)';
     const highlight = ':style(border:5px dotted pink !important; width:66% !important;)';
     const live = ':style(width:0 !important; height:0 !important;)';
 
@@ -85,7 +83,7 @@
             // - filter for uBO:
             const filterComment1 = '! FB - sponsored text (Late October 2022) *** IN TEST MODE - highlights post that met a certain criteria ***\n';
             const filterComment2 = '! FB - sponsored text (Late October 2022)\n';
-            const filterBegin = `facebook.com##${postContainer} > div:not([class]) span[id] > span > span > a[href="#"] span > span[class]:has(svg > use[*|href]:not([href])):matches-css(width:/^(`;
+            const filterBegin = `facebook.com##${postContainer} > div span[id] > span > span > a[href="#"] span > span[class]:has(svg > use[*|href]:not([href])):matches-css(width:/^(`;
             const filterEnd = `)(\.|p)/i)${upward}`;
 
             rule1 = filterComment1 + filterBegin + uniqueWidths.join('|') + filterEnd + highlight;
@@ -117,9 +115,7 @@
     if (methodFound > 0) {
 
         nfDummyRule = `facebook.com##${postContainer} > div div[data-0]:remove()`;
-        nfSuggestionRule = `facebook.com##${postContainer} > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span:not(>*)`;
-        gfSuggestionRule = `facebook.com##div[role="feed"] > div div[aria-posinset] > div > div > div > div > div > div > div > div:nth-of-type(2) h3 > div > span ~ span > span > div > div`;
-
+ 
         let logText = 'The following filter rules are for use in uBlock Origin.\n';
         logText += '========================================================\n\n';
         logText += 'News Feed Sponsored posts\n';
@@ -137,21 +133,7 @@
         logText += 'This rule is in LIVE MODE - it hides the posts\n\n';
         logText += rule2 + '\n\n\n';
 
-        if (ECHO_SUGGESTED) {
-            logText += 'News Feed Suggestions/Recommendations filter rule:\n';
-            logText += '--------------------------------------------------\n\n';
-            logText += '! FB - News Feed - remove "dummy" elements helper (helps the news feed suggestion/recommendation rule to work)\n';
-            logText += nfDummyRule + '\n\n';
-            logText += '! FB - News Feed - suggestions / recommendations (TEST MODE)\n';
-            logText += nfSuggestionRule + upward + highlight + '\n\n\n';
-            logText += '! FB - News Feed - suggestions / recommendations (LIVE MODE)\n';
-            logText += nfSuggestionRule + upward + live + '\n\n\n';
-            logText += 'Groups Feed suggestions filter rule:\n\n';
-            logText += '! FB - Groups Feed - suggestions / recommendations (TEST MODE)\n';
-            logText += gfSuggestionRule + ':upward(div[role="feed"] > div)' + highlight + '\n\n\n';
-            logText += '! FB - Groups Feed - suggestions / recommendations (LIVE MODE)\n';
-            logText += gfSuggestionRule + ':upward(div[role="feed"] > div)' + live + '\n\n\n';
-        }
+  
         console.clear();
         console.info(logText);
     }
