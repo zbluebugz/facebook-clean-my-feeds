@@ -15,6 +15,7 @@
 /*
     v4.10 :: November 2022
         Updated selection rule for News Feed posts
+        Code tweaks
     v4.09 :: October 2022
         Fixed bug in previous fix for News Feed sponsored posts
     v4.08 :: October 2022
