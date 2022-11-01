@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.09
+// @version      4.10
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,8 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.10 :: November 2022
+        Updated selection rule for News Feed posts
     v4.09 :: October 2022
         Fixed bug in previous fix for News Feed sponsored posts
     v4.08 :: October 2022
@@ -1401,15 +1403,17 @@
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
     const VARS = {
+
+// - how many times to scan a post
+        scanCountStart: 0,
+        scanCountMaxLoop: 11,
+
         // - langauge (default to EN)
         language: '',
         // - user options
         Options: {},
         // - blocked text
         Filters: {},
-
-        scanCountStart: 0,
-        scanCountMaxLoop: 11,
 
         // - Feed toggles
         isNF: false, // news
@@ -1486,11 +1490,26 @@
         return str;
     }
 
+    // -- stylesheet builder
+    VARS.tempStyleSheetCode = ''; // holds the SS code while it is being built.
+    function addToSS(classes, styles) {
+        // -- formats and builds the StyleSheet code
+        // -- parameters: classes (separated by comma), styles (separated by semicolon)
+        // -- array actions: .filter - remove empties, .map - trim (or pad + trim)
+        let tClasses = classes.split(',').filter(function (e) { return e.trim() }).map(e => e.trim());
+        let tStyleLines = styles.split(';').filter(function (e) { return e.trim() });
+        tStyleLines = tStyleLines.map(function (e) { let temp = e.split(':'); return '    ' + temp[0].trim() + ':' + temp[1].trim() });
+        let temp = tClasses.join(',\n') + ' {\n';
+        temp += tStyleLines.join(';\n') + ';\n';
+        temp += '}\n';
+        VARS.tempStyleSheetCode += temp;
+    }
+
     // -- various CSS
     function addCSS() {
         // - CSS styles for hiding or highlighting the selected posts / element
         // - CSS styles for dialog panel
-        let head, styleEl, css;
+        let head, styleEl, classes, styles;
         let isNewCSS = true;
 
         if (VARS.cssID !== '') {
@@ -1504,10 +1523,11 @@
         if (isNewCSS) {
             // - Create the new Stylesheet head + classnames
             VARS.cssID = generateRandomString().toUpperCase();
-            head = document.getElementsByTagName('head')[0];
             styleEl = document.createElement('style');
             styleEl.setAttribute('type', 'text/css');
             styleEl.setAttribute('id', VARS.cssID);
+            head = document.getElementsByTagName('head')[0];
+            head.appendChild(styleEl);
 
             // - remember class names (for other functions to use)
             VARS.cssHide = generateRandomString(); // - the parent element - hides the nth level down element
@@ -1515,156 +1535,223 @@
             VARS.cssHideStories = generateRandomString(); // - stories have an odd setup for hide & show with border ...
             VARS.cssEcho = generateRandomString();
         }
+        VARS.tempStyleSheetCode = ''; // reset temp CSS code.
+
         // - insert Styles (as classes)
         // - NF/GF/VF
         // -- remove margins
-        if (VARS.Options.VERBOSITY_DEBUG === false) {
-            // -- not debugging, remove margins
-            styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}, .${VARS.cssHideEl} {margin:0 !important;}`));
-        }
+        addToSS(
+            `.${VARS.cssHide},` +
+            `.${VARS.cssHideEl}`,
+            'margin:0 !important;'
+        );
+
         // -- post wrapper (mainly for news, groups and video feeds posts)
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div:not([${postAtt}]) > div[class], `));
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > span, `));
+        //classes = `.${VARS.cssHide} > div:not([${postAtt}]) > div[class],`;
+        classes = `.${VARS.cssHide} > div:not([${postAtt}]) > div,`;
+        classes += `.${VARS.cssHide} > span,`;
         // - stories, hide at upper level, border at few level down
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideStories}, `));
+        classes += `.${VARS.cssHideStories}, `;
         // -- non n/f & g/f wrappers (mainly for marketplace posts + some aside boxes)
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideEl} `));
+        classes += `.${VARS.cssHideEl}`;
         // -- which styles to apply?
         // --- (display:block is for those span tags being a nth-of-child element.)
-        if (VARS.Options.VERBOSITY_DEBUG === true) {
-            styleEl.appendChild(document.createTextNode(` {border:5px dotted ${VARS.Options.CMF_BORDER_COLOUR}; width:66%; display:block;}`));
-        }
-        else {
-            styleEl.appendChild(document.createTextNode(' {display:none;}'));
-        }
+        styles = 'display:none;';
+
+        addToSS(classes, styles);
 
         // - echo msg
-        css = `display:flex; margin:1.5rem auto; padding:0.5rem 1rem 0.5rem 0; border-radius:0.55rem; width:85%; font-style:italic; cursor:pointer; `;
-        css += (VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `;
-        css += `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `;
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] {${css}}`));
+        addToSS(
+            `.${VARS.cssHide} > div[${postAtt}]`,
+            'display:flex; margin:1.5rem auto; padding:0.5rem 1rem 0.5rem 0; border-radius:0.55rem; width:85%; font-style:italic; cursor:pointer;' +
+            ((VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `  color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `) +
+            `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR};`
+        );
         // - echo msg flex boxes
-        css = 'display:flex; align-items: center;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] > div {${css}}`));
-        css = 'flex:0 0 3rem; justify-content: center;';
+        addToSS(
+            `.${VARS.cssHide} > div[${postAtt}] > div`,
+            'display:flex; align-items: center;'
+        );
         // - echo msg's button
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] > div.wbtn {${css}}`));
-        // - ech msg's text
-        css = 'flex:1;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] > div.wtxt {${css}}`));
+        addToSS(
+            `.${VARS.cssHide} > div[${postAtt}] > div.wbtn`,
+            'flex:0 0 3rem; justify-content: center;'
+        );
+        // - echo msg's text
+        addToSS(
+            `.${VARS.cssHide} > div[${postAtt}] > div.wtxt`,
+            'flex:1;'
+        );
         // - echo msg hover
-        css = `text-decoration: underline; background-color:white; color:black;`;
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}]:hover {${css}}`));
-        css = 'cursor:pointer;'
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] button:hover {${css}}`));
+        addToSS(
+            `.${VARS.cssHide} > div[${postAtt}]:hover`,
+            'text-decoration: underline; background-color:white; color:black;'
+        );
+        addToSS(
+            `.${VARS.cssHide} > div[${postAtt}] button:hover`,
+            'cursor:pointer;'
+        );
         // - echo msg's button's default state
-        css = 'transform: rotate(180deg);transition: transform 0.15s linear;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div[${postAtt}] > div.wbtn > button {${css}}`));
-
-
+        addToSS(
+            `.${VARS.cssHide} > div[${postAtt}] > div.wbtn > button`,
+            'transform: rotate(180deg);transition: transform 0.15s linear;'
+        );
         // - flagged post's mini-tab
-        css = 'border-radius: 0.55rem 0.55rem 0 0; width:75%; margin:0 auto; padding: 0.45rem 0.25rem; font-style:italic; text-align:center; font-weight:normal;'
-        css += (VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `;
-        css += `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `;
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide} > div:not([${postAtt}]) > div > div > h6[${postAtt}] {${css}}`));
+        addToSS(
+            `.${VARS.cssHide} > div:not([${postAtt}]) > div > div > h6[${postAtt}]`,
+            'border-radius: 0.55rem 0.55rem 0 0; width:75%; margin:0 auto; padding: 0.45rem 0.25rem; font-style:italic; text-align:center; font-weight:normal;' +
+            ((VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `  color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `) +
+            `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `
+        );
 
-        // - reveal a hidden post
-        css = 'display:block !important; ';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideStories}.show {${css}}`));
-        css += `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.2rem 0.1rem 0.1rem 0.1rem;`; // 4px
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > div:not([${postAtt}]) > div[class] {${css}}`));
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideStories}.show > div > div > div {${css}}`));
-
+        // - 'show' - reveal a hidden post
+        addToSS(
+            `.${VARS.cssHideStories}.show`,
+            'display:block !important; '
+        );
+        addToSS(
+            //`.${VARS.cssHide}.show > div:not([${postAtt}]) > div[class], ` +
+            `.${VARS.cssHide}.show > div:not([${postAtt}]) > div, ` +
+            `.${VARS.cssHideStories}.show > div > div > div `,
+            'display:block !important; ' +
+            `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.2rem 0.1rem 0.1rem 0.1rem;` // 4px
+        );
         // - echo msg show state
-        css = 'margin-top:0.5rem; margin-bottom:0.5rem;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > div[${postAtt}] {${css}}`));
-
+        addToSS(
+            `.${VARS.cssHide}.show > div[${postAtt}] `,
+            'margin-top:0.5rem; margin-bottom:0.5rem;'
+        );
         // - echo msg's button show state
-        css = 'transform: rotate(360deg);transition: transform 0.15s linear;';
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHide}.show > div[${postAtt}] > div.wbtn > button {${css}}`));
+        addToSS(
+            `.${VARS.cssHide}.show > div[${postAtt}] > div.wbtn > button`,
+            'transform: rotate(360deg);transition: transform 0.15s linear;'
+        );
         // - non-standard post's show state
-        css = `display: block; border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.1rem;`; // 4px
-        styleEl.appendChild(document.createTextNode(`.${VARS.cssHideEl}.show {${css}}`));
-
+        addToSS(
+            `.${VARS.cssHideEl}.show `,
+            `display: block; border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.1rem;` // 4px
+        );
         // - dailog box CSS
         // --- dialog box; position + flex
         let bColour = (VARS.Options.CMF_BORDER_COLOUR === '') ? KeyWords.CMF_BORDER_COLOUR.defaultValue : VARS.Options.CMF_BORDER_COLOUR;
         let tColour = ((VARS.Options.CMF_DIALOG_COLOUR === '') || (VARS.Options.CMF_DIALOG_COLOUR === undefined)) ? 'var(--primary-text)' : VARS.Options.CMF_DIALOG_COLOUR;
-        // - left / right done in fn addExtraCSS().
-        css = `position:fixed; top:0.15rem; bottom:0.15rem; display:flex; flex-direction:column; max-width:40rem; padding:0 1rem; z-index:5; border:2px solid ${bColour}; border-radius:1rem; opacity:0;`;
-        css += `color:${tColour};`;
-        styleEl.appendChild(document.createTextNode(`.fb-cmf {${css}}`));
+        // - left / right done in fn addExtraCSS()
+        addToSS(
+            '.fb-cmf ',
+            'position:fixed; top:0.15rem; bottom:0.15rem; display:flex; flex-direction:column; max-width:30rem; padding:0 1rem; z-index:5;' +
+            `border:2px solid ${bColour}; border-radius:1rem; opacity:0; color:${tColour};`
+        );
         if ((VARS.Options.CMF_DIALOG_BG_COLOUR === '') || (VARS.Options.CMF_DIALOG_BG_COLOUR === undefined)) {
-            styleEl.appendChild(document.createTextNode('.__fb-light-mode .fb-cmf {background-color:#fefefa;}'));
-            styleEl.appendChild(document.createTextNode('.__fb-dark-mode .fb-cmf {background-color:var(--web-wash);}'));
-            styleEl.appendChild(document.createTextNode('.fb-cmf {background-color:floralwhite;}')); // -- fall back colour.
+            addToSS('.__fb-light-mode .fb-cmf', 'background-color:#fefefa;');
+            addToSS('.__fb-dark-mode .fb-cmf', 'background-color:var(--web-wash);');
+            addToSS('.fb-cmf', 'background-color:floralwhite;'); // -- fall back colour.
         }
         else {
-            styleEl.appendChild(document.createTextNode(`.fb-cmf {background-color:${VARS.Options.CMF_DIALOG_BG_COLOUR};}`));
+            addToSS('.fb-cmf', `background-color:${VARS.Options.CMF_DIALOG_BG_COLOUR};`);
         }
-
-        //dumpCSS(sheet);
-
         // -- header
-        css = 'display:flex; justify-content:space-between; direction:ltr;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header {${css}}`));
-
-        css = 'flex-grow:0; align-self:auto; width:75px; text-align:left; order:1;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-icon {${css}}`));
-        css = 'width:64px; height:64px; margin:2px 0;'
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-icon svg {${css}}`));
-
-        css = 'flex-grow:2; align-self:auto; order:2;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-title {${css}}`));
-        css = 'padding-top:1.25rem;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-lang-1 {${css}}`));
-        css = 'padding-top:0.75rem;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-lang-2 {${css}}`));
-
-        css = 'font-size:1.35rem; font-weight: 700; text-align:center;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-title > div {${css}}`));
-        css = 'display:block; font-size:0.8rem; text-align:center;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-title > small {${css}}`));
-
-        css = 'flex-grow:0; align-self:auto; width:75px; text-align:right; padding: 1.5rem 0 0 0; order:3;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-close {${css}}`));
-        css = 'width:1.75rem; height:1.5rem; font-family: monospace;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf header .fb-cmf-close button {${css}}`));
+        addToSS(
+            '.fb-cmf header',
+            'display:flex; justify-content:space-between; direction:ltr;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-icon',
+            'flex-grow:0; align-self:auto; width:75px; text-align:left; order:1;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-icon svg',
+            'width:64px; height:64px; margin:2px 0;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-title',
+            'flex-grow:2; align-self:auto; order:2;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-lang-1',
+            'padding-top:1.25rem;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-lang-2',
+            'padding-top:0.75rem;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-title > div',
+            'font-size:1.35rem; font-weight: 700; text-align:center;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-title > small',
+            'display:block; font-size:0.8rem; text-align:center;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-close',
+            'flex-grow:0; align-self:auto; width:75px; text-align:right; padding: 1.5rem 0 0 0; order:3;'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-close button',
+            'width:1.75rem; height:1.5rem; font-family: monospace;'
+        );
 
         // -- content
-        css = `flex:1; overflow:auto; border:2px double ${bColour}; border-radius:0.5rem; color: var(--primary-text);`;
-        styleEl.appendChild(document.createTextNode(`.fb-cmf div.content {${css}}`));
-        css = 'padding:1rem; text-align:center;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf footer.buttons {${css}}`));
-        css = 'margin:0.5rem; border-color:LightGrey;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset {${css}}`));
-        css = 'font-weight:700;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset legend {${css}}`));
-        css = 'display:inline-block; padding:0.125rem 0; width:95%; color: var(--primary-text); font-weight: normal;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset label {${css}}`));
-        css = 'margin: 0 0.5rem 0 0.5rem; vertical-align:baseline;'; // left & right margins for RTL & LTR text
-        styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset label input {${css}}`));
-        css = 'color:darkgrey;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset label[disabled] {${css}}`));
-        css = 'width:100%; height:12rem;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf fieldset textarea {${css}}`));
-        css = 'background-color:var(--comment-background); color:var(--primary-text);';
-        styleEl.appendChild(document.createTextNode(`.__fb-dark-mode .fb-cmf fieldset textarea, .__fb-dark-mode .fb-cmf fieldset input[type="input"] {${css}}`));
+        addToSS(
+            '.fb-cmf div.content',
+            `    flex:1; overflow:auto; border:2px double ${bColour}; border-radius:0.5rem; color: var(--primary-text);`
+        );
+        addToSS(
+            '.fb-cmf footer.buttons',
+            'padding:1rem; text-align:center;'
+        );
+        addToSS(
+            '.fb-cmf fieldset',
+            'margin:0.5rem; border-color:LightGrey;'
+        );
+        addToSS(
+            '.fb-cmf fieldset legend',
+            'font-weight:700;'
+        );
+        addToSS(
+            '.fb-cmf fieldset label',
+            'display:inline-block; padding:0.125rem 0; width:95%; color: var(--primary-text); font-weight: normal;'
+        );
+        addToSS(
+            '.fb-cmf fieldset label input',
+            'margin: 0 0.5rem 0 0.5rem; vertical-align:baseline;' // left & right margins for RTL & LTR text
+        );
+        addToSS(
+            '.fb-cmf fieldset label[disabled]',
+            'color:darkgrey;'
+        )
+        addToSS(
+            '.fb-cmf fieldset textarea',
+            'width:100%; height:12rem;'
+        );
+        addToSS(
+            '.__fb-dark-mode .fb-cmf fieldset textarea,' +
+            '.__fb-dark-mode .fb-cmf fieldset input[type="input"]',
+            'background-color:var(--comment-background); color:var(--primary-text);'
+        );
         // -- footer - buttons
-        css = 'margin-left: 1rem; margin-right:1rem;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf .buttons button {${css}}`));
+        addToSS(
+            '.fb-cmf .buttons button',
+            'margin-left: 1rem; margin-right:1rem;'
+        );
         // -- footer - file input
-        styleEl.appendChild(document.createTextNode('.fb-cmf .fileInput {display:none;}'));
+        addToSS(
+            '.fb-cmf .fileInput',
+            'display:none;'
+        );
         // -- footer - import results
-        css = 'font-style:italic; margin-top: 1rem;';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf .fileResults {${css}}`));
+        addToSS(
+            '.fb-cmf .fileResults',
+            'font-style:italic; margin-top: 1rem;'
+        );
         // -- show dialog box (default is not to show)
-        css = 'opacity:1; transform:scale(1);';
-        styleEl.appendChild(document.createTextNode(`.fb-cmf.show {${css}}`));
-        // - add above styles to HEAD.
-        if (isNewCSS) {
-            head.appendChild(styleEl);
-        }
+        addToSS(
+            '.fb-cmf.show',
+            'opacity:1; transform:scale(1);'
+        );
+        // - save & apply the CSS
+        styleEl.appendChild(document.createTextNode(VARS.tempStyleSheetCode));
+        VARS.tempStyleSheetCode = '';
     }
 
     function addExtraCSS() {
@@ -1689,48 +1776,62 @@
 
         // Grab the existing Stylesheet and amend it
         let styleEl = document.getElementById(VARS.cssID);
+        let styles;
 
-        let css = '';
+        VARS.tempStyleSheetCode = ''; // reset
 
         // - button's location.
         if (cmfBtnLocation === '1') {
             // - top right - has the buttons running across the top of the page (pre May 2022).
-            css = 'margin-right: 42px;';
             if (document.querySelector('[role="banner"]')) {
                 // - oldish FB structure has menu buttons across the top (changed for some users in Apr/May 2022)
-                styleEl.appendChild(document.createTextNode(`div[role="banner"] > div:last-of-type div[role="navigation"] {${css}}`));
+                addToSS(
+                    'div[role="banner"] > div:last-of-type div[role="navigation"]',
+                    'margin-right: 42px;'
+                );
             }
-            css = 'position:fixed; top:0.5rem; right:0.5rem; display:none;';
+            styles = 'position:fixed; top:0.5rem; right:0.5rem; display:none;';
         }
         else if (cmfBtnLocation === '2') {
             // - disabled, use "Settings" in the user script menu.
             // - no css
-            css = '';
+            styles = '';
         }
         else {
             // - bottom left - has the buttons running down the side of the page (May 2022 ->).
             // - cmfBtnLocation === "0"
-            css = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
+            styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
         }
-        if (css.length > 0) {
-            styleEl.appendChild(document.createTextNode(`.fb-cmf-toggle {${css}}`));
+        if (styles.length > 0) {
+            addToSS(
+                '.fb-cmf-toggle',
+                styles
+            );
             // - btn - basic styling.
-            styleEl.appendChild(document.createTextNode('.fb-cmf-toggle {border-radius:0.3rem;}'));
-            styleEl.appendChild(document.createTextNode('.fb-cmf-toggle svg {height:32px; width:32px;}'))
-            styleEl.appendChild(document.createTextNode('.fb-cmf-toggle:hover {cursor:pointer;}'));
+            addToSS('.fb-cmf-toggle', 'border-radius:0.3rem;');
+            addToSS('.fb-cmf-toggle svg', 'height:32px; width:32px;');
+            addToSS('.fb-cmf-toggle:hover', 'cursor:pointer;');
             // - dialog box's display
-            styleEl.appendChild(document.createTextNode('.fb-cmf-toggle.show {display:block;}'));
+            addToSS('.fb-cmf-toggle.show', 'display:block;');
         }
         // - dialog box's left/right + animated open/close behaviour
         if (cmfDlgLocation === '1') {
             // - right
-            css = 'right:0.35rem; margin-left:1rem; transform:scale(0);transform-origin:top right;';
+            styles = 'right:0.35rem; margin-left:1rem; transform:scale(0);transform-origin:top right;';
         }
         else {
             // - left (cmfDlgLocation === '0')
-            css = 'left:4.25rem; margin-right:1rem; transform:scale(0);transform-origin:center center;';
+            styles = 'left:4.25rem; margin-right:1rem; transform:scale(0);transform-origin:center center;';
         }
-        styleEl.appendChild(document.createTextNode(`.fb-cmf {${css + 'transition:transform .45s ease, opacity .25s ease;'}}`));
+        addToSS(
+            '.fb-cmf',
+            styles +
+            'transition:transform .45s ease, opacity .25s ease;'
+        );
+        if (VARS.tempStyleSheetCode.length > 0) {
+            styleEl.appendChild(document.createTextNode(VARS.tempStyleSheetCode));
+            VARS.tempStyleSheetCode = '';
+        }
     }
 
     // -- get the user's settings ...
@@ -2509,11 +2610,6 @@
             reader.readAsText(file);
         }
 
-        // function toggleDialog() {
-        //     let dlg = document.getElementById('fbcmf');
-        //     dlg.classList.toggle('show');
-        // }
-
         function createToggleButton() {
             let btn = document.createElement('button');
             btn.innerHTML = VARS.logoHTML;
@@ -2960,11 +3056,15 @@
             }
         }
         if (elWrapper !== null) {
-            // console.info(log+'isSponsored(), ',elWrapper.parentElement.tagName, elWrapper);
             let elLink = elWrapper.closest('a[href="#"]');
-            let elParent = elLink.parentElement;
-            if (elParent.tagName === 'OBJECT') {
-                // not interested in this one.
+            if (elLink !== null) {
+                let elParent = elLink.parentElement;
+                if ((elParent !== null) && (elParent.tagName === 'OBJECT')) {
+                    // not interested in this one.
+                    elWrapper = null;
+                }
+            }
+            else {
                 elWrapper = null;
             }
         }
@@ -3223,13 +3323,18 @@
     }
     function vf_scrubSponsoredBlock(post) {
         // - some videos have a sponsored block beneath the video block/section
-        let query = `:scope > div > div > div > div > div:nth-of-type(2) > div:nth-of-type(3) a:not([${postAtt}])`;
-        let element = post.querySelector(query);
-        if (element !== null) {
-            element = element.closest('div');
-            hideBlock(element, element.querySelector('a'), KeyWords.SPONSORED[VARS.language]);
+        // - includes "watch more ___ videos by ___"
+        let query = `:scope > div > div > div > div > div:nth-of-type(2) > div`;
+        let blocks = post.querySelectorAll(query);
+        if (blocks.length > 3) {
+            let block = blocks[2]; // -- 3rd block
+            let isJunk = block.querySelector(`:scope > div > div > div > div > div > div > span > a:not([${postAtt}])`);
+            if (isJunk !== null) {
+                hideBlock(block, isJunk, KeyWords.SPONSORED[VARS.language]);
+            }
         }
     }
+
 
     function swatTheMosquitos(post) {
         // - scan the post for any gifs that is animating (pausing them once)
@@ -3297,7 +3402,9 @@
 
     function nf_cleanTheConsoleTable(item = 'Sponsored') {
         // -- mopping up the news feed aside panel. item values: Sponosored | Suggestions
-        let query = `div[role="complementary"] > div > div > div > span ~ div:first-of-type > div:not([data-visualcompletion])`;
+        // let query = `div[role="complementary"] > div > div > div > span ~ div:first-of-type > div:not([data-visualcompletion])`; // pre Nov 2022
+        // let query = 'div[role="complementary"] > div > div > div > div > div > div:not([data-visualcompletion])';
+        let query = 'div[role="complementary"] > div > div > div > div > div:not([data-visualcompletion])';
         let asideBoxes = Array.from(document.querySelectorAll(query));
         // console.info(log + 'aside:', asideBoxes);
         if (asideBoxes.length > 0) {
@@ -3317,7 +3424,8 @@
                         // -- check for birthdays
                         let birthdays = Array.from(elItem.querySelectorAll('a[href="/events/birthdays/"]')).length > 0;
                         // -- check for "your pages and profiles"
-                        let pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 0;
+                        // -- suggested groups only have 1 i[..] attribute
+                        let pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 1;
 
                         if (birthdays === false && pagesAndProfiles === false) {
                             reason = KeyWords.NF_SUGGESTIONS[VARS.language];
@@ -3423,6 +3531,11 @@
         if (posts.length < 2) {
             // -- 21-22/10/2022 - fb tweaked the structure
             posts = Array.from(document.querySelectorAll(query + ' > div'));
+            if (posts.length < 2) {
+                // -- 31/10/2022 - fb tweaked the structure
+                query = 'h3[dir="auto"] ~ div:not([class]) > div[class] > div';
+                posts = Array.from(document.querySelectorAll(query));
+            }
         }
         if (posts.length > 0) {
             // console.info(log+'---> mopUpTheNewsFeed()');
