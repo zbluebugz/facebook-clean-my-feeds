@@ -19,6 +19,8 @@
 - If non-sponsored posts also have the pink border, then the rule needs to be "_tightened_" up - look for the 6 numbers in this format __(##|##|##|##|##|##)__ and remove the first number, save, reload FB, check again. If non-sponsored posts still being marked, remove the last number and try again. Repeat one more time for first and last, until the middle 2 numbers remain. When done, follow the previous step in updating the rule.
 
 #### Last updated ####
+2022-11--01:
+- Updated News Feed sponsored detection code
 2022-10-23:
 - Updated News Feed sponsored detection code
 2022-10-21:
