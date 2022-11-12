@@ -6,7 +6,7 @@ Works with most languages (i.e. not 100% reliant on dictionary of words)
 
 User-interface languages supported:
 - English
-- Português (Portugal & Brazl)
+- Português (Portugal & Brazil)
 - Deutsch (Germany)
 - Français (France)
 - Espanol (Spain)
