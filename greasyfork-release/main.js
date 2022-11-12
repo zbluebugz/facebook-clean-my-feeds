@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.10
+// @version      4.11
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -13,6 +13,8 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.11 :: November 2022
+        Updated News Feed suggested/recommended rule
     v4.10 :: November 2022
         Updated selection rule for News Feed posts
         Code tweaks
@@ -3186,6 +3188,10 @@
         let query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
         let elSuggestion = querySelectorAllNoChildren(post, query, 1);
         // console.info(log+'isSuggested:', elSuggestion.length, elSuggestion);
+        if (elSuggestion.length === 0) {
+            query = ':scope > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
+            elSuggestion = querySelectorAllNoChildren(post, query, 1);
+        }
         if (elSuggestion.length > 0) {
             const pattern = /([0-9]|[\u0660-\u0669])/;
             let firstCharacter = cleanText(elSuggestion[0].textContent).trim().slice(0, 1);
