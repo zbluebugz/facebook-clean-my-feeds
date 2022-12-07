@@ -3,16 +3,24 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.11
+// @version      4.12
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
+// @noframes
 // @grant        GM.registerMenuCommand
 // @license      MIT; https://opensource.org/licenses/MIT
 // @icon64       data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAanSURBVHic5ZtpjBVFEMd/u8vthsCi3OcGxQWBKJdEDEbuDypqNoGgxGgkWY8YDaIYFQ9MRCOJJ0Y80JhgVESiRpCVIAYIIAQPCEoQZCOIyuIB667IPj/8qzPzhveANzPvvX3LP5nMVHdPT1V3VVd1zQwUNroDK4A/gB3A1Pyyk1sUA18DCeBPoBH4FxiRT6ZyiXFI+C+AFsAdRj+TSSfF8fOVM0y281LgP+BwHnnJC75FM15u9BtGV+aNoxyiG7L5H3xlNUgTyjLpqFBNYDJQBKw0ejDQE9gC1GbSUaEOwCQ7r0pDN2sUA78CDUCpla1G9j86X0zlEqOQsJ8b3RaoQ6pfkmlnhWgCQXW/Ag1CNXAi086awwCcVfbfATgOHEReAGAXMone+WIql7geCbvE6F5G7wjbYaGZQFDdpwToZo99aKHrbPQypAGT0t3QnFCBhN1idAlyff8A7cJ2WkgmEFT/S4GOwDoUB4RCIQ3ARDt/ZudL7LwyRdtmhzbAMZT5aWll5wGzgfb5YiqXmIDsf3ncHReKCQTtfwDwGtA1P+zkHi7708/o142ekvaOZoQeKPvzva8sVPYnFQrBBCahuN+pf+jsTyoUygDAWbr7KwF+J4vZnxZxdJICFYQLTxvQzi5h9HCgE7AGOGp9jgGOAJujs5kd3IAECHvc7+vrYSubY/QUo9+Ni9lsrAG97LwN+NiuDwPvAVuN/s7oA0avBjbatdvpQYHa/1w0S1Xo7W0CT7hZRj9o9IdGX4yX7FhodTnJ/jRlLzAerVGrkNC9UAS4A9gf10Oa8gDkJPvTlAdgIooAXf4/K/YflxssBc5HA9rdynoDQ+z6HGAYnu12N7qD0RUo5AXoAlxtbb9Cb4FaAFeidFid3XschccNMckQGpXIR0dxfemO+faMy9LUH0RvikIjqga0QdvS1sBHQH3E/hzGo3RX0P1twlsAy9BXIq8AQ2N6bsa4CM1EnHaZKvuzyZ4zMNB2P1onWhISURdBp0Fx2uHlKORdg+y8E7L5GmBnoG09ihFCyxHVBH6280jgRsKbwGbgJ7sOrvbj0aaohuTPXzoCfYHfyPNC+CrRF7tdvv7SZX/SHfdEYb7o9E3OqI9K9JHidBTnf5JhH+vsXAE8DexGUV8Rmvmu6PO3BNK07sCzaK9RHY39+DAUMZip8AB3kzyrK5Dwg43e4Gu7By18baIwmw2UIWa/yfC+3iiOqAfeRsGO20AttutHrG2RtTsUnd3s4ChnlqfrjFT5MWA9EvIJqxuFIkC/Royzui5Gb6WJwm1XS9PUlyFbriNZwEa8V18gt1aF8ggJ5G3KUYYogbbRTRLViMGKFHW98AboLxTBzQJewhuEJWiWHc7Fyxk8ihbaBPBCVriPAe5z1QmB8g7Aj1a3DAnm0Bt98Oy04QhwJ/L9RXgmMsPKE8B9WZMgIh5HDN4cKH8e792e+5StL/IY6fz7duApu95m9y3AG4xYEHdWuMbOPX1lA4Bb0QJ5O1rlxyIfXorc2jIkJGjnNw251aHoDdBtdp/LN7rnNDm4rO1io8fiqb6L2AaiPzwSSGNap+hnttXvRKGww5dWXp7inryhGH28vAjvD46jaKFz6vwmnrY5tZ+Xoq9StBdwqv9+oH4vWixTDVpeMA5vZQ8etSjEnYYXco+wut0km18nZN/HAn34w9xi9EvML9kRJXPMRbORANYCM4E+QKs07VuhAUkAN/nKL0T7eqc5y/G8yQe+dt2sbAtNAC52/5tT/6FRhgSsxEtqbMWb/XKU80ugMNjFADM42d+PxPMkecUwpIp1nJyPKwKuRTPnojj/sZHkNz/uReeLJO9MX7bymb6y66zsuZjkCI2VxkhVoHwQml0nbB3a269GMzmVZCHddz970dfeDm1RMOQixlo73Ppwb6zSZIh+xsQekhexCXgMrgeu4tQr9RiU0U1YWz/m4Q1gre9osPLpUYWIgipj4klf2RDEbCPwAMn5ueHI17+FNKEaeQCnJQtJxnD05Wc9cEGg7lO7Z0wMcoSGy8q4ha8EL4U1x9duLMoLpHKPjSheCIazg9A+P4EW2SC2W13f6GKEh0tQuK2rW63X4tn3Ajz3uAFtYEYD/dGq77d3kMbcgvdyZVGaZx9C4XDoFHgcuAsxudQYcWrpdn/zjT4MXHOavvqj312dBp1AW95UecqWVn8gRV0kZJoUbY9Uuw+KAdohM9hHcia3FsX7qdAK+fvgTNaTXsBipPqbifgqLA70AN5B+fhTpavjPhqBh+IW5n827DI9G+eQwwAAAABJRU5ErkJggg==
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.12 :: December 2022
+        Added @noframes directive
+        Added Marketplace text filter
+        Added option to share text filter between feeds
+        Added post's image's ALT text in text-filtering
+        Fixed bug with certain sections not hidden when <no message> was been enabled.
+        Code tweaks
     v4.11 :: November 2022
         Updated News Feed suggested/recommended rule
     v4.10 :: November 2022
@@ -66,20 +74,17 @@
     - page: https://www.flaticon.com/premium-icon/mop_2383747
 
 
-    To do :::
-    - investigate Private/Incognito/InPrivate Mode (idb doesn't work in Firefox's private mode)
-    - review events in news feed
-
     Instructions on how to use:
     - In FB, top right corner or bottom left corner, click on the "Clean my feeds" icon (mop + bucket)
+    - Alternatively, click on the script manager icon in the menu bar and select "Settings" under FB - Clean my feeds
     - Toggle the various options
     - Click Save then Close.
     - It is recommended that you Export your settings every now and then.
-    (When your browser flushes the cache, your settings are deleted).
+        (When your browser flushes the cache, your settings are deleted).
 
     Known issue(s):
-    - Settings are not saved in Private/Incognito mode when using Firefox
-    - For Chrome/Edge, only retained until Private/Incognito mode is closed
+    - Settings are not saved in Private/Incognito mode when using Firefox.
+    - For Chrome/Edge, in Private/Incognito mode, settings are retained until browser is closed.
 
     \\\ --- No need to amend any of the code below --- ///
 */
@@ -405,7 +410,6 @@
             'defaultEnabled': false
         },
 
-
         // *** Groups Feed ::
 
         // - Paid partnership:
@@ -530,6 +534,102 @@
             'tr': 'Hareketli GIF\'leri duraklat',
             'defaultEnabled': false,
         },
+
+        // *** block text - feeds
+
+        // - text filter for News Feed:
+        NF_BLOCKED_FEED: {
+            'en': ['News Feed', 'Groups Feed', 'Videos Feed'],
+            'pt': ['Feed de notícias', 'Feed de grupos', 'Feed de vídeos'],
+            'de': ['Newsfeed', 'Gruppen-Feed', 'Video-Feed'],
+            'fr': ['Fil de nouvelles', 'Flux de groupes', 'Flux de vidéos'],
+            'es': ['Feed de noticias', 'Feed de grupos', 'Feed de videos'],
+            'cs': ['Informační kanál', 'Skupinový kanál', 'Video kanál'],
+            'vi': ['Nguồn cấp tin tức', 'Nguồn cấp dữ liệu Nhóm', 'Nguồn cấp dữ liệu video'],
+            'it': ['Feed di notizie', 'Feed di gruppo', 'Feed di video'],
+            'lv': ['Ziņu plūsma', 'Grupu plūsma', 'Video plūsma'],
+            'pl': ['Kanał aktualności', 'Kanał grup', 'Kanał wideo'],
+            'nl': ['Nieuwsfeed', 'Groepsfeed', 'Videofeed'],
+            'he': ['ניוז פיד', 'פיד קבוצות', 'צפה בפיד סרטונים'],
+            'ar': ['موجز الأخبار', 'تغذية المجموعات', 'تغذية الفيديو'],
+            'id': ['Umpan Berita', 'Umpan Grup', 'Umpan Video'],
+            'zh-Hans': ['新闻提要', '组提要', '视频提要'],
+            'zh-Hant': ['新聞動態消息', '群組動態消息', '影片動態消息'],
+            'ja': ['ニュースフィード', 'グループ フィード', '動画フィード'],
+            'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
+            'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
+            'defaultEnabled': ['1', '0', '0'],
+        },
+        // - text filter for Groups Feed:
+        GF_BLOCKED_FEED: {
+            'en': ['News Feed', 'Groups Feed', 'Videos Feed'],
+            'pt': ['Feed de notícias', 'Feed de grupos', 'Feed de vídeos'],
+            'de': ['Newsfeed', 'Gruppen-Feed', 'Video-Feed'],
+            'fr': ['Fil de nouvelles', 'Flux de groupes', 'Flux de vidéos'],
+            'es': ['Feed de noticias', 'Feed de grupos', 'Feed de videos'],
+            'cs': ['Informační kanál', 'Skupinový kanál', 'Video kanál'],
+            'vi': ['Nguồn cấp tin tức', 'Nguồn cấp dữ liệu Nhóm', 'Nguồn cấp dữ liệu video'],
+            'it': ['Feed di notizie', 'Feed di gruppo', 'Feed di video'],
+            'lv': ['Ziņu plūsma', 'Grupu plūsma', 'Video plūsma'],
+            'pl': ['Kanał aktualności', 'Kanał grup', 'Kanał wideo'],
+            'nl': ['Nieuwsfeed', 'Groepsfeed', 'Videofeed'],
+            'he': ['ניוז פיד', 'פיד קבוצות', 'צפה בפיד סרטונים'],
+            'ar': ['موجز الأخبار', 'تغذية المجموعات', 'تغذية الفيديو'],
+            'id': ['Umpan Berita', 'Umpan Grup', 'Umpan Video'],
+            'zh-Hans': ['新闻提要', '组提要', '视频提要'],
+            'zh-Hant': ['新聞動態消息', '群組動態消息', '影片動態消息'],
+            'ja': ['ニュースフィード', 'グループ フィード', '動画フィード'],
+            'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
+            'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
+            'defaultEnabled': ['0', '1', '0'],
+        },
+        // - text filter for Vidoes Feed:
+        VF_BLOCKED_FEED: {
+            'en': ['News Feed', 'Groups Feed', 'Videos Feed'],
+            'pt': ['Feed de notícias', 'Feed de grupos', 'Feed de vídeos'],
+            'de': ['Newsfeed', 'Gruppen-Feed', 'Video-Feed'],
+            'fr': ['Fil de nouvelles', 'Flux de groupes', 'Flux de vidéos'],
+            'es': ['Feed de noticias', 'Feed de grupos', 'Feed de videos'],
+            'cs': ['Informační kanál', 'Skupinový kanál', 'Video kanál'],
+            'vi': ['Nguồn cấp tin tức', 'Nguồn cấp dữ liệu Nhóm', 'Nguồn cấp dữ liệu video'],
+            'it': ['Feed di notizie', 'Feed di gruppo', 'Feed di video'],
+            'lv': ['Ziņu plūsma', 'Grupu plūsma', 'Video plūsma'],
+            'pl': ['Kanał aktualności', 'Kanał grup', 'Kanał wideo'],
+            'nl': ['Nieuwsfeed', 'Groepsfeed', 'Videofeed'],
+            'he': ['ניוז פיד', 'פיד קבוצות', 'צפה בפיד סרטונים'],
+            'ar': ['موجز الأخبار', 'تغذية المجموعات', 'تغذية الفيديو'],
+            'id': ['Umpan Berita', 'Umpan Grup', 'Umpan Video'],
+            'zh-Hans': ['新闻提要', '组提要', '视频提要'],
+            'zh-Hant': ['新聞動態消息', '群組動態消息', '影片動態消息'],
+            'ja': ['ニュースフィード', 'グループ フィード', '動画フィード'],
+            'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
+            'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
+            'defaultEnabled': ['0', '0', '1'],
+        },
+        // - text filter for Marketplace feed:
+        MP_BLOCKED_FEED: {
+            'en': ['Marketplace Feed'],
+            'pt': ['Feed de mercado'],
+            'de': ['Marktplatz-Feed'],
+            'fr': ['Flux de la place de marché'],
+            'es': ['Feed de Marketplace'],
+            'cs': ['Marketplace kanál'],
+            'vi': ['Nguồn cấp dữ liệu Marketplace'],
+            'it': ['Feed id Marketplace'],
+            'lv': ['Marketplace'],
+            'pl': ['Kanał Marketplace'],
+            'nl': ['Marktplaatsfeed'],
+            'he': ['זירת מסחר'],
+            'ar': ['السوق تغذية'],
+            'id': ['Umpan Marketplace'],
+            'zh-Hans': ['市场提要'],
+            'zh-Hant': ['Marketplace 動態消息'],
+            'ja': ['マーケットプレイス フィード'],
+            'fi': ['Marketplace-syöte'],
+            'tr': ['Pazar Yeri Feed\'i'],
+            'defaultEnabled': ['1', '0', '0'],
+        },
+
 
         // *** Miscellaneous/Other items ::
 
@@ -748,76 +848,27 @@
             'tr': 'Diğer öğeler',
         },
 
-        // - text filter for News Feed:
-        DLG_NF_BLOCK: {
-            'en': 'News Feed - text filter',
-            'pt': 'Feed de notícias - filtro de texto',
-            'de': 'Newsfeed - Textfilter',
-            'fr': 'Fil de nouvelles - filtre de texte',
-            'es': 'Feed de noticias: filtro de texto',
-            'cs': 'Informační kanál - textový filtr',
-            'vi': 'Nguồn cấp tin tức - bộ lọc văn bản',
-            'it': 'Feed di notizie - filtro di testo',
-            'lv': 'Ziņu plūsma - teksta filtrs',
-            'pl': 'Kanał aktualności - filtr tekstu',
-            'nl': 'Nieuwsfeed - tekstfilter',
-            'he': 'מסנן טקסט - ניוז פיד',
-            'ar': 'موجز الأخبار - مرشح النص',
-            'id': 'Umpan Berita - filter teks',
-            'zh-Hans': '新闻提要 - 文本过滤器',
-            'zh-Hant': '新聞動態消息 - 文字過濾器',
-            'ja': 'ニュースフィード - テキストフィルター',
-            'fi': 'Uutissyöte - tekstisuodatin',
-            'tr': 'Haber akışı - metin filtresi',
-            'defaultEnabled': false,
-        },
-
-        // - text filter for Groups Feed:
-        DLG_GF_BLOCK: {
-            'en': 'Groups Feed - text filter',
-            'pt': 'Feed de grupos - filtro de texto',
-            'de': 'Gruppen-Feed - Textfilter',
-            'fr': 'Flux de groupes - filtre de texte',
-            'es': 'Feed de grupos: filtro de texto',
-            'cs': 'Skupinový kanál - textový filtr',
-            'vi': 'Nguồn cấp dữ liệu Nhóm - bộ lọc văn bản',
-            'it': 'Feed di gruppo - filtro di testo',
-            'lv': 'Grupu plūsma - teksta filtrs',
-            'pl': 'Kanał grup - filtr tekstu',
-            'nl': 'Groepsfeed - tekstfilter',
-            'he': 'פיד קבוצות - מסנן טקסט',
-            'ar': 'تغذية المجموعات - مرشح النص',
-            'id': 'Umpan Grup - filter teks',
-            'zh-Hans': '组提要 - 文本过滤器',
-            'zh-Hant': '群組動態消息 - 文字過濾器',
-            'ja': 'グループ フィード - テキスト フィルタ',
-            'fi': 'Ryhmäsyöte - tekstisuodatin',
-            'tr': 'Gruplar Feed\'i - metin filtresi',
-            'defaultEnabled': false,
-        },
-
-        // - text filter for Vidoes Feed:
-        DLG_VF_BLOCK: {
-            'en': 'Videos Feed - text filter',
-            'pt': 'Feed de vídeos - filtro de texto',
-            'de': 'Video-Feed - Textfilter',
-            'fr': 'Flux de vidéos - filtre de texte',
-            'es': 'Feed de videos: filtro de texto',
-            'cs': 'Video kanál - textový filtr',
-            'vi': 'Nguồn cấp dữ liệu video - bộ lọc văn bản',
-            'it': 'Feed di video - filtro di testo',
-            'lv': 'Video plūsma - teksta filtrs',
-            'pl': 'Kanał wideo - filtr tekstu',
-            'nl': 'Videofeed - tekstfilter',
-            'he': 'צפה בפיד סרטונים - מסנן טקסט',
-            'ar': 'تغذية الفيديو - مرشح النص',
-            'id': 'Umpan Video - filter teks',
-            'zh-Hans': '视频提要 - 文本过滤器',
-            'zh-Hant': '影片動態消息 - 文字過濾器',
-            'ja': '動画フィード - テキスト フィルター',
-            'fi': 'Videosyöte - tekstisuodatin',
-            'tr': 'Video Beslemelerini İzle - metin filtresi',
-            'defaultEnabled': false,
+        // - text filter label (title)
+        DLG_BLOCK_TEXT_FILTER_TITLE: {
+            'en': 'Text filter',
+            'pt': 'Filtro de texto',
+            'de': 'Textfilter',
+            'fr': 'Filtre de texte',
+            'es': 'Filtro de texto',
+            'cs': 'Textový filtr',
+            'vi': 'Bộ lọc văn bản',
+            'it': 'Filtro di testo',
+            'lv': 'Teksta filtrs',
+            'pl': 'Filtr tekstu',
+            'nl': 'Tekstfilter',
+            'he': 'מסנן טקסט',
+            'ar': 'مرشح النص',
+            'id': 'Filter teks',
+            'zh-Hans': '文本过滤器',
+            'zh-Hant': '文字過濾器',
+            'ja': 'テキストフィルター',
+            'fi': 'Tekstisuodatin',
+            'tr': 'Metin filtresi',
         },
 
         // - text filter - separate keywords with new line:
@@ -863,6 +914,7 @@
             'ja': '有効化',
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
+            'defaultEnabled': false,
         },
 
         GF_BLOCKED_ENABLED: {
@@ -885,6 +937,7 @@
             'ja': '有効化',
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
+            'defaultEnabled': false,
         },
 
         VF_BLOCKED_ENABLED: {
@@ -907,6 +960,30 @@
             'ja': '有効化',
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
+            'defaultEnabled': false,
+        },
+
+        MP_BLOCKED_ENABLED: {
+            'en': 'Enabled',
+            'pt': 'Habilidoso',
+            'de': 'Ermöglichte',
+            'fr': 'Activé',
+            'es': 'Habilitadas',
+            'cs': 'Zapnuto',
+            'vi': 'Đã kích hoạt',
+            'it': 'Abilita opzione',
+            'lv': 'Iespējots',
+            'pl': 'Włączone',
+            'nl': 'Ingeschakeld',
+            'he': 'מופעל',
+            'ar': 'تمكين',
+            'id': 'Diaktifkan',
+            'zh-Hans': '启用',
+            'zh-Hant': '啟用',
+            'ja': '有効化',
+            'fi': 'Ota vaihtoehto käyttöön',
+            'tr': 'Etkinleştirildi',
+            'defaultEnabled': false,
         },
 
         // - label for Verbosity
@@ -1390,7 +1467,6 @@
         DBName: 'dbCMF',
         DBStore: 'Mopping',
         DBKey: 'Options',
-        optionsReady: false,
         ostore: null
     }
     // - make sure the db's store exists ...
@@ -1406,17 +1482,23 @@
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
     const VARS = {
-
-// - how many times to scan a post
+        // - mutations counter
+        mutationsCount: 0,
+        // - how many mutations to ignore @ start (usually non-feed elements)
+        mutationsInitSkip: 75,
+        // - how many times to scan a post
         scanCountStart: 0,
-        scanCountMaxLoop: 11,
+        scanCountMaxLoop: 12,
 
         // - langauge (default to EN)
         language: '',
         // - user options
         Options: {},
+        optionsReady: false,
         // - blocked text
         Filters: {},
+        // - blocked text separator
+        SEP: '¦¦',
 
         // - Feed toggles
         isNF: false, // news
@@ -1559,7 +1641,7 @@
         classes += `.${VARS.cssHideEl}`;
         // -- which styles to apply?
         // --- (display:block is for those span tags being a nth-of-child element.)
-        styles = 'display:none;';
+        styles = 'display:none !important;';
 
         addToSS(classes, styles);
 
@@ -1705,7 +1787,7 @@
         );
         addToSS(
             '.fb-cmf fieldset',
-            'margin:0.5rem; border-color:LightGrey;'
+            'margin:0.5rem; padding:0.5rem; border-color:LightGrey;'
         );
         addToSS(
             '.fb-cmf fieldset legend',
@@ -1713,7 +1795,7 @@
         );
         addToSS(
             '.fb-cmf fieldset label',
-            'display:inline-block; padding:0.125rem 0; width:95%; color: var(--primary-text); font-weight: normal;'
+            'display:inline-block; padding:0.125rem 0; color: var(--primary-text); font-weight: normal;'
         );
         addToSS(
             '.fb-cmf fieldset label input',
@@ -1843,6 +1925,7 @@
         let changed = false;
         // - reset Options
         VARS.Options = new Object();
+        VARS.optionsReady = false;
 
         // - has the user previously saved options?
         // -- if yes, the update Options
@@ -1879,53 +1962,6 @@
             changed = true;
         }
 
-        // -- which version is stored?
-        // -- v2.x-v3.x have "create_room". v4.x doesn't.
-        // -- if v2-3, upgrade to v4.
-        if ((result === 1) && VARS.Options.hasOwnProperty('NF_CREATE_ROOM')) {
-            if (!VARS.Options.hasOwnProperty('NF_SUGGESTIONS')) {
-                VARS.Options.NF_SUGGESTIONS = (
-                    //VARS.Options.NF_EVENTS_YOU_MAY_LIKE ||
-                    VARS.Options.NF_RECOMMENDED_POST ||
-                    VARS.Options.NF_SUGGESTED_EVENTS ||
-                    VARS.Options.NF_SUGGESTED_FOR_YOU ||
-                    VARS.Options.NF_SUGGESTED_PAGES ||
-                    VARS.Options.NF_THIRD_COLUMN_SUGGESTED_FOR_YOU
-                );
-            }
-            if (!VARS.Options.hasOwnProperty('GF_SUGGESTIONS')) {
-                VARS.Options.GF_SUGGESTIONS = (
-                    VARS.Options.GF_BECAUSE_YOU_VIEWED_A_SIMILAR_GROUP ||
-                    VARS.Options.GF_BECAUSE_YOU_VIEWED_A_SIMILAR_POST ||
-                    VARS.Options.GF_FRIENDS_GROUPS ||
-                    VARS.Options.GF_FROM_A_GROUP_YOUR_FRIEND_IS_IN ||
-                    VARS.Options.GF_JOIN_GROUP ||
-                    VARS.Options.GF_NEW_FOR_YOU ||
-                    VARS.Options.GF_POPULAR_NEAR_YOU ||
-                    VARS.Options.GF_SEE_MORE_GROUPS ||
-                    VARS.Options.GF_SUGGESTED_FOR_YOU_GROUPS ||
-                    VARS.Options.GF_SUGGESTED_GROUPS ||
-                    VARS.Options.GF_SUGGESTED_POST_PUBLIC_GROUP ||
-                    VARS.Options.GF_YOUR_RECENT_ACTIVITY
-                );
-            }
-            if (!VARS.Options.hasOwnProperty('VERBOSITY_MESSAGE_COLOUR')) {
-                VARS.Options.VERBOSITY_MESSAGE_COLOUR = VARS.Options.VERBOSITY_COLOUR;
-            }
-            if (!VARS.Options.hasOwnProperty('VERBOSITY_MESSAGE_BG_COLOUR')) {
-                VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR = VARS.Options.VERBOSITY_BG_COLOUR;
-            }
-            if ((VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR === '') || (VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR === undefined)) {
-                VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR = KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue;
-            }
-            if (!VARS.Options.hasOwnProperty('CMF_DIALOG_OPTION')) {
-                VARS.Options.CMF_DIALOG_OPTION = VARS.Options.CMF_DIALOG_LOCATION;
-            }
-            if (!VARS.Options.hasOwnProperty('CMF_BTN_OPTION')) {
-                VARS.Options.CMF_BTN_OPTION = VARS.Options.CMF_BTN_LOCATION;
-            }
-        }
-
         // -- which option has been enabled / disabled?
         VARS.hideAnInfoBox = false;
         for (const key in KeyWords) {
@@ -1947,6 +1983,12 @@
                     changed = true;
                 }
             }
+            else if (key.slice(0, 3) === 'MP_' && key.slice(0, 10) !== 'MP_BLOCKED') {
+                if (!VARS.Options.hasOwnProperty(key)) {
+                    VARS.Options[key] = KeyWords[key].defaultEnabled;
+                    changed = true;
+                }
+            }
             else if (key.slice(0, 10) === 'OTHER_INFO') {
                 if (!VARS.Options.hasOwnProperty(key)) {
                     VARS.Options[key] = KeyWords[key].defaultEnabled;
@@ -1963,6 +2005,10 @@
             VARS.Options.NF_BLOCKED_ENABLED = KeyWords.NF_BLOCKED_ENABLED.defaultEnabled;
             changed = true;
         }
+        if (!VARS.Options.hasOwnProperty('NF_BLOCKED_FEED')) {
+            VARS.Options.NF_BLOCKED_FEED = KeyWords.NF_BLOCKED_FEED.defaultEnabled;
+            changed = true;
+        }
         if (!VARS.Options.hasOwnProperty('NF_BLOCKED_TEXT')) {
             VARS.Options.NF_BLOCKED_TEXT = '';
             changed = true;
@@ -1970,6 +2016,10 @@
 
         if (!VARS.Options.hasOwnProperty('GF_BLOCKED_ENABLED')) {
             VARS.Options.GF_BLOCKED_ENABLED = KeyWords.GF_BLOCKED_ENABLED.defaultEnabled;
+            changed = true;
+        }
+        if (!VARS.Options.hasOwnProperty('GF_BLOCKED_FEED')) {
+            VARS.Options.GF_BLOCKED_FEED = KeyWords.GF_BLOCKED_FEED.defaultEnabled;
             changed = true;
         }
         if (!VARS.Options.hasOwnProperty('GF_BLOCKED_TEXT')) {
@@ -1981,8 +2031,25 @@
             VARS.Options.VF_BLOCKED_ENABLED = KeyWords.VF_BLOCKED_ENABLED.defaultEnabled;
             changed = true;
         }
+        if (!VARS.Options.hasOwnProperty('VF_BLOCKED_FEED')) {
+            VARS.Options.VF_BLOCKED_FEED = KeyWords.VF_BLOCKED_FEED.defaultEnabled;
+            changed = true;
+        }
         if (!VARS.Options.hasOwnProperty('VF_BLOCKED_TEXT')) {
             VARS.Options.VF_BLOCKED_TEXT = '';
+            changed = true;
+        }
+
+        if (!VARS.Options.hasOwnProperty('MP_BLOCKED_ENABLED')) {
+            VARS.Options.MP_BLOCKED_ENABLED = KeyWords.MP_BLOCKED_ENABLED.defaultEnabled;
+            changed = true;
+        }
+        if (!VARS.Options.hasOwnProperty('MP_BLOCKED_FEED')) {
+            VARS.Options.MP_BLOCKED_FEED = KeyWords.MP_BLOCKED_FEED.defaultEnabled;
+            changed = true;
+        }
+        if (!VARS.Options.hasOwnProperty('MP_BLOCKED_TEXT')) {
+            VARS.Options.MP_BLOCKED_TEXT = '';
             changed = true;
         }
 
@@ -2064,32 +2131,127 @@
 
         // split the blocks of texts entries into arrays and translate to lowercase.
         VARS.Filters = new Object();
-        // -- news feed
+
+        // -- original list of text for each feed
+        let nfBlockedText = '';
+        let gfBlockedText = '';
+        let vfBlockedText = '';
+        let mpBlockedText = '';
+        if (VARS.Options.NF_BLOCKED_ENABLED === true) {
+            nfBlockedText = VARS.Options.NF_BLOCKED_TEXT;
+        }
+        if (VARS.Options.GF_BLOCKED_ENABLED === true) {
+            gfBlockedText = VARS.Options.GF_BLOCKED_TEXT;
+        }
+        if (VARS.Options.VF_BLOCKED_ENABLED === true) {
+            vfBlockedText = VARS.Options.VF_BLOCKED_TEXT;
+        }
+        if (VARS.Options.MP_BLOCKED_ENABLED === true) {
+            mpBlockedText = VARS.Options.MP_BLOCKED_TEXT;
+        }
+
+        // -- final list of text for each feed
+        let nfBlockedTextList = '';
+        let gfBlockedTextList = '';
+        let vfBlockedTextList = '';
+        let mpBlockedTextList = '';
+
+        // -- ##_BLOCKED_FEED[X] : 0 = NF, 1 = GF, 2 = VF.
+        // -- rule: both feeds must be enabled before appending text list from one feed to another text list
+        // -- news feed:
+        if (VARS.Options.NF_BLOCKED_ENABLED) {
+            nfBlockedTextList = nfBlockedText; // final list
+            // -- add gf to nf
+            if (VARS.Options.GF_BLOCKED_ENABLED && VARS.Options.GF_BLOCKED_FEED[0] === '1') {
+                if (gfBlockedText.length > 0) {
+                    nfBlockedTextList += ((nfBlockedTextList.length > 0) ? VARS.SEP : '') + gfBlockedText;
+                }
+            }
+            // -- add vf to nf
+            if (VARS.Options.VF_BLOCKED_ENABLED && VARS.Options.VF_BLOCKED_FEED[0] === '1') {
+                if (vfBlockedText.length > 0) {
+                    nfBlockedTextList += ((nfBlockedTextList.length > 0) ? VARS.SEP : '') + vfBlockedText;
+                }
+            }
+        }
+        // -- groups feed:
+        if (VARS.Options.GF_BLOCKED_ENABLED) {
+            gfBlockedTextList = gfBlockedText; // final list
+            // -- add nf to gf
+            if (VARS.Options.NF_BLOCKED_ENABLED && VARS.Options.NF_BLOCKED_FEED[1] === '1') {
+                if (nfBlockedText.length > 0) {
+                    gfBlockedTextList += ((gfBlockedTextList.length > 0) ? VARS.SEP : '') + nfBlockedText;
+                }
+            }
+            // -- add vf to gf
+            if (VARS.Options.VF_BLOCKED_ENABLED && VARS.Options.VF_BLOCKED_FEED[1] === '1') {
+                if (vfBlockedText.length > 0) {
+                    gfBlockedTextList += ((gfBlockedTextList.length > 0) ? VARS.SEP : '') + vfBlockedText;
+                }
+            }
+        }
+        // -- videos feed:
+        if (VARS.Options.VF_BLOCKED_ENABLED) {
+            vfBlockedTextList = vfBlockedText; // final list
+            // -- add nf to vf
+            if (VARS.Options.NF_BLOCKED_ENABLED && VARS.Options.NF_BLOCKED_FEED[2] === '1') {
+                if (nfBlockedText.length > 0) {
+                    vfBlockedTextList += ((vfBlockedTextList.length > 0) ? VARS.SEP : '') + nfBlockedText;
+                }
+            }
+            // -- add gf to vf
+            if (VARS.Options.GF_BLOCKED_ENABLED && VARS.Options.GF_BLOCKED_FEED[2] === '1') {
+                if (gfBlockedText.length > 0) {
+                    vfBlockedTextList += ((vfBlockedTextList.length > 0) ? VARS.SEP : '') + gfBlockedText;
+                }
+            }
+        }
+        // -- market place (stand-alone)
+        if (VARS.Options.MP_BLOCKED_ENABLED) {
+            mpBlockedTextList = mpBlockedText;
+        }
+
+        // -- populate the VARS.Filters.###...
+        // -- news feed:
         VARS.Filters.NF_BLOCKED_TEXT = [];
         VARS.Filters.NF_BLOCKED_TEXT_LC = [];
-        if (VARS.Options.NF_BLOCKED_ENABLED) {
-            VARS.Filters.NF_BLOCKED_TEXT = VARS.Options.NF_BLOCKED_TEXT.split('¦¦');
+        VARS.Filters.NF_BLOCKED_ENABLED = false;
+        if (VARS.Options.NF_BLOCKED_ENABLED && nfBlockedTextList.length > 0) {
+            VARS.Filters.NF_BLOCKED_ENABLED = true;
+            VARS.Filters.NF_BLOCKED_TEXT = nfBlockedTextList.split(VARS.SEP);
             VARS.Filters.NF_BLOCKED_TEXT_LC = VARS.Filters.NF_BLOCKED_TEXT.map(btext => btext.toLowerCase());
         }
-        VARS.Filters.NF_BLOCKED_ENABLED = ((VARS.Filters.NF_BLOCKED_TEXT.length > 0) && (VARS.Filters.NF_BLOCKED_TEXT[0] !== ''));
-        // -- groups feed
+        // -- groups feed:
         VARS.Filters.GF_BLOCKED_TEXT = [];
         VARS.Filters.GF_BLOCKED_TEXT_LC = [];
-        if (VARS.Options.GF_BLOCKED_ENABLED) {
-            VARS.Filters.GF_BLOCKED_TEXT = VARS.Options.GF_BLOCKED_TEXT.split('¦¦');
+        VARS.Filters.GF_BLOCKED_ENABLED = false;
+        if (VARS.Options.GF_BLOCKED_ENABLED && gfBlockedTextList.length > 0) {
+            VARS.Filters.GF_BLOCKED_ENABLED = true;
+            VARS.Filters.GF_BLOCKED_TEXT = gfBlockedTextList.split(VARS.SEP);
             VARS.Filters.GF_BLOCKED_TEXT_LC = VARS.Filters.GF_BLOCKED_TEXT.map(btext => btext.toLowerCase());
         }
-        VARS.Filters.GF_BLOCKED_ENABLED = ((VARS.Filters.GF_BLOCKED_TEXT.length > 0) && (VARS.Filters.GF_BLOCKED_TEXT[0] !== ''));
         // -- watch videos feed
         VARS.Filters.VF_BLOCKED_TEXT = [];
         VARS.Filters.VF_BLOCKED_TEXT_LC = [];
-        if (VARS.Options.VF_BLOCKED_ENABLED) {
-            VARS.Filters.VF_BLOCKED_TEXT = VARS.Options.VF_BLOCKED_TEXT.split('¦¦');
+        VARS.Filters.VF_BLOCKED_ENABLED = false;
+        if (VARS.Options.VF_BLOCKED_ENABLED && vfBlockedTextList.length > 0) {
+            VARS.Filters.VF_BLOCKED_ENABLED = true;
+            VARS.Filters.VF_BLOCKED_TEXT = vfBlockedTextList.split(VARS.SEP);
             VARS.Filters.VF_BLOCKED_TEXT_LC = VARS.Filters.VF_BLOCKED_TEXT.map(btext => btext.toLowerCase());
         }
-        VARS.Filters.VF_BLOCKED_ENABLED = ((VARS.Filters.VF_BLOCKED_TEXT.length > 0) && (VARS.Filters.VF_BLOCKED_TEXT[0] !== ''));
+        // -- marketplace  feed
+        VARS.Filters.MP_BLOCKED_TEXT = [];
+        VARS.Filters.MP_BLOCKED_TEXT_LC = [];
+        VARS.Filters.MP_BLOCKED_ENABLED = false;
+        if (VARS.Options.MP_BLOCKED_ENABLED && mpBlockedTextList.length > 0) {
+            VARS.Filters.MP_BLOCKED_ENABLED = true;
+            VARS.Filters.MP_BLOCKED_TEXT = mpBlockedTextList.split(VARS.SEP);
+            VARS.Filters.MP_BLOCKED_TEXT_LC = VARS.Filters.MP_BLOCKED_TEXT.map(btext => btext.toLowerCase());
+        }
 
-        DBVARS.optionsReady = true;
+        // console.info(log + 'getUserOptions() - Filters:', VARS.Filters);
+
+        VARS.optionsReady = true;
     }
 
     // -- run some functions now - not dependent on HEAD being available.
@@ -2102,13 +2264,15 @@
         // -- BODY must be available for use.
         // -- used for displaying/getting/setting the various options
 
-        function createCB(cbName, cbKeyWord, cbReadOnly = false) {
-            let div = document.createElement('div');
+        function createSingleCB(cbName, cbReadOnly = false) {
+            // -- create toggle style checkboxes
+            const CBTYPE = 'T'; // checkbox, single value, Toggle style
             let cb = document.createElement('input');
             cb.type = 'checkbox';
+            cb.setAttribute('cbType', CBTYPE);
             cb.name = cbName;
-            cb.value = cbKeyWord;
-            cb.checked = VARS.Options[cbKeyWord];
+            cb.value = cbName;
+            cb.checked = VARS.Options[cbName];
             let label = document.createElement('label');
             if (cbReadOnly) {
                 cb.checked = true;
@@ -2116,22 +2280,52 @@
                 label.setAttribute('disabled', 'disabled');
             }
             label.appendChild(cb);
-            if (KeyWords[cbKeyWord]) {
-                if (Array.isArray(KeyWords[cbKeyWord][VARS.language]) === false) {
-                    label.appendChild(document.createTextNode(KeyWords[cbKeyWord][VARS.language]));
+            if (KeyWords[cbName]) {
+                if (Array.isArray(KeyWords[cbName][VARS.language]) === false) {
+                    label.appendChild(document.createTextNode(KeyWords[cbName][VARS.language]));
                 }
                 else {
-                    label.appendChild(document.createTextNode(Array.from(KeyWords[cbKeyWord][VARS.language]).join(', ')));
+                    label.appendChild(document.createTextNode(Array.from(KeyWords[cbName][VARS.language]).join(', ')));
                 }
             }
-            else if (['NF_SPONSORED', 'GF_SPONSORED', 'VF_SPONSORED', 'MP_SPONSORED'].indexOf(cbKeyWord) >= 0) {
+            else if (['NF_SPONSORED', 'GF_SPONSORED', 'VF_SPONSORED', 'MP_SPONSORED'].indexOf(cbName) >= 0) {
                 label.appendChild(document.createTextNode(KeyWords.SPONSORED[VARS.language]));
             }
             else {
-                label.appendChild(document.createTextNode(cbKeyWord));
+                label.appendChild(document.createTextNode(cbName));
             }
+            let div = document.createElement('div');
             div.appendChild(label);
             return div;
+        }
+
+        function createMultipeCBs(cbName, cbReadOnlyIdx = -1) {
+            // -- create multiple values checkboxes
+            const CBTYPE = 'M'; // checkbox, Multiple values
+            let arrElements = [];
+            for (let i = 0; i < KeyWords[cbName][VARS.language].length; i++) {
+                let div = document.createElement('div');
+                let cbKeyWord = KeyWords[cbName][VARS.language][i];
+                let cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.setAttribute('cbType', CBTYPE);
+                cb.name = cbName;
+                cb.value = i;
+                cb.checked = VARS.Options[cbName][i] === '1';
+                let label = document.createElement('label');
+                if (i === cbReadOnlyIdx) {
+                    cb.checked = true;
+                    cb.disabled = true;
+                    label.setAttribute('disabled', 'disabled');
+                }
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(cbKeyWord));
+                div.appendChild(label);
+                arrElements.push(div);
+            };
+            let br = document.createElement('br');
+            arrElements.push(br);
+            return arrElements;
         }
 
         function createRB(rbName, rbValue, rbLabelText) {
@@ -2163,7 +2357,7 @@
         }
 
         function createDialog() {
-            let dlg, hdr, hdr1, hdr2, hdr3, htxt, stxt, btn, cnt, fs, l, s, ta, footer, elHint;
+            let dlg, hdr, hdr1, hdr2, hdr3, htxt, stxt, btn, cnt, fs, l, s, ta, div, footer;
 
             // -- wrapper
             dlg = document.createElement('div');
@@ -2212,26 +2406,30 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_NF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createCB('cbNF', 'NF_SPONSORED', true));
+            fs.appendChild(createSingleCB('NF_SPONSORED', true));
             for (const key in KeyWords) {
-                if (key.slice(0, 3) === 'NF_' && key.slice(0, 10) !== 'NF_BLOCKED') {
-                    fs.appendChild(createCB('cbNF', key));
+                if (key.slice(0, 3) === 'NF_' && key.slice(0, 8) !== 'NF_BLOCK') {
+                    fs.appendChild(createSingleCB(key));
                 }
             }
-            cnt.appendChild(fs);
 
             // -- Keywords to block - News Feed
-            fs = document.createElement('fieldset');
-            l = document.createElement('legend');
-            l.textContent = KeyWords.DLG_NF_BLOCK[VARS.language];
+            fs.appendChild(document.createElement('br'));
+            l = document.createElement('strong');
+            l.textContent = KeyWords.DLG_BLOCK_TEXT_FILTER_TITLE[VARS.language] + ":";
             fs.appendChild(l);
-            fs.appendChild(createCB('cbNFBT', 'NF_BLOCKED_ENABLED'));
+
+            createMultipeCBs('NF_BLOCKED_FEED', 0).forEach(el => {
+                fs.appendChild(el);
+            });
+
+            fs.appendChild(createSingleCB('NF_BLOCKED_ENABLED'));
             s = document.createElement('small');
             s.appendChild(document.createTextNode(KeyWords.DLG_BLOCK_NEW_LINE[VARS.language]));
             fs.appendChild(s);
             ta = document.createElement('textarea');
             ta.name = 'NF_BLOCKED_TEXT';
-            ta.textContent = VARS.Filters.NF_BLOCKED_TEXT.join('\n');
+            ta.textContent = VARS.Options.NF_BLOCKED_TEXT.split(VARS.SEP).join('\n');
             fs.appendChild(ta);
             cnt.appendChild(fs);
 
@@ -2240,55 +2438,62 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_GF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createCB('cbGF', 'GF_SPONSORED', true));
+            fs.appendChild(createSingleCB('GF_SPONSORED', true));
             for (const key in KeyWords) {
-                if (key.slice(0, 3) === 'GF_' && key.slice(0, 10) !== 'GF_BLOCKED') {
-                    fs.appendChild(createCB('cbGF', key));
+                if (key.slice(0, 3) === 'GF_' && key.slice(0, 8) !== 'GF_BLOCK') {
+                    fs.appendChild(createSingleCB(key));
                 }
             }
-            cnt.appendChild(fs);
 
             // -- Keywords to block - Groups Feed
-            fs = document.createElement('fieldset');
-            l = document.createElement('legend');
-            l.textContent = KeyWords.DLG_GF_BLOCK[VARS.language];
+            fs.appendChild(document.createElement('br'));
+            l = document.createElement('strong');
+            l.textContent = KeyWords.DLG_BLOCK_TEXT_FILTER_TITLE[VARS.language] + ':';
             fs.appendChild(l);
-            fs.appendChild(createCB('cbGFBT', 'GF_BLOCKED_ENABLED'));
+
+            createMultipeCBs('GF_BLOCKED_FEED', 1).forEach(el => {
+                fs.appendChild(el);
+            });
+
+            fs.appendChild(createSingleCB('GF_BLOCKED_ENABLED'));
             s = document.createElement('small');
             s.appendChild(document.createTextNode(KeyWords.DLG_BLOCK_NEW_LINE[VARS.language]));
             fs.appendChild(s);
             ta = document.createElement('textarea');
             ta.name = 'GF_BLOCKED_TEXT';
-            ta.textContent = VARS.Filters.GF_BLOCKED_TEXT.join('\n');
+            ta.textContent = VARS.Options.GF_BLOCKED_TEXT.split(VARS.SEP).join('\n');
             fs.appendChild(ta);
             cnt.appendChild(fs);
-
 
             // -- Watch Videos Feed options
             fs = document.createElement('fieldset');
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_VF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createCB('cbVF', 'VF_SPONSORED', true));
+            fs.appendChild(createSingleCB('VF_SPONSORED', true));
             for (const key in KeyWords) {
-                if (key.slice(0, 3) === 'VF_' && key.slice(0, 10) !== 'VF_BLOCKED') {
-                    fs.appendChild(createCB('cbVF', key));
+                if (key.slice(0, 3) === 'VF_' && key.slice(0, 8) !== 'VF_BLOCK') {
+                    fs.appendChild(createSingleCB(key));
                 }
             }
-            cnt.appendChild(fs);
 
             // -- Keywords to block - Watch Videos Feed
-            fs = document.createElement('fieldset');
-            l = document.createElement('legend');
-            l.textContent = KeyWords.DLG_VF_BLOCK[VARS.language];
+            fs.appendChild(document.createElement('br'));
+            l = document.createElement('strong');
+            l.textContent = KeyWords.DLG_BLOCK_TEXT_FILTER_TITLE[VARS.language] + ':';
             fs.appendChild(l);
-            fs.appendChild(createCB('cbVFBT', 'VF_BLOCKED_ENABLED'));
+
+            createMultipeCBs('VF_BLOCKED_FEED', 2).forEach(el => {
+                fs.appendChild(el);
+            });
+
+            fs.appendChild(createSingleCB('VF_BLOCKED_ENABLED'));
             s = document.createElement('small');
             s.appendChild(document.createTextNode(KeyWords.DLG_BLOCK_NEW_LINE[VARS.language]));
             fs.appendChild(s);
             ta = document.createElement('textarea');
             ta.name = 'VF_BLOCKED_TEXT';
-            ta.textContent = VARS.Filters.VF_BLOCKED_TEXT.join('\n');
+            ta.textContent = VARS.Options.VF_BLOCKED_TEXT.split(VARS.SEP).join('\n');
             fs.appendChild(ta);
             cnt.appendChild(fs);
 
@@ -2297,7 +2502,26 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_MP[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createCB('cbMP', 'MP_SPONSORED', true));
+            fs.appendChild(createSingleCB('MP_SPONSORED', true));
+
+            // -- Keywords to block - Marketplace Feed
+            fs.appendChild(document.createElement('br'));
+            l = document.createElement('strong');
+            l.textContent = KeyWords.DLG_BLOCK_TEXT_FILTER_TITLE[VARS.language] + ':';
+            fs.appendChild(l);
+
+            createMultipeCBs('MP_BLOCKED_FEED', 0).forEach(el => {
+                fs.appendChild(el);
+            });
+
+            fs.appendChild(createSingleCB('MP_BLOCKED_ENABLED'));
+            s = document.createElement('small');
+            s.appendChild(document.createTextNode(KeyWords.DLG_BLOCK_NEW_LINE[VARS.language]));
+            fs.appendChild(s);
+            ta = document.createElement('textarea');
+            ta.name = 'MP_BLOCKED_TEXT';
+            ta.textContent = VARS.Options.MP_BLOCKED_TEXT.split(VARS.SEP).join('\n');
+            fs.appendChild(ta);
             cnt.appendChild(fs);
 
             // -- Other items options
@@ -2307,7 +2531,7 @@
             fs.appendChild(l);
             for (const key in KeyWords) {
                 if (key.slice(0, 10) === 'OTHER_INFO') {
-                    fs.appendChild(createCB('cbOther', key));
+                    fs.appendChild(createSingleCB(key));
                 }
             }
             cnt.appendChild(fs);
@@ -2327,7 +2551,7 @@
             fs.appendChild(createInput('VERBOSITY_MESSAGE_COLOUR', `${KeyWords.VERBOSITY_MESSAGE_COLOUR[VARS.language]}:`));
             fs.appendChild(createInput('VERBOSITY_MESSAGE_BG_COLOUR', `${KeyWords.VERBOSITY_MESSAGE_BG_COLOUR[VARS.language]}:`));
             fs.appendChild(document.createElement('br'));
-            fs.appendChild(createCB('cbVD', 'VERBOSITY_DEBUG'));
+            fs.appendChild(createSingleCB('VERBOSITY_DEBUG'));
             cnt.appendChild(fs);
 
             // -- cmf customisations
@@ -2336,7 +2560,8 @@
             l.textContent = KeyWords.CMF_CUSTOMISATIONS[VARS.language];
             fs.appendChild(l);
             fs.appendChild(document.createTextNode(`${KeyWords.CMF_BTN_LOCATION[VARS.language]}:`));
-            for (let i = 0; i < KeyWords.CMF_BTN_OPTION[VARS.language].length; i++) {
+            let len = KeyWords.CMF_BTN_OPTION[VARS.language].length;
+            for (let i = 0; i < len; i++) {
                 fs.appendChild(createRB('CMF_BTN_OPTION', i.toString(), KeyWords.CMF_BTN_OPTION[VARS.language][i]));
             };
             fs.appendChild(document.createElement('br'));
@@ -2385,7 +2610,7 @@
             fileImport.classList.add('fileInput');
             footer.appendChild(fileImport);
             // -- import results
-            let div = document.createElement('div');
+            div = document.createElement('div');
             div.classList.add('fileResults');
             footer.appendChild(div);
 
@@ -2406,24 +2631,35 @@
         function updateDialog() {
             let content = document.getElementById('fbcmf').querySelector('.content');
             if (content) {
-                let cbs = Array.from(content.querySelectorAll('input[type="checkbox"]'));
+                // -- toggle checkboxes
+                let cbs = Array.from(content.querySelectorAll('input[type="checkbox"][cbtype="T"]'));
                 cbs.forEach(cb => {
-                    if (VARS.Options.hasOwnProperty(cb.value)) {
-                        cb.checked = VARS.Options[cb.value];
+                    if (VARS.Options.hasOwnProperty(cb.name)) {
+                        cb.checked = VARS.Options[cb.name];
                     }
                 });
+                // -- multiple values checkboxes
+                cbs = Array.from(content.querySelectorAll('input[type="checkbox"][cbtype="M"]'));
+                cbs.forEach(cb => {
+                    if (VARS.Options.hasOwnProperty(cb.name)) {
+                        cb.checked = VARS.Options[cb.name][parseInt(cb.value)] === '1';
+                    }
+                });
+                // -- radios
                 let rbs = content.querySelectorAll('input[type="radio"]');
                 rbs.forEach(rb => {
-                    if (VARS.Options.hasOwnProperty(rb.name)) {
+                    if (VARS.Options.hasOwnProperty(rb.name) && (rb.value === VARS.Options[rb.name])) {
                         rb.checked = VARS.Options[rb.name];
                     }
                 });
+                // -- textareas
                 let tas = Array.from(content.querySelectorAll('textarea'));
                 tas.forEach(ta => {
                     if (VARS.Options.hasOwnProperty(ta.name)) {
-                        ta.value = VARS.Options[ta.name].replaceAll('¦¦', '\n');
+                        ta.value = VARS.Options[ta.name].replaceAll(VARS.SEP, '\n');
                     }
                 });
+                // -- plain inputs
                 let inputs = Array.from(content.querySelectorAll('input[type="text"]'));
                 inputs.forEach(inp => {
                     if (VARS.Options.hasOwnProperty[inp.name]) {
@@ -2440,11 +2676,33 @@
 
                 // -- grab the dialog box and get the various options.
                 md = document.getElementById('fbcmf');
-                // -- checkboxes
-                cbs = Array.from(md.querySelectorAll('input[type="checkbox"]'));
+                // -- checkboxes (toggle variations)
+                cbs = Array.from(md.querySelectorAll('input[type="checkbox"][cbtype="T"]'));
                 cbs.forEach(cb => {
-                    VARS.Options[cb.value] = cb.checked;
+                    VARS.Options[cb.name] = cb.checked;
                 });
+                // -- checkboxes (multipe values variations)
+                let cbName = 'NF_BLOCKED_FEED';
+                cbs = Array.from(md.querySelectorAll(`input[type="checkbox"][name="${cbName}"]`));
+                cbs.forEach(cb => {
+                    VARS.Options[cbName][parseInt(cb.value)] = (cb.checked) ? '1' : '0';
+                });
+                cbName = 'GF_BLOCKED_FEED';
+                cbs = Array.from(md.querySelectorAll(`input[type="checkbox"][name="${cbName}"]`));
+                cbs.forEach(cb => {
+                    VARS.Options[cbName][parseInt(cb.value)] = (cb.checked) ? '1' : '0';
+                });
+                cbName = 'VF_BLOCKED_FEED';
+                cbs = Array.from(md.querySelectorAll(`input[type="checkbox"][name="${cbName}"]`));
+                cbs.forEach(cb => {
+                    VARS.Options[cbName][parseInt(cb.value)] = (cb.checked) ? '1' : '0';
+                });
+                cbName = 'MP_BLOCKED_FEED';
+                cbs = Array.from(md.querySelectorAll(`input[type="checkbox"][name="${cbName}"]`));
+                cbs.forEach(cb => {
+                    VARS.Options[cbName][parseInt(cb.value)] = (cb.checked) ? '1' : '0';
+                });
+
                 // -- radios
                 rbs = md.querySelectorAll('input[type="radio"]:checked');
                 rbs.forEach(rb => {
@@ -2465,7 +2723,7 @@
                             txts.push(txt); // -- do not trim - retain entry as is.
                         }
                     });
-                    VARS.Options[ta.name] = txts.join('¦¦');
+                    VARS.Options[ta.name] = txts.join(VARS.SEP);
                 });
             }
 
@@ -2474,12 +2732,14 @@
             let inputs = Array.from(md.querySelectorAll('input:not([type="file"]), textarea'));
             let validNames = [];
             inputs.forEach(inp => {
-                validNames.push((inp.type === 'checkbox') ? inp.value : inp.name);
+                if (validNames.indexOf(inp.name) < 0) {
+                    validNames.push(inp.name);
+                }
             });
             for (let key in VARS.Options) {
                 if (validNames.indexOf(key) < 0) {
                     if (VARS.Options.VERBOSITY_DEBUG) {
-                        console.info(`${log}SUO : deleting key:`, key);
+                        console.info(log + 'saveUserOptions(); Deleting key:', key);
                     }
                     delete VARS.Options[key];
                 }
@@ -2591,9 +2851,14 @@
             reader.onload = (file) => {
                 try {
                     let fileContent = JSON.parse(file.target.result);
-                    if (fileContent.hasOwnProperty('NF_SPONSORED') && fileContent.hasOwnProperty('GF_SPONSORED') && fileContent.hasOwnProperty('VF_SPONSORED') && fileContent.hasOwnProperty('MP_SPONSORED')) {
+                    if (
+                        fileContent.hasOwnProperty('NF_SPONSORED') &&
+                        fileContent.hasOwnProperty('GF_SPONSORED') &&
+                        fileContent.hasOwnProperty('VF_SPONSORED') &&
+                        fileContent.hasOwnProperty('MP_SPONSORED')
+                    ) {
                         VARS.Options = fileContent;
-                        // console.info(`${log}importUserOptions > reader.onload: Options:`, VARS.Options);
+                        // console.info(log + 'importUserOptions() > reader.onload: Options:', VARS.Options);
                         // -- save the file to the db
                         // -- save will run getUserOptions();
                         let result = saveUserOptions(null, 'file').then(() => {
@@ -2605,7 +2870,8 @@
                     else {
                         fileResults.textContent = `File NOT imported: ${fileN}`;
                     }
-                } catch (e) {
+                }
+                catch (e) {
                     fileResults.textContent = `File NOT imported: ${fileN}`;
                 }
             }
@@ -2747,7 +3013,8 @@
         if (scanCount < VARS.scanCountMaxLoop) {
             let dustySpots = Array.from(post.querySelectorAll('[data-0="0"]'));
             if (dustySpots.length > 0) {
-                for (let i = dustySpots.length - 1; i >= 0; i--) {
+                let len = dustySpots.length - 1;
+                for (let i = len; i >= 0; i--) {
                     dustySpots[i].parentElement.removeChild(dustySpots[i]);
                 }
             }
@@ -2762,16 +3029,33 @@
             walk = document.createTreeWalker(theNode, NodeFilter.SHOW_TEXT, null, false);
         while ((n = walk.nextNode())) {
             let val = n.textContent.trim();
-            if ((val !== '') && (val.length > 1)) {
+            if ((val !== '') && (val.length > 1) && (val.toLowerCase() !== 'facebook')) {
                 // - keep 2+ char strings.
                 arrayTextValues.push(val);
             }
         }
         return arrayTextValues;
     }
+    function scanImagesForAltText(theNode) {
+        let arrayAltTextValues = [];
+        Array.from(theNode.querySelectorAll('img[alt]')).forEach(img => {
+            if (img.alt.length > 0) {
+                if (img.width && img.width < 33) {
+                    // -- emojis usually have widths < 32 ... skip them.
+                }
+                else {
+                    if (arrayAltTextValues.indexOf(img.alt) < 0) {
+                        arrayAltTextValues.push(img.alt);
+                    }
+                }
+            }
+        });
+        return arrayAltTextValues;
+    }
 
     function extractTextContent(post, selector, maxBlocks) {
         // - get the text node values of the regular feed posts
+        // - get the alt-text values of any images in the feed posts
         // -- scan the top portion of the posts (first maxBlocks blocks)
         // -- parameters:
         //    post: post to scan
@@ -2788,6 +3072,10 @@
             for (let b = 0; b < bL; b++) {
                 if (blocks[b].innerHTML.length > 0) {
                     arrayTextValues = arrayTextValues.concat(scanTreeForText(blocks[b]));
+                    let imgAltText = scanImagesForAltText(blocks[b]);
+                    if (imgAltText.length > 0) {
+                        arrayTextValues = arrayTextValues.concat(imgAltText);
+                    }
                 }
             }
         }
@@ -2823,11 +3111,11 @@
         return elMiniTab;
     }
 
-
     function hideFeature(post, reason, isStories = false) {
         // -- hide something - keep it out of the regular feed stuff.
         // -- no counter
         if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
+            // -- add info tab
             let echoEl = createInfoNote(reason);
             let postFirstChild = post.querySelector(':scope > :first-child');
             if (postFirstChild) {
@@ -2836,17 +3124,26 @@
             else {
                 // -- post has been changed while being processed (very rare)
             }
-            if (!isStories) {
-                post.classList.add(VARS.cssHide);
-                post.setAttribute(postAtt, reason);
-            }
-            else {
-                post.classList.add(VARS.cssHideStories);
-                post.setAttribute(postAtt, reason);
-            }
-            if (VARS.Options.VERBOSITY_DEBUG) {
-                post.classList.add('show');
-            }
+        }
+
+        if (!isStories) {
+            post.classList.add(VARS.cssHide);
+            post.setAttribute(postAtt, reason);
+        }
+        else {
+            post.classList.add(VARS.cssHideStories);
+            post.setAttribute(postAtt, reason);
+        }
+
+        // - add mini-tab (indicates why post is hidden)
+        let elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
+        if (elTabSpot) {
+            elTabSpot.before(createMiniTab(reason));
+        }
+
+        // - in debugging mode?
+        if (VARS.Options.VERBOSITY_DEBUG) {
+            post.classList.add('show');
         }
     }
 
@@ -2956,13 +3253,16 @@
         // -- hide something ..
         // -- if requested, echo post is hidden ..
         // -- (separate function for marketplace)
-        if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
+
+        if ((VARS.Options.VERBOSITY_LEVEL !== '0') && (reason !== '')) {
+            // -- in info tab mode
+
             if (VARS.Options.VERBOSITY_LEVEL === '1') {
                 // - single post level
                 VARS.echoCount = 1;
             }
             if (VARS.echoCount < 2) {
-                // - 1 post hidden
+                // - first/1 post hidden
                 VARS.echoEl = createInfoNote(reason);
                 VARS.echoElCreatedCount++;
                 if (VARS.echoElCreatedCount === 1) {
@@ -2977,52 +3277,61 @@
                 else {
                     // post has been changed while being processed (very rare)
                 }
+
                 if (VARS.Options.VERBOSITY_LEVEL === '2') {
-                    // - multipe post level
+                    // - multipe post level (CPID = consecutive post id)
                     VARS.echoCPID = generateRandomString();
                     VARS.echoEl.setAttribute(postAttCPID, VARS.echoCPID);
-                }
-                if (VARS.Options.VERBOSITY_DEBUG) {
-                    VARS.echoEl.parentElement.classList.add('show');
                 }
             }
             else {
                 // - 2+ posts hidden
                 VARS.echoEl.querySelector('.wtxt').textContent = VARS.echoCount + KeyWords.VERBOSITY_MESSAGE[VARS.language][1];
             }
+
             if (VARS.Options.VERBOSITY_LEVEL === '2') {
                 // - multiple post level - flag it as part of a consecutive group
                 post.setAttribute(postAttCPID, VARS.echoCPID);
             }
-            let elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
-            if (elTabSpot) {
-                elTabSpot.before(createMiniTab(reason));
+
+            // - is this consecutive group being told to be shown or are we in debugging mode?
+            if ((VARS.echoEl.parentElement) && (VARS.echoEl.parentElement.classList.contains('show'))) {
+                post.classList.add('show');
+            }
+
+            if (VARS.echoElCreatedCount < 10) {
+                // -- check if the first note went missing ...
+                let elFirstNote = VARS.echoELFirstPost.querySelector(`div[${postAtt}]`);
+                if (!elFirstNote) {
+                    let elFirstNote = VARS.echoElFirstNote.cloneNode(true); // include child nodes
+                    elFirstNote.addEventListener('click', togglePost, false);
+                    VARS.echoELFirstPost.querySelector(':scope > :first-child').before(elFirstNote);
+                }
             }
         }
-        // - flag the post
+        
+        // - flag & hide the post
         post.setAttribute(postAtt, reason);
         post.classList.add(VARS.cssHide);
 
-        // - is this consecutive group being told to be shown or are we in debugging mode?
-        if ((VARS.echoEl.parentElement) && (VARS.echoEl.parentElement.classList.contains('show'))) {
-            post.classList.add('show');
+        // - add mini-tab (indicates why post is hidden)
+        let elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
+        if (elTabSpot) {
+            elTabSpot.before(createMiniTab(reason));
         }
 
-        if (VARS.echoElCreatedCount < 10) {
-            // -- check if the first note went missing ...
-            let elFirstNote = VARS.echoELFirstPost.querySelector(`div[${postAtt}]`);
-            if (!elFirstNote) {
-                let elFirstNote = VARS.echoElFirstNote.cloneNode(true); // include child nodes
-                elFirstNote.addEventListener('click', togglePost, false);
-                VARS.echoELFirstPost.querySelector(':scope > :first-child').before(elFirstNote);
-            }
+        // - in debugging mode?
+        if (VARS.Options.VERBOSITY_DEBUG) {
+            post.classList.add('show');
         }
+   
         //console.info(log+'hidePost():', VARS.echoElFirst);
     }
 
     function hideBlock(block, link, reason) {
         block.classList.add(VARS.cssHideEl);
         link.setAttribute(postAtt, reason);
+        // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
             VARS.block.classList.add('show');
         }
@@ -3238,6 +3547,7 @@
         let paidPartnership = post.querySelector(query);
         return (paidPartnership === null) ? '' : KeyWords.NF_PAID_PARTNERSHIP[VARS.language];
     }
+
     function nf_isSponsoredPaidBy(post) {
         let query = 'div:nth-child(2) > div > div:nth-child(2) > span[class] > span[id] > div:nth-child(2)';
         let sponsoredPaidBy = querySelectorAllNoChildren(post, query, 1);
@@ -3284,15 +3594,18 @@
         // console.info(log+'nf_isBlockedText:', ptexts, post);
         ptexts = ptexts.join(' ').toLowerCase();
         let blockedText = '';
-        for (let b = 0, btL = VARS.Filters.NF_BLOCKED_TEXT_LC.length; b < btL; b++) {
+        let btL = VARS.Filters.NF_BLOCKED_TEXT_LC.length;
+        for (let b = 0; b < btL; b++) {
             if (ptexts.indexOf(VARS.Filters.NF_BLOCKED_TEXT_LC[b]) >= 0) {
                 // before breaking out, get the text that matched.
                 blockedText = VARS.Filters.NF_BLOCKED_TEXT[b];
                 break;
             }
         }
+        // if (blockedText.length > 0) console.info(log + 'isBlockedText():', blockedText, post, ptexts);
         return blockedText;
     }
+
     function gf_isBlockedText(post) {
         // - check for blocked text - partial text match
         // -- groups feed post's blocks (have 1-4 blocks)
@@ -3302,7 +3615,8 @@
         // console.info(log+'gf_isBlockedText:', ptexts, post);
         ptexts = ptexts.join(' ').toLowerCase();
         let blockedText = '';
-        for (let b = 0, btL = VARS.Filters.GF_BLOCKED_TEXT_LC.length; b < btL; b++) {
+        let btL = VARS.Filters.GF_BLOCKED_TEXT_LC.length;
+        for (let b = 0; b < btL; b++) {
             if (ptexts.indexOf(VARS.Filters.GF_BLOCKED_TEXT_LC[b]) >= 0) {
                 // before breaking out, get the text that matched.
                 blockedText = VARS.Filters.GF_BLOCKED_TEXT[b];
@@ -3311,6 +3625,7 @@
         }
         return blockedText;
     }
+
     function vf_isBlockedText(post, queryBlocks) {
         // - check for blocked text - partial text match
         // -- regular videos feed post's blocks (have 1-3 blocks)
@@ -3319,7 +3634,8 @@
         // console.info(log+'vf_isBlockedText:', ptexts, post);
         ptexts = ptexts.join(' ').toLowerCase();
         let blockedText = '';
-        for (let b = 0, btL = VARS.Filters.VF_BLOCKED_TEXT_LC.length; b < btL; b++) {
+        let btL = VARS.Filters.VF_BLOCKED_TEXT_LC.length;
+        for (let b = 0; b < btL; b++) {
             if (ptexts.indexOf(VARS.Filters.VF_BLOCKED_TEXT_LC[b]) >= 0) {
                 // before breaking out, get the text that matched.
                 blockedText = VARS.Filters.VF_BLOCKED_TEXT[b];
@@ -3328,6 +3644,59 @@
         }
         return blockedText;
     }
+
+    function mp_isBlockedText() {
+        let query = `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`;
+        let items = document.querySelectorAll(query);
+        items.forEach(item => {
+            let queryTextBlock = ':scope > div > div:nth-of-type(2) > div'
+            // a[href*="/marketplace/item"] > div > div:nth-of-type(2) > div > div > span > span > span
+            let blocksOfText = item.querySelectorAll(queryTextBlock);
+            if (blocksOfText.length > 0) {
+                let blockedText = '';
+                // - first block, has prices and sometimes old price. we ignore 2nd price (old one).
+                // - compare as exact match
+                let itemPrices = scanTreeForText(blocksOfText[0]);
+                let itemPrice = itemPrices[0].toLowerCase();
+                let idx = VARS.Filters.MP_BLOCKED_TEXT_LC.indexOf(itemPrice);
+                if (idx >= 0) {
+                    blockedText = VARS.Filters.MP_BLOCKED_TEXT[idx];
+                }
+                else {
+                    // - second + subsequent blocks of text ...
+                    //  - compare as partial match (description/location of item)
+                    for (let i = 1; i < blocksOfText.length; i++) {
+                        let ptexts = scanTreeForText(blocksOfText[i]);
+                        if (ptexts.length > 0) {
+                            let ptext = ptexts.join(' ').toLowerCase();
+                            let btL = VARS.Filters.MP_BLOCKED_TEXT_LC.length;
+                            for (let b = 0; b < btL; b++) {
+                                if (ptext.indexOf(VARS.Filters.MP_BLOCKED_TEXT_LC[b]) >= 0) {
+                                    // -- before breaking out, get the text that matched.
+                                    blockedText = VARS.Filters.MP_BLOCKED_TEXT[b];
+                                    break;
+                                }
+                            }
+                        }
+                        if (blockedText.length > 0) {
+                            break;
+                        }
+                    }
+                }
+                let box = item.closest('div[style]');
+                //console.info(log + 'isBlockedText():', blockedText, ptexts, box);
+                if (blockedText.length > 0) {
+                    // -- hide the item
+                    mp_hideBox(box, blockedText);
+                }
+                else {
+                    // -- flag the item not to be scanned again
+                    box.setAttribute(postAtt, '');
+                }
+            }
+        });
+    }
+
     function vf_scrubSponsoredBlock(post) {
         // - some videos have a sponsored block beneath the video block/section
         // - includes "watch more ___ videos by ___"
@@ -3341,7 +3710,6 @@
             }
         }
     }
-
 
     function swatTheMosquitos(post) {
         // - scan the post for any gifs that is animating (pausing them once)
@@ -3382,6 +3750,7 @@
             }
         }
     }
+
     function nf_scrubTheStories() {
         // - stories only
         // -- appears at top of NF
@@ -3395,6 +3764,7 @@
             hideFeature(par, KeyWords.NF_STORIES[VARS.language], true);
         }
     }
+
     function nf_scrubTheRoom() {
         // - Create Room
         // -- appears below "What's on your mind, <name>?" box at top of News Feed
@@ -3891,7 +4261,34 @@
     function mopUpTheMarketplaceFeed() {
         // mopping up parts of the Marketplace ...
 
-        if (VARS.mpType === 'item') {
+        if (VARS.mpType === 'marketplace') {
+            // - standard marketplace page
+            // -- "sponsored" is _not_ obfuscated;
+            // -- nb: adguard base filter hides the label, but not the item/product ...
+            let queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
+            // let queryItems = `div[style]:not([${postAtt}]) > span > div > div > div > a:not([href*="marketplace"])`;
+            // let queryItems = `div[style]:not([${postAtt}]) > span > div > div > div:first-of-type > a:not([href*="marketplace"])`;
+            let queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
+            let headings = document.querySelectorAll(queryHeadings);
+            let items = document.querySelectorAll(queryItems);
+            if ((headings.length > 0) && (items.length > 0)) {
+                for (let heading of headings) {
+                    // heading = heading.parentElement;
+                    mp_hideBox(heading.parentElement, KeyWords.SPONSORED[VARS.language]);
+                }
+                for (let item of items) {
+                    //item = item.closest('span').parentElement;
+                    // item = item.closest('div[style]');
+                    // let parItem = item.parentElement.parentElement.parentElement.parentElement.parentElement;
+                    let parItem = item.parentElement.parentElement.parentElement;
+                    mp_hideBox(parItem, KeyWords.SPONSORED[VARS.language]);
+                }
+            }
+            if (VARS.Options.MP_BLOCKED_ENABLED) {
+                mp_isBlockedText();
+            }
+        }
+        else if (VARS.mpType === 'item') {
             // -- viewing a marketplace item - a small sponsored box often shows up on the right.
             let query = `a[href*="/ads/"]:not([${postAtt}])`;
             let elements = Array.from(document.querySelectorAll(query));
@@ -3913,25 +4310,6 @@
                 }
             }
         }
-        else if (VARS.mpType === 'marketplace') {
-            // - standard marketplace page
-            // -- "sponsored" is _not_ obfuscated;
-            // -- nb: adguard base filter hides the label, but not the item/product ...
-            let queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
-            let queryItems = `div[class]:not([${postAtt}]) > span > div > div > div > a:not([href*="marketplace"])`;
-            let headings = document.querySelectorAll(queryHeadings);
-            let items = document.querySelectorAll(queryItems);
-            if ((headings.length > 0) && (items.length > 0)) {
-                for (let heading of headings) {
-                    heading = heading.parentElement;
-                    mp_hideBox(heading, KeyWords.SPONSORED[VARS.language]);
-                }
-                for (let item of items) {
-                    item = item.closest('span').parentElement;
-                    mp_hideBox(item, KeyWords.SPONSORED[VARS.language]);
-                }
-            }
-        }
         else if ((VARS.mpType === 'category') || (VARS.mpType === 'search')) {
             // - viewing a markplace category or marketplace search results
             // - (both have similar layout)
@@ -3944,6 +4322,9 @@
                     let itemBox = element.parentElement.closest('a').parentElement.parentElement.parentElement;
                     mp_hideBox(itemBox, KeyWords.SPONSORED[VARS.language]);
                 }
+            }
+            if (VARS.Options.MP_BLOCKED_ENABLED) {
+                mp_isBlockedText();
             }
         }
     }
@@ -4000,52 +4381,61 @@
                             }
                         }
                     }
-                    // console.info(log + 'mopUpTheSearchFeed:', hideReason, VARS.echoCount, post);
                 }
-                // console.info(log + '<--- mopUpTheSearchFeed()');
             }
         }
     }
-
 
     // ** Mutations processor
     function bodyMutating(mutations) {
         for (let mutation of mutations) {
-            if (mutation.type === 'childList') {
+            if ((mutation.type === 'childList') && (mutation.addedNodes.length > 0)) {
                 if (VARS.prevURL !== window.location.href) {
                     // - page url has changed ... refresh the bodyObserver.
                     runMO();
-                    // console.info(`${log}runMO(): A/N/G/V/M:`, VARS.isAF, VARS.isNF, VARS.isGF, VARS.isVF, VARS.isMF);
                 }
                 else if (VARS.isAF) {
-                    for (let i = 0; i < mutation.addedNodes.length; i++) {
-                        let mnode = mutation.addedNodes[i];
-                        if (['DIV', 'SPAN', 'A', 'B'].indexOf(mnode.tagName) >= 0) {
-                            // console.info(`${log} mnode: ${mnode.tagName}; innerHTML: ${mnode.innerHTML.length}; textContent: ${mnode.textContent.length}; children: ${mnode.children.length};\nnode:`, mnode);
-                            if ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0)) {
-                                // - skip these ...
-                            }
-                            else if (VARS.isNF) {
-                                mopUpTheNewsFeed();
-                            }
-                            else if (VARS.isGF) {
-                                mopUpTheGroupsFeed();
-                            }
-                            else if (VARS.isVF) {
-                                mopUpTheWatchVideosFeed();
-                            }
-                            else if (VARS.isMF) {
-                                mopUpTheMarketplaceFeed();
-                            }
-                            else if (VARS.isSF) {
-                                mopUpTheSearchFeed();
+                    // -- isAF := any feed
+                    // -- nb: don't bother with looping through mutation.addedNodes.length - 99.5% of the time there's only one ...
+                    let mnode = mutation.addedNodes[0]; // placed here for error trapping block
+                    // try {
+                        VARS.mutationsCount++;
+                        // if (VARS.mutationsCount % 100 === 0) {
+                        //     console.info(log+'bodyMutating(); mutationsCount:', VARS.mutationsCount);
+                        // }
+                        if (VARS.mutationsCount > VARS.mutationsInitSkip) {
+                            //if (['A', 'DIV', 'I', 'IMG', 'OBJECT', 'SPAN', 'svg', '#text'].indexOf(mnode.nodeName) > 0) {
+                            if (['A', 'DIV', 'IMG', 'SPAN', '#text', 'svg'].indexOf(mnode.nodeName) > 0) {
+                                if ((mnode.nodeType === Node.ELEMENT_NODE) && ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0))) {
+                                    // - skip these ...
+                                }
+                                else if (VARS.isNF) {
+                                    mopUpTheNewsFeed();
+                                }
+                                else if (VARS.isGF) {
+                                    mopUpTheGroupsFeed();
+                                }
+                                else if (VARS.isVF) {
+                                    mopUpTheWatchVideosFeed();
+                                }
+                                else if (VARS.isMF) {
+                                    mopUpTheMarketplaceFeed();
+                                }
+                                else if (VARS.isSF) {
+                                    mopUpTheSearchFeed();
+                                }
                             }
                         }
-                    }
+                    // }
+                    // catch (error) {
+                    //     console.error(log + 'fn bodyMutating() :: Error! mnode:', mnode);
+                    //     console.error(log + 'fn bodyMutating() :: Error! message:', error.message);
+                    //     console.error(log + 'fn bodyMutating() :: Error! stack:', error.stack);
+                    // }
                 }
             }
         }
-    }
+    };
 
     // ** Mutation Observer
     let bodyObserver = new MutationObserver(bodyMutating);
@@ -4055,7 +4445,8 @@
     function runMO() {
         // run code soon as the elements HEAD, BDDY and variable Options are ready/available.
         // or when page url has changed ...
-        if (document.head && document.body && DBVARS.optionsReady) {
+        if (document.head && document.body && VARS.optionsReady) {
+            // console.info(log + 'runMO(); - ready ...');
             if (firstRun) {
                 GM.registerMenuCommand(KeyWords.GM_MENU_SETTINGS[VARS.language], toggleDialog);
                 addCSS();
@@ -4078,6 +4469,7 @@
         else {
             // HEAD / BODY / Options not yet ready ...
             // -- try again ...
+            // console.info(log + 'runMO(); - not yet ready ...');
             setTimeout(runMO, 10);
         }
     }
