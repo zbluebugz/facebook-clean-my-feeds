@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.12
+// @version      4.13
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -14,6 +14,12 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.13 :: December 2022
+        Updated News Feed Suggestion/Recommendation posts rule (FB changed structure)
+        Updated Groups Feed Suggestion/Recommendation posts rule (FB changed structure)
+        Updated News Feed blocked text filter (excluding comments)
+        Updated Groups Feed blocked text filter (excluding comments)
+        Code tweaks
     v4.12 :: December 2022
         Added @noframes directive
         Added Marketplace text filter
@@ -3501,7 +3507,17 @@
             query = ':scope > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
             elSuggestion = querySelectorAllNoChildren(post, query, 1);
         }
+        if (elSuggestion.length === 0) {
+            // -- December 2022 - structure change
+            query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span';
+            elSuggestion = querySelectorAllNoChildren(post, query, 1);
+        }
         if (elSuggestion.length > 0) {
+            if (nf_isReelsAndShortVideos(post).length > 0) {
+                // -- false-positive hit.
+                // -- let nf_isReelsAndShortVideos() take care of this post.
+                return '' ;
+            }
             const pattern = /([0-9]|[\u0660-\u0669])/;
             let firstCharacter = cleanText(elSuggestion[0].textContent).trim().slice(0, 1);
             // console.info(log+'isSuggested - match test:', firstCharacter, pattern.test(firstCharacter), pattern.test(firstCharacter) ? 'No': 'Yes' );
@@ -3516,10 +3532,16 @@
         // - check if any of the suggestions / recommendations type post
         // -- get the blocks/sections, then have a look for <i> in 1st block (providing there's more than 1 block)
         // -- (query bypasses the dusty elements)
-        let blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div';
-        let blocks = post.querySelectorAll(blocksQuery);
+        // -- some users don't have [aria-posinset], hence [aria-describedby]
         let results = '';
-        if (blocks.length > 0) {
+        let blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div';
+        let blocks = post.querySelectorAll(blocksQuery);
+        if (blocks.length <= 1) {
+            // try again .. (December 2022 change)
+            blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div > div';
+            blocks = post.querySelectorAll(blocksQuery);
+        }
+        if (blocks.length > 1) {
             let suggIcon = blocks[0].querySelector('i[data-visualcompletion="css-img"][style]');
             if (suggIcon) {
                 results = KeyWords.GF_SUGGESTIONS[VARS.language];
@@ -3589,8 +3611,14 @@
         // -- news feed post's blocks (have 1-4 blocks)
         // -- scan 1st & 3rd blocks
         // -- used by the fn extractTextContent() and fn doMoppingInfoBox()
-        let query = 'div[aria-posinset] > div > div > div > div > div > div > div > div';
-        let ptexts = extractTextContent(post, query, 3);
+        // -- some users don't have [aria-posinset], hence [aria-describedby]
+        let blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div';
+        let blocks = post.querySelectorAll(blocksQuery);
+        if (blocks.length <= 1) {
+            // try again .. (December 2022 change)
+            blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div > div';
+        }
+        let ptexts = extractTextContent(post, blocksQuery, 3);
         // console.info(log+'nf_isBlockedText:', ptexts, post);
         ptexts = ptexts.join(' ').toLowerCase();
         let blockedText = '';
@@ -3610,8 +3638,14 @@
         // - check for blocked text - partial text match
         // -- groups feed post's blocks (have 1-4 blocks)
         // -- scan first 3 blocks
-        let query = 'div[aria-posinset] > div > div > div > div > div > div > div > div';
-        let ptexts = extractTextContent(post, query, 3);
+        // -- some users don't have [aria-posinset], hence [aria-describedby]
+        let blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div';
+        let blocks = post.querySelectorAll(blocksQuery);
+        if (blocks.length <= 1) {
+            // try again .. (Dec 2022 change)
+            blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div > div';
+        }
+        let ptexts = extractTextContent(post, blocksQuery, 3);
         // console.info(log+'gf_isBlockedText:', ptexts, post);
         ptexts = ptexts.join(' ').toLowerCase();
         let blockedText = '';
@@ -3908,6 +3942,11 @@
         if (posts.length < 2) {
             // -- 21-22/10/2022 - fb tweaked the structure
             posts = Array.from(document.querySelectorAll(query + ' > div'));
+            if (posts.length < 2) {
+                // -- December 2022 - try the [data-pagelet] attribute
+                query = 'span[id="ssrb_feed_start"] ~ div > div div[data-pagelet]';
+                posts = Array.from(document.querySelectorAll(query));
+            }
             if (posts.length < 2) {
                 // -- 31/10/2022 - fb tweaked the structure
                 query = 'h3[dir="auto"] ~ div:not([class]) > div[class] > div';
