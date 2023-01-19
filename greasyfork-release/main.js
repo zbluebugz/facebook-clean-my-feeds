@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.13
+// @version      4.14
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -14,6 +14,10 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.14 :: January 2023
+        Updated News Feed Suggestion/Recommendation posts rule (FB changed structure)
+        Updated News Feed verbosity behaviour. FB limits 40 posts in News Feed. Show either no notification or 1 post hidden. 2+ posts hidden notification disabled.
+        Groups Feed posts - added icon to open post in new window (fix annoying FB bug with not showing comments properly)
     v4.13 :: December 2022
         Updated News Feed Suggestion/Recommendation posts rule (FB changed structure)
         Updated Groups Feed Suggestion/Recommendation posts rule (FB changed structure)
@@ -1546,7 +1550,9 @@
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl: null,
         // - script's logo
-        logoHTML: '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32"><g id="Layer" fill="currentColor"><path id="Layer" fill-rule="evenodd" class="s0" d="m51 3.2c0.7 1.1 0.7 1-1.6 9.2-1.4 5-2.1 7.4-2.3 7.6-0.1 0.1-0.3 0.2-0.6 0.2-0.4 0-0.9-0.4-0.9-0.7 0-0.1 1-3.5 2-7.4 1.2-4 2-7.3 2-7.5 0-0.4-0.6-1-0.9-1-0.2 0-0.5 0.2-0.7 0.3-0.3 0.3-0.7 1.8-5.5 19.2l-5.3 18.9 0.9 0.5c0.5 0.3 0.9 0.5 0.9 0.5 0 0 1.3-4.4 2.8-9.8 1.5-5.3 2.8-10 2.8-10.3 0.2-0.5 0.3-0.7 0.6-0.9 0.3-0.1 0.4-0.1 0.8 0 0.2 0.2 0.4 0.3 0.4 0.5 0.1 0.2-0.4 2.2-1.5 6.1-0.9 3.2-1.6 5.8-1.6 5.9 0 0 0.5 0.1 1.3 0.1 1.9 0 2.7 0.4 3.2 1.5 0.3 0.6 0.3 2.7 0 3.4-0.3 0.9-1.2 1.4-2 1.4-0.3 0-0.5 0.1-0.5 0.1 0 0.2-2.3 20.2-2.3 20.4-0.2 0.8 0.7 0.7-14.1 0.7-15.3 0-14.3 0.1-15.3-1-0.8-0.8-1.1-1.5-1-2.9 0.2-3.6 2.7-6.7 6.3-7.8 0.4-0.2 0.9-0.3 1-0.3 0.6 0 0.6 0.1 0.1-4.5-0.3-2.4-0.5-4.4-0.5-4.5-0.1-0.1-0.3-0.1-0.7-0.2-0.6 0-1.1-0.3-1.6-1-0.3-0.4-0.3-0.5-0.4-1.8 0-1.7 0.1-2.1 0.6-2.7 0.7-0.6 1-0.7 2.5-0.8h1.3v-2.9c0-3.1 0-3.4 0.6-3.6 0.2-0.1 2.4-0.1 7.1-0.1 6.5 0.1 6.9 0.1 7.1 0.3 0.2 0.2 0.2 0.3 0.2 3.3v3h0.6l0.6-0.1 4.3-15.3c2.4-8.5 4.4-15.6 4.5-15.9 0.4-0.6 0.9-1 1.5-1.3 1.2-0.4 2.6 0.1 3.3 1.2zm-26.6 26.6h-0.7c-0.3 0-0.6 0-0.7 0 0 0.1-0.1 1.2-0.1 2.5v2.3h1.5zm3.4 0h-0.7c-0.5 0-0.9 0-0.9 0.1 0 0-0.1 1.1-0.1 2.4v2.3h1.8v-2.4zm3.4 0h-1.6v4.8h1.6zm3.2 0h-1.3v4.8h1.3zm-6.4 6.6c-7.9 0-9 0-9.2 0.2-0.3 0.2-0.3 0.3-0.3 1.3 0 0.7 0.1 1.1 0.2 1.2 0.1 0.1 2.3 0.1 7.3 0.1 6.9 0.1 7.2 0.1 7.5 0.3 0.3 0.3 0.3 1 0 1.3-0.2 0.2-0.8 0.2-6.3 0.2h-6l0.1 0.5c0 0.3 0.2 2.3 0.5 4.5l0.4 4h0.4c0.6 0 1.5-0.3 2-0.7 0.3-0.3 0.7-0.8 0.9-1.3 0.6-1.1 1.3-2 2.1-2.7 1.1-0.9 2.8-1.5 4-1.5h0.6l0.7-1.1c0.6-1 0.8-1.2 1.3-1.5 0.4-0.2 0.6-0.2 0.9-0.2 0.4 0.1 0.5 0.1 0.5-0.1 0.1-0.1 0.3-1.1 0.6-2.1 0.3-1.1 0.6-2.1 0.6-2.2 0.1-0.2-0.4-0.2-8.8-0.2zm16.2 0h-1.5l-0.4 1.3c-0.2 0.8-0.4 1.4-0.4 1.5 0 0 0.9 0 2 0 2.3 0 2.3 0.1 2.3-1.4 0-0.9-0.1-1-0.3-1.2-0.2-0.2-0.6-0.2-1.7-0.2zm-2.8 4.7c0 0.1-0.2 0.8-0.5 1.6-0.2 1-0.3 1.4-0.2 1.5 0 0 0.3 0.2 0.6 0.4 0.4 0.4 0.4 0.5 0.5 1.2 0 0.6 0 0.7-0.8 2-0.7 1.1-0.8 1.3-1.3 1.6l-0.5 0.2v1.8c0 1.3-0.1 2-0.2 2.5-0.1 0.4-0.2 0.8-0.2 0.8 0 0 0.7 0.1 1.5 0.1 1.2 0 1.6-0.1 1.6-0.2 0-0.1 0.4-3.1 0.8-6.8 0.4-3.6 0.7-6.7 0.7-6.7-0.1-0.2-1.9-0.1-2 0zm-6.3 1.8c-0.2-0.1-0.3 0-0.9 1-0.2 0.4-0.4 0.8-0.3 0.8 0 0.1 1.1 0.7 2.3 1.5 1.3 0.7 2.4 1.4 2.5 1.5 0.3 0.1 0.3 0.1 0.8-0.8 0.3-0.6 0.6-1 0.5-1 0 0-1.1-0.7-2.4-1.5-1.3-0.8-2.4-1.4-2.5-1.5zm-4.5 2.8c-1.6 0.5-2.7 1.5-3.5 3.1-0.6 1.2-1.3 2-2.4 2.5-0.9 0.4-0.9 0.4-2.9 0.5-2.8 0.1-3.9 0.6-5.4 2.1-0.8 0.8-1 1.1-1.4 1.9-1 2.2-0.9 4 0.2 4.4 0.7 0.3 0.8 0.3 1-0.5 0.8-2.4 2.7-4.5 5.1-5.5 1.1-0.4 1.6-0.5 3.2-0.6 2-0.2 2.8-0.7 3.4-2.2 0.3-0.5 0.6-1.2 0.8-1.6 0.8-1.3 2.4-2.5 3.8-2.9 0.4-0.1 0.8-0.2 0.8-0.2q0.2-0.1-0.3-0.4c-0.3-0.2-0.6-0.4-0.6-0.5-0.1-0.3-1.1-0.3-1.8-0.1zm3.2 2.7c-0.9 0.2-2 0.8-2.8 1.5-0.7 0.6-0.8 0.9-1.6 2.6-0.7 1.5-2.2 2.5-3.9 2.7-3.4 0.4-4.3 0.8-5.8 2.2-0.7 0.8-1 1.2-1.4 1.9l-0.5 1 0.9 0.1c0.9 0 0.9 0 1.2-0.4q2.7-3.2 7.3-3.2c2.2 0 2.9-0.5 3.9-2.3 0.3-0.5 0.7-1.2 0.9-1.5 1-1.2 3-2.3 4.6-2.4l0.8-0.1-0.1-0.5c-0.1-0.8-0.3-1.2-0.9-1.4-0.7-0.2-1.9-0.3-2.6-0.2zm3.6 3.9h-0.4c-0.5 0-1.6 0.3-2.3 0.7-0.7 0.5-1.6 1.5-2.2 2.6-1.1 2.1-2.5 2.9-5.2 2.9-0.6 0-1.6 0.1-2 0.2-1 0.2-2.3 0.8-2.9 1.3l-0.4 0.4h4.1c4.6-0.1 4.7-0.1 6.5-1 0.9-0.5 1.3-0.7 2.2-1.6 1.4-1.4 2.2-3 2.5-4.9zm4.3 4.2h-1.9-1.8l-0.5 0.8c-0.6 0.9-1.5 1.9-2.4 2.6l-0.6 0.5h3.4c2.6 0 3.4 0 3.4-0.1 0-0.1 0.1-1 0.2-2z"/></g></svg>'
+        logoHTML: '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32"><g id="Layer" fill="currentColor"><path id="Layer" fill-rule="evenodd" class="s0" d="m51 3.2c0.7 1.1 0.7 1-1.6 9.2-1.4 5-2.1 7.4-2.3 7.6-0.1 0.1-0.3 0.2-0.6 0.2-0.4 0-0.9-0.4-0.9-0.7 0-0.1 1-3.5 2-7.4 1.2-4 2-7.3 2-7.5 0-0.4-0.6-1-0.9-1-0.2 0-0.5 0.2-0.7 0.3-0.3 0.3-0.7 1.8-5.5 19.2l-5.3 18.9 0.9 0.5c0.5 0.3 0.9 0.5 0.9 0.5 0 0 1.3-4.4 2.8-9.8 1.5-5.3 2.8-10 2.8-10.3 0.2-0.5 0.3-0.7 0.6-0.9 0.3-0.1 0.4-0.1 0.8 0 0.2 0.2 0.4 0.3 0.4 0.5 0.1 0.2-0.4 2.2-1.5 6.1-0.9 3.2-1.6 5.8-1.6 5.9 0 0 0.5 0.1 1.3 0.1 1.9 0 2.7 0.4 3.2 1.5 0.3 0.6 0.3 2.7 0 3.4-0.3 0.9-1.2 1.4-2 1.4-0.3 0-0.5 0.1-0.5 0.1 0 0.2-2.3 20.2-2.3 20.4-0.2 0.8 0.7 0.7-14.1 0.7-15.3 0-14.3 0.1-15.3-1-0.8-0.8-1.1-1.5-1-2.9 0.2-3.6 2.7-6.7 6.3-7.8 0.4-0.2 0.9-0.3 1-0.3 0.6 0 0.6 0.1 0.1-4.5-0.3-2.4-0.5-4.4-0.5-4.5-0.1-0.1-0.3-0.1-0.7-0.2-0.6 0-1.1-0.3-1.6-1-0.3-0.4-0.3-0.5-0.4-1.8 0-1.7 0.1-2.1 0.6-2.7 0.7-0.6 1-0.7 2.5-0.8h1.3v-2.9c0-3.1 0-3.4 0.6-3.6 0.2-0.1 2.4-0.1 7.1-0.1 6.5 0.1 6.9 0.1 7.1 0.3 0.2 0.2 0.2 0.3 0.2 3.3v3h0.6l0.6-0.1 4.3-15.3c2.4-8.5 4.4-15.6 4.5-15.9 0.4-0.6 0.9-1 1.5-1.3 1.2-0.4 2.6 0.1 3.3 1.2zm-26.6 26.6h-0.7c-0.3 0-0.6 0-0.7 0 0 0.1-0.1 1.2-0.1 2.5v2.3h1.5zm3.4 0h-0.7c-0.5 0-0.9 0-0.9 0.1 0 0-0.1 1.1-0.1 2.4v2.3h1.8v-2.4zm3.4 0h-1.6v4.8h1.6zm3.2 0h-1.3v4.8h1.3zm-6.4 6.6c-7.9 0-9 0-9.2 0.2-0.3 0.2-0.3 0.3-0.3 1.3 0 0.7 0.1 1.1 0.2 1.2 0.1 0.1 2.3 0.1 7.3 0.1 6.9 0.1 7.2 0.1 7.5 0.3 0.3 0.3 0.3 1 0 1.3-0.2 0.2-0.8 0.2-6.3 0.2h-6l0.1 0.5c0 0.3 0.2 2.3 0.5 4.5l0.4 4h0.4c0.6 0 1.5-0.3 2-0.7 0.3-0.3 0.7-0.8 0.9-1.3 0.6-1.1 1.3-2 2.1-2.7 1.1-0.9 2.8-1.5 4-1.5h0.6l0.7-1.1c0.6-1 0.8-1.2 1.3-1.5 0.4-0.2 0.6-0.2 0.9-0.2 0.4 0.1 0.5 0.1 0.5-0.1 0.1-0.1 0.3-1.1 0.6-2.1 0.3-1.1 0.6-2.1 0.6-2.2 0.1-0.2-0.4-0.2-8.8-0.2zm16.2 0h-1.5l-0.4 1.3c-0.2 0.8-0.4 1.4-0.4 1.5 0 0 0.9 0 2 0 2.3 0 2.3 0.1 2.3-1.4 0-0.9-0.1-1-0.3-1.2-0.2-0.2-0.6-0.2-1.7-0.2zm-2.8 4.7c0 0.1-0.2 0.8-0.5 1.6-0.2 1-0.3 1.4-0.2 1.5 0 0 0.3 0.2 0.6 0.4 0.4 0.4 0.4 0.5 0.5 1.2 0 0.6 0 0.7-0.8 2-0.7 1.1-0.8 1.3-1.3 1.6l-0.5 0.2v1.8c0 1.3-0.1 2-0.2 2.5-0.1 0.4-0.2 0.8-0.2 0.8 0 0 0.7 0.1 1.5 0.1 1.2 0 1.6-0.1 1.6-0.2 0-0.1 0.4-3.1 0.8-6.8 0.4-3.6 0.7-6.7 0.7-6.7-0.1-0.2-1.9-0.1-2 0zm-6.3 1.8c-0.2-0.1-0.3 0-0.9 1-0.2 0.4-0.4 0.8-0.3 0.8 0 0.1 1.1 0.7 2.3 1.5 1.3 0.7 2.4 1.4 2.5 1.5 0.3 0.1 0.3 0.1 0.8-0.8 0.3-0.6 0.6-1 0.5-1 0 0-1.1-0.7-2.4-1.5-1.3-0.8-2.4-1.4-2.5-1.5zm-4.5 2.8c-1.6 0.5-2.7 1.5-3.5 3.1-0.6 1.2-1.3 2-2.4 2.5-0.9 0.4-0.9 0.4-2.9 0.5-2.8 0.1-3.9 0.6-5.4 2.1-0.8 0.8-1 1.1-1.4 1.9-1 2.2-0.9 4 0.2 4.4 0.7 0.3 0.8 0.3 1-0.5 0.8-2.4 2.7-4.5 5.1-5.5 1.1-0.4 1.6-0.5 3.2-0.6 2-0.2 2.8-0.7 3.4-2.2 0.3-0.5 0.6-1.2 0.8-1.6 0.8-1.3 2.4-2.5 3.8-2.9 0.4-0.1 0.8-0.2 0.8-0.2q0.2-0.1-0.3-0.4c-0.3-0.2-0.6-0.4-0.6-0.5-0.1-0.3-1.1-0.3-1.8-0.1zm3.2 2.7c-0.9 0.2-2 0.8-2.8 1.5-0.7 0.6-0.8 0.9-1.6 2.6-0.7 1.5-2.2 2.5-3.9 2.7-3.4 0.4-4.3 0.8-5.8 2.2-0.7 0.8-1 1.2-1.4 1.9l-0.5 1 0.9 0.1c0.9 0 0.9 0 1.2-0.4q2.7-3.2 7.3-3.2c2.2 0 2.9-0.5 3.9-2.3 0.3-0.5 0.7-1.2 0.9-1.5 1-1.2 3-2.3 4.6-2.4l0.8-0.1-0.1-0.5c-0.1-0.8-0.3-1.2-0.9-1.4-0.7-0.2-1.9-0.3-2.6-0.2zm3.6 3.9h-0.4c-0.5 0-1.6 0.3-2.3 0.7-0.7 0.5-1.6 1.5-2.2 2.6-1.1 2.1-2.5 2.9-5.2 2.9-0.6 0-1.6 0.1-2 0.2-1 0.2-2.3 0.8-2.9 1.3l-0.4 0.4h4.1c4.6-0.1 4.7-0.1 6.5-1 0.9-0.5 1.3-0.7 2.2-1.6 1.4-1.4 2.2-3 2.5-4.9zm4.3 4.2h-1.9-1.8l-0.5 0.8c-0.6 0.9-1.5 1.9-2.4 2.6l-0.6 0.5h3.4c2.6 0 3.4 0 3.4-0.1 0-0.1 0.1-1 0.2-2z"/></g></svg>',
+        // - new window icon
+        iconNewWindow: '<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link"><title>Open post in a new window</title><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>'
     };
 
     // -- which language is the FB page in?
@@ -1840,6 +1846,21 @@
             '.fb-cmf.show',
             'opacity:1; transform:scale(1);'
         );
+        // -- new window icon
+        addToSS(
+            '.link-new',
+            'width: 1rem; height: 1rem;'
+        );
+        // 'width: 1rem; height: 1rem; margin-left: 0.2rem; margin-right: 0.2rem;'
+        addToSS(
+          '.link-new a',
+            'width: 1rem; position: relative; display: inline-block;'
+        );
+        addToSS(
+          '.link-new svg',
+            'position: absolute; top: -13.5px; stroke: rgb(101, 103, 107);'
+        );
+
         // - save & apply the CSS
         styleEl.appendChild(document.createTextNode(VARS.tempStyleSheetCode));
         VARS.tempStyleSheetCode = '';
@@ -3259,78 +3280,67 @@
         // -- hide something ..
         // -- if requested, echo post is hidden ..
         // -- (separate function for marketplace)
+        // -- Verbosity_Level: 0 = hide; 1 = single info note; 2 = consecutive info notes
+
+        // console.info(LOG_U + 'hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
 
         if ((VARS.Options.VERBOSITY_LEVEL !== '0') && (reason !== '')) {
             // -- in info tab mode
+            // -- nb: calling function will either zap or increment VARS.echoCount
+            // --     they don't look at VARS.Options.VERBOSITY_LEVEL's value
 
-            if (VARS.Options.VERBOSITY_LEVEL === '1') {
+            if ((VARS.Options.VERBOSITY_LEVEL === '1') || (VARS.isNF === true)) {
                 // - single post level
                 VARS.echoCount = 1;
             }
-            if (VARS.echoCount < 2) {
-                // - first/1 post hidden
-                VARS.echoEl = createInfoNote(reason);
-                VARS.echoElCreatedCount++;
-                if (VARS.echoElCreatedCount === 1) {
-                    VARS.echoElFirstNote = VARS.echoEl;
-                    VARS.echoELFirstPost = post;
-                }
 
-                let postFirstChild = post.querySelector(':scope > :first-child');
-                if (postFirstChild) {
-                    postFirstChild.before(VARS.echoEl);
+            if (VARS.echoCount < 2) {
+                // - 1 post to be hidden (includes first of consecutive group)
+
+                VARS.echoEl = createInfoNote(reason);
+
+                let postFirstChildEl = post.querySelector(':scope > :first-child');
+                if (postFirstChildEl) {
+                    postFirstChildEl.before(VARS.echoEl);
                 }
                 else {
                     // post has been changed while being processed (very rare)
                 }
+            }
 
-                if (VARS.Options.VERBOSITY_LEVEL === '2') {
-                    // - multipe post level (CPID = consecutive post id)
+            if ((VARS.Options.VERBOSITY_LEVEL === '2') && (VARS.isNF === false)) {
+
+                if (VARS.echoCount < 2) {
+                    // - first post in a possible consecutive collection.
+                    // - CPID = consecutive post id
                     VARS.echoCPID = generateRandomString();
                     VARS.echoEl.setAttribute(postAttCPID, VARS.echoCPID);
                 }
-            }
-            else {
-                // - 2+ posts hidden
-                VARS.echoEl.querySelector('.wtxt').textContent = VARS.echoCount + KeyWords.VERBOSITY_MESSAGE[VARS.language][1];
-            }
+                else {
+                    // - 2+ consecutive posts hidden
+                    VARS.echoEl.querySelector('.wtxt').textContent = VARS.echoCount + KeyWords.VERBOSITY_MESSAGE[VARS.language][1];
+                }
 
-            if (VARS.Options.VERBOSITY_LEVEL === '2') {
-                // - multiple post level - flag it as part of a consecutive group
+                // - consecutive posts level - flag it as part of a consecutive group
                 post.setAttribute(postAttCPID, VARS.echoCPID);
-            }
 
-            // - is this consecutive group being told to be shown or are we in debugging mode?
-            if ((VARS.echoEl.parentElement) && (VARS.echoEl.parentElement.classList.contains('show'))) {
-                post.classList.add('show');
-            }
-
-            if (VARS.echoElCreatedCount < 10) {
-                // -- check if the first note went missing ...
-                let elFirstNote = VARS.echoELFirstPost.querySelector(`div[${postAtt}]`);
-                if (!elFirstNote) {
-                    let elFirstNote = VARS.echoElFirstNote.cloneNode(true); // include child nodes
-                    elFirstNote.addEventListener('click', togglePost, false);
-                    VARS.echoELFirstPost.querySelector(':scope > :first-child').before(elFirstNote);
+                // - add mini-tab (indicates why post is hidden)
+                let elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
+                if (elTabSpot) {
+                    elTabSpot.before(createMiniTab(reason));
                 }
             }
         }
-        
+
         // - flag & hide the post
         post.setAttribute(postAtt, reason);
         post.classList.add(VARS.cssHide);
-
-        // - add mini-tab (indicates why post is hidden)
-        let elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
-        if (elTabSpot) {
-            elTabSpot.before(createMiniTab(reason));
-        }
 
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
             post.classList.add('show');
         }
-   
+
         //console.info(log+'hidePost():', VARS.echoElFirst);
     }
 
@@ -3500,23 +3510,34 @@
         // - check if any of the suggestions / recommendations type post
         // -- nb: <name> commented / <name> replied to a commment posts have similar structure - but have extra elements ...
         // -- nb: x people recently commented posts have similar structure - suggested/recommended posts don't start with a number ...
-        let query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
+
+        // -- December 2022 - structure change - variation #2
+        let query = ':scope div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span, ' +
+            ':scope div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span';
         let elSuggestion = querySelectorAllNoChildren(post, query, 1);
-        // console.info(log+'isSuggested:', elSuggestion.length, elSuggestion);
+        // console.info(log + 'nf_isSuggested; try #1:', elSuggestion.length, elSuggestion);
+        if (elSuggestion.length === 0) {
+            // -- December 2022 - structure change - variation #1
+            query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span';
+            elSuggestion = querySelectorAllNoChildren(post, query, 1);
+            // console.info(log + 'nf_isSuggested; try #2:', elSuggestion.length, elSuggestion);
+        }
+        if (elSuggestion.length === 0) {
+            query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
+            elSuggestion = querySelectorAllNoChildren(post, query, 1);
+            // console.info(log + 'nf_isSuggested; try #3:', elSuggestion.length, elSuggestion);
+        }
         if (elSuggestion.length === 0) {
             query = ':scope > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
             elSuggestion = querySelectorAllNoChildren(post, query, 1);
+            // console.info(log + 'nf_isSuggested; try #4:', elSuggestion.length, elSuggestion);
         }
-        if (elSuggestion.length === 0) {
-            // -- December 2022 - structure change
-            query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span';
-            elSuggestion = querySelectorAllNoChildren(post, query, 1);
-        }
+
         if (elSuggestion.length > 0) {
             if (nf_isReelsAndShortVideos(post).length > 0) {
                 // -- false-positive hit.
                 // -- let nf_isReelsAndShortVideos() take care of this post.
-                return '' ;
+                return '';
             }
             const pattern = /([0-9]|[\u0660-\u0669])/;
             let firstCharacter = cleanText(elSuggestion[0].textContent).trim().slice(0, 1);
@@ -3870,6 +3891,62 @@
         }
     }
 
+    function gf_setPostLinkToOpenInNewTab(post) {
+        // -- open a group post in a new window from the groups feed
+        // -- overcomes the fb bug in not listing the comments properly
+
+        try {
+            // - parts of the post's link can be found in the first link
+            let postLink = Array.from(post.querySelectorAll('div > div > a[href*="/groups/"][role="link"]'))[0];
+            if (postLink) {
+
+                // -- get the container for the lower part of the header block.
+                let header = postLink.parentElement.parentElement.parentElement.parentElement;
+                let blockOfIcons = header.querySelector(':scope > div:nth-of-type(2) > div > div:nth-of-type(2) > span > span');
+
+                if (blockOfIcons && blockOfIcons.querySelector('.cmf-link-new') === null) {
+                    // -- need to create the group post's link
+                    // -- nb: last post may not be a post - it could be the "You've completely caught up. Check again later for more updates" post.
+                    // --     it doesn't have a set of icons ...
+
+                    let newLink;
+                    if (postLink.href.split('multi_permalinks').length > 1) {
+                        // -- sample link: https://www.facebook.com/groups/424532172574012/?hoisted_section_header_type=recently_seen&multi_permalinks=720886619605231&__cft__[0]=AZV1vpwA0h21cVRZoS_GM3Q7H_Ul77iObEbYu2EA4oL7XyM-C78sQp5KIEpPooBCQZ2dmAMTvpCi1qYt5VxSTiCQCBkTmv8_Ra77OyacW2l685TVbttwb4qwKUm6AVr0zIapBxKODmLHgnNcYaSkXeCEOMEMdxQajQX8NTcniWYUA7OuVNY5C4F-ETSuab37Azw&__tn__=%3C%3C%2CP-R
+                        // -- .. converted to: https://www.facebook.com/groups/424532172574012/posts/720886619605231/
+                        // -- post link structure: https://www.facebook.com/groups/<group id>/posts/<post id>/
+                        let postID = new URLSearchParams(postLink.href).get('multi_permalinks');
+                        newLink = postLink.href.split('?')[0] + 'posts/' + postID + '/'
+                    }
+                    else {
+                        // -- hmm, we don't have the info to reconstruct a group post link.
+                        return;
+                    }
+
+                    // -- put in fb's spacer between icons.
+                    let spacerWdot = '<span><span style="position:absolute;width:1px;height:1px;">&nbsp;</span><span aria-hidden="true"> · </span></span>'
+                    let spanSpacer = document.createElement('span');
+                    spanSpacer.innerHTML = spacerWdot;
+                    blockOfIcons.appendChild(spanSpacer);
+
+                    let container = document.createElement('span');
+                    container.className = 'link-new';
+                    let span2 = document.createElement('span');
+                    let linkNew = document.createElement('a');
+                    linkNew.setAttribute('href', newLink);
+                    linkNew.innerHTML = VARS.iconNewWindow;
+                    linkNew.setAttribute('target', '_blank');
+                    span2.appendChild(linkNew);
+                    container.appendChild(span2);
+
+                    blockOfIcons.appendChild(container);
+                }
+            }
+        }
+        catch (error) {
+            console.error(LOG_GRP + 'gf_setPostLinkToOpenInNewTab(); Error:', post, error);
+        }
+    }
+
     function scrubInfoBoxes(post) {
         // hide the "truth" info boxes that appear in posts having a certain topic.
 
@@ -4053,6 +4130,11 @@
                     if (post.innerHTML.length > 0) {
 
                         let hideReason = '';
+
+                        // -- add the open group in new tab link+icon. (fixes fb bug in not displaying comments properly)
+                        if ((VARS.gfType === 'groups') && (post[postPropDS] === undefined)) {
+                            gf_setPostLinkToOpenInNewTab(post);
+                        }
 
                         if (post.hasAttribute(postAtt)) {
                             // -- already flagged
@@ -4438,33 +4520,33 @@
                     // -- nb: don't bother with looping through mutation.addedNodes.length - 99.5% of the time there's only one ...
                     let mnode = mutation.addedNodes[0]; // placed here for error trapping block
                     // try {
-                        VARS.mutationsCount++;
-                        // if (VARS.mutationsCount % 100 === 0) {
-                        //     console.info(log+'bodyMutating(); mutationsCount:', VARS.mutationsCount);
-                        // }
-                        if (VARS.mutationsCount > VARS.mutationsInitSkip) {
-                            //if (['A', 'DIV', 'I', 'IMG', 'OBJECT', 'SPAN', 'svg', '#text'].indexOf(mnode.nodeName) > 0) {
-                            if (['A', 'DIV', 'IMG', 'SPAN', '#text', 'svg'].indexOf(mnode.nodeName) > 0) {
-                                if ((mnode.nodeType === Node.ELEMENT_NODE) && ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0))) {
-                                    // - skip these ...
-                                }
-                                else if (VARS.isNF) {
-                                    mopUpTheNewsFeed();
-                                }
-                                else if (VARS.isGF) {
-                                    mopUpTheGroupsFeed();
-                                }
-                                else if (VARS.isVF) {
-                                    mopUpTheWatchVideosFeed();
-                                }
-                                else if (VARS.isMF) {
-                                    mopUpTheMarketplaceFeed();
-                                }
-                                else if (VARS.isSF) {
-                                    mopUpTheSearchFeed();
-                                }
+                    VARS.mutationsCount++;
+                    // if (VARS.mutationsCount % 100 === 0) {
+                    //     console.info(log+'bodyMutating(); mutationsCount:', VARS.mutationsCount);
+                    // }
+                    if (VARS.mutationsCount > VARS.mutationsInitSkip) {
+                        //if (['A', 'DIV', 'I', 'IMG', 'OBJECT', 'SPAN', 'svg', '#text'].indexOf(mnode.nodeName) > 0) {
+                        if (['A', 'DIV', 'IMG', 'SPAN', '#text', 'svg'].indexOf(mnode.nodeName) > 0) {
+                            if ((mnode.nodeType === Node.ELEMENT_NODE) && ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0))) {
+                                // - skip these ...
+                            }
+                            else if (VARS.isNF) {
+                                mopUpTheNewsFeed();
+                            }
+                            else if (VARS.isGF) {
+                                mopUpTheGroupsFeed();
+                            }
+                            else if (VARS.isVF) {
+                                mopUpTheWatchVideosFeed();
+                            }
+                            else if (VARS.isMF) {
+                                mopUpTheMarketplaceFeed();
+                            }
+                            else if (VARS.isSF) {
+                                mopUpTheSearchFeed();
                             }
                         }
+                    }
                     // }
                     // catch (error) {
                     //     console.error(log + 'fn bodyMutating() :: Error! mnode:', mnode);
