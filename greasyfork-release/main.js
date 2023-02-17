@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.14
+// @version      4.15
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -14,6 +14,10 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.15 :: February 2023
+        Updated News Feed sponsored posts rule (FB changed structure)
+        Updated Marketplace Feed > Item page posts rules
+        Code tweaks
     v4.14 :: January 2023
         Updated News Feed Suggestion/Recommendation posts rule (FB changed structure)
         Updated News Feed verbosity behaviour. FB limits 40 posts in News Feed. Show either no notification or 1 post hidden. 2+ posts hidden notification disabled.
@@ -1424,7 +1428,7 @@
             'de': ['Speichern', 'Schließen', 'Exportieren', 'Importieren'],
             'fr': ['Sauvegarder', 'Fermer', 'Exporter', 'Importer'],
             'es': ['Guardar', 'Cerrar', 'Exportar', 'Importar'],
-            'cs': ['Zachránit', 'Zavřít', 'Export', 'Import'],
+            'cs': ['Uložit', 'Zavřít', 'Export', 'Import'],
             'vi': ['Lưu', 'Đóng', 'Xuất', 'Nhập'],
             'it': ['Salva', 'Chiudi', 'Esportare', 'Importare'],
             'lv': ['Saglabājiet', 'Aizveriet', 'Eksportēt', 'Importēt'],
@@ -1487,7 +1491,7 @@
     // - post attribute - consecutive posts id
     const postAttCPID = 'cmfcpid';
     // - post property - # of light dusting duties done
-    const postPropDS = 'cmfrDusted';
+    const postPropDS = 'cmfDusted';
 
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
@@ -1853,11 +1857,11 @@
         );
         // 'width: 1rem; height: 1rem; margin-left: 0.2rem; margin-right: 0.2rem;'
         addToSS(
-          '.link-new a',
+            '.link-new a',
             'width: 1rem; position: relative; display: inline-block;'
         );
         addToSS(
-          '.link-new svg',
+            '.link-new svg',
             'position: absolute; top: -13.5px; stroke: rgb(101, 103, 107);'
         );
 
@@ -2404,8 +2408,7 @@
             hdr2.appendChild(htxt);
             if (VARS.language !== 'en') {
                 stxt = document.createElement('small');
-                stxt.textContent = `(${KeyWords.DLG_TITLE[VARS.language]
-                    })`;
+                stxt.textContent = `(${KeyWords.DLG_TITLE[VARS.language]})`;
                 hdr2.appendChild(stxt);
                 hdr2.classList.add('fb-cmf-lang-2');
             }
@@ -2818,9 +2821,12 @@
                             let elParent = el.parentElement;
                             elParent.removeChild(el);
                         }
-                        el.removeAttribute(postAtt);
-                        el.classList.remove(VARS.cssHide);
-                        el.classList.remove(VARS.cssHideEl);
+                        else {
+                            el.removeAttribute(postAtt);
+                            el.classList.remove(VARS.cssHide);
+                            el.classList.remove(VARS.cssHideEl);
+                            el.classList.remove('show');
+                        }
                     });
                 }
                 // -- check that the classes have been removed
@@ -2829,6 +2835,7 @@
                     elements.forEach(el => {
                         el.classList.remove(VARS.cssHide);
                         el.classList.remove(VARS.cssHideEl);
+                        el.classList.remove('show');
                     });
                 }
                 elements = Array.from(document.querySelectorAll(`.${VARS.cssHideEl}`));
@@ -2836,6 +2843,7 @@
                     elements.forEach(el => {
                         el.classList.remove(VARS.cssHideEl);
                         el.classList.remove(VARS.cssHide);
+                        el.classList.remove('show');
                     });
                 }
 
@@ -3349,7 +3357,7 @@
         link.setAttribute(postAtt, reason);
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            VARS.block.classList.add('show');
+            block.classList.add('show');
         }
     }
 
@@ -3360,136 +3368,64 @@
 
     function isSponsored(post) {
         // Is it a sponsored post?
-        // -- grab the block of code that usually holds the post's timestamp / sponsored text.
-        // -- there are various methods for displaying sponsored text.
         // -- applies to News feed, Groups feed, Videos Feed
         // -- mopUpTheMarketplaceFeed() looks after marketplace feed sponsored posts/items.
 
-        let daText = '';
+        // -- scan the first few levels of DIVS, looking for a certain property.
 
-        // -- which method is FB using?
+        let foundSponsoredCategory = false;
 
-        // -- try the shadow-root
-        // -- querySelector cannot find attribute "xlink:href", so we trick it ..
-        // -- [*|href] will match both html href and svg xlink:href, then use :not([href]) to exclude html href
-        let elWrapper;
-        // Early Oct 2022
-        elWrapper = post.querySelector('span[id] > span > span > a[href] span > span > svg > use[*|href]:not([href])');
-        if (elWrapper === null) {
-            // Mid Oct 2022
-            elWrapper = post.querySelector('div > div > div > svg > use[*|href]:not([href])');
-            // Late Oct 2022
-            if (elWrapper === null) {
-                elWrapper = post.querySelector('a[href="#"] svg > use[*|href]:not([href])');
-            }
-        }
-        if (elWrapper !== null) {
-            let elLink = elWrapper.closest('a[href="#"]');
-            if (elLink !== null) {
-                let elParent = elLink.parentElement;
-                if ((elParent !== null) && (elParent.tagName === 'OBJECT')) {
-                    // not interested in this one.
-                    elWrapper = null;
+        // console.info(log + 'isSponsored(); post:', post);
+
+        if (!VARS.isVF) {
+            try {
+                // -- news feed + groups feed
+                let divs = Array.from(post.querySelectorAll(':scope > div'));
+                divs.unshift(post); // -- add post to list of divs to scan
+                let countDivs = divs.length;
+                for (let i = 0; i < countDivs; i++) {
+                    let objValues = Object.values(divs[i]);
+                    // console.info(log+'isSponsored(); i:', i, '; divs[i]:', divs[i], '; objValues:', objValues);
+                    if (objValues.length > 1) {
+                        if (objValues[1].children?.props?.feedEdge?.category === 'SPONSORED') {
+                            foundSponsoredCategory = true;
+                            break;
+                        }
+                    }
                 }
             }
-            else {
-                elWrapper = null;
+            catch (error) {
+                console.error(log + 'isSponsored(); isNF; Error:', error);
             }
         }
-        if (elWrapper !== null) {
-            let theID = elWrapper.getAttributeNS('http://www.w3.org/1999/xlink', 'href'); // the attribute has the "#" ...
-            let elSRB = document.querySelector('div > svg > ' + theID); // -- a TEXT element has the ID field.
-            daText = elSRB.textContent;
-        }
-        else {
-            // -- try the Flex/Order structure
-            elWrapper = post.querySelector(
-                'span > span > span > a[href^="?"] > span > span[class] > [style*="order"], ' +
-                'span > span > span > a[href="#"] > span > span[class] > [style*="order"], ' +
-                'span > span > span > a[href^="?"] > span > span[class] > [style*="display"], ' +
-                'span > span > span > a[href="#"] > span > span[class] > [style*="display"], ' +
-                'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="order"], ' +
-                'span > span > span > a[href*="/ads/"] > span > span[class] > [style*="display"]'
-            );
-
-            if (elWrapper) {
-                // -- found a regular post structure
-                let arrText = [];
-                let cs = window.getComputedStyle(elWrapper);
-                // wrapper's order - set to 0 if has a value (css will ignore other values)
-                let wrapperOrder = (cs.order !== "") ? 0 : -1;
-                elWrapper.childNodes.forEach((cn) => {
-                    if (cn.nodeType === Node.ELEMENT_NODE) {
-                        let cs = window.getComputedStyle(cn);
-                        if ((cs.position === 'relative') && (cs.display != 'none')) {
-                            arrText[parseInt(cs.order, 10)] = cn.textContent;
-                        }
-                    }
-                    else if ((cn.nodeType === Node.TEXT_NODE) && (wrapperOrder >= 0)) {
-                        let nv = cn.nodeValue.replaceAll(String.fromCharCode(10), '');
-                        if (nv.length > 0) {
-                            arrText[wrapperOrder] = nv;
-                        }
-                    }
-                });
-                daText = arrText.join('');
-            }
-            else {
-                // -- try the non-Flex/Order structure
-                elWrapper = post.querySelector(
-                    'span > span > span > a[href^="?"] > span > span[class] > [class], ' +
-                    'span > span > span > a[href="#"] > span > span[class] > [class], ' +
-                    'span > span > span > a[href*="/ads/"] > span > span[class] > [class]'
-                );
-                if (elWrapper) {
-                    // -- found a regular post structure
-                    daText = '';
-                    elWrapper.childNodes.forEach((cn) => {
-                        if (cn.nodeType === Node.ELEMENT_NODE) {
-                            let cs = window.getComputedStyle(cn);
-                            if ((cs.position === 'relative') && (cs.display != 'none')) {
-                                daText += cn.textContent;
+        else if (VARS.isVF) {
+            // -- watch videos feed has a different set of properties for sponsored posts.
+            try {
+                let divs = Array.from(post.querySelectorAll(':scope > div, :scope > div > div, :scope > div > div > div'));
+                divs.unshift(post); // -- add post to list of divs to scan
+                let countDivs = divs.length;
+                //console.info('scanPost(); scanning:', post);
+                for (let i = 0; i < countDivs; i++) {
+                    let objValues = Object.values(divs[i]);
+                    if (objValues.length > 1) {
+                        if (objValues[1].children?.props?.story) {
+                            let objStory = Object.values(objValues[1].children?.props?.story);
+                            if (objStory.find(val => { return ((typeof val === 'object') && (val?.__typename === 'SponsoredData')) })) {
+                                foundSponsoredCategory = true;
+                                break;
                             }
                         }
-                        else if (cn.nodeType === Node.TEXT_NODE) {
-                            let nv = cn.nodeValue.replaceAll(String.fromCharCode(10), '');
-                            if (nv.length > 0) {
-                                daText += nv;
-                            }
-                        }
-                    });
-                }
-                else {
-                    // --- try the non-obfuscated structure
-                    elWrapper = post.querySelector(
-                        'span > span > span > a[href="#"] > span, ' +
-                        'span > span > span > a[href*="/ads/"] > span'
-                    );
-                    if (elWrapper && elWrapper.children.length == 0) {
-                        daText = elWrapper.textContent;
                     }
                 }
             }
+            catch (error) {
+                console.error(log + 'isSponsored(); isVF; Error:', error);
+            }
         }
-        if (elWrapper !== null) {
-            // -- have a possible sponsored post ...
-            // --- regex pattern:
-            // --- [0-9] = ASCII digits
-            // --- [\u0660-\u0669] = Arabic digits
-            // --- שעה אחת = Hebrew for "one hour";
-            // --- ഒരു മണിക്കൂർ = Malaylam for "one/an hour"
-            // --- if pattern.test(...) is true, then not a sponsored post (sponsored posts do not have numbers)
-            // --- nb: regex testing - pattern.test() is quicker than string.match(pattern)
-            const pattern = /([0-9]|[\u0660-\u0669]|שעה אחת|ഒരു മണിക്കൂർ|^$)/;
-            daText = cleanText(daText).trim();
-            // console.info(`${log}is Sponsored post: >${daText}< >${!pattern.test(daText)}<`, post, elWrapper);
-            return ((daText.length > 0) && (!pattern.test(daText)));
-        }
-        else {
-            // -- not a sponsored post structure
-            return false;
-        }
+
+        return foundSponsoredCategory;
     }
+
 
     function querySelectorAllNoChildren(container = document, query, minText = 0) {
         if (query === '') {
@@ -3943,7 +3879,7 @@
             }
         }
         catch (error) {
-            console.error(LOG_GRP + 'gf_setPostLinkToOpenInNewTab(); Error:', post, error);
+            console.error(log + 'gf_setPostLinkToOpenInNewTab(); Error:', post, error);
         }
     }
 
@@ -4014,11 +3950,16 @@
         }
 
         // -- news feed stream ...
-        let query = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div';
+        // -- February 2023 - fb tweaked the structure
+        let query = 'h3[dir="auto"] ~ div:not([class]) > div[class]';
         let posts = Array.from(document.querySelectorAll(query));
         if (posts.length < 2) {
-            // -- 21-22/10/2022 - fb tweaked the structure
-            posts = Array.from(document.querySelectorAll(query + ' > div'));
+            query = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div';
+            posts = Array.from(document.querySelectorAll(query));
+            if (posts.length < 2) {
+                // -- 21-22/10/2022 - fb tweaked the structure
+                posts = Array.from(document.querySelectorAll(query + ' > div'));
+            }
             if (posts.length < 2) {
                 // -- December 2022 - try the [data-pagelet] attribute
                 query = 'span[id="ssrb_feed_start"] ~ div > div div[data-pagelet]';
@@ -4041,6 +3982,17 @@
                     if (post.hasAttribute(postAtt)) {
                         // -- already flagged ...
                         hideReason = 'hidden';
+                        // -- however, fb is clearing out the posts as the user scrolls ...
+                        // -- so we remove cmf's stuff ...
+                        if (post.querySelectorAll(':scope > div').length === 1) {
+                            post.removeAttribute(postAtt);
+                            post.classList.remove(VARS.cssHide);
+                            post.classList.remove(VARS.cssHideEl);
+                            post.classList.remove('show');
+                            // -- remove the notification tab.
+                            post.removeChild(post.firstElementChild);
+                            post[postPropDS] = 1; // -- reset scanning count
+                        }
                     }
                     else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
                         // -- skip these - already been scanned a few times
@@ -4048,15 +4000,15 @@
                     else {
                         doLightDusting(post);
 
+                        if (hideReason === '' && VARS.Options.NF_REELS_SHORT_VIDEOS) {
+                            hideReason = nf_isReelsAndShortVideos(post);
+                        }
                         // -- check short reel video post before sponsored (has hidden 'Learn more' text)
                         if (hideReason === '' && VARS.Options.NF_SHORT_REEL_VIDEO) {
                             hideReason = nf_isShortReelVideo(post);
                         }
                         if (hideReason === '' && VARS.Options.NF_PAID_PARTNERSHIP) {
                             hideReason = nf_isPaidPartnership(post);
-                        }
-                        if (hideReason === '' && VARS.Options.NF_REELS_SHORT_VIDEOS) {
-                            hideReason = nf_isReelsAndShortVideos(post);
                         }
                         if (hideReason === '' && VARS.Options.NF_PEOPLE_YOU_MAY_KNOW) {
                             hideReason = nf_isPeopleYouMayKnow(post);
@@ -4144,9 +4096,10 @@
                             // -- skip these - already been scanned a few times
                         }
                         else {
+
                             doLightDusting(post);
 
-                            if (isSponsored(post)) {
+                            if (hideReason === '' && isSponsored(post)) {
                                 hideReason = KeyWords.SPONSORED[VARS.language];
                             }
                             if (hideReason === '' && VARS.Options.GF_SUGGESTIONS) {
@@ -4382,8 +4335,9 @@
     function mopUpTheMarketplaceFeed() {
         // mopping up parts of the Marketplace ...
 
-        if (VARS.mpType === 'marketplace') {
+        if (VARS.mpType === 'marketplace' || VARS.mpType === 'item') {
             // - standard marketplace page
+            // - on the item page, there's listing of items to sell ... (similar structure to standard marketplace page)
             // -- "sponsored" is _not_ obfuscated;
             // -- nb: adguard base filter hides the label, but not the item/product ...
             let queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
@@ -4409,7 +4363,7 @@
                 mp_isBlockedText();
             }
         }
-        else if (VARS.mpType === 'item') {
+        if (VARS.mpType === 'item') {
             // -- viewing a marketplace item - a small sponsored box often shows up on the right.
             let query = `a[href*="/ads/"]:not([${postAtt}])`;
             let elements = Array.from(document.querySelectorAll(query));
