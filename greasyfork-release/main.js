@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.15
+// @version      4.16
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
@@ -14,6 +14,9 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.16 :: February 2023
+        Fixed issue with <no message> setting breaking FB
+        Code tweaks
     v4.15 :: February 2023
         Updated News Feed sponsored posts rule (FB changed structure)
         Updated Marketplace Feed > Item page posts rules
@@ -3290,7 +3293,7 @@
         // -- (separate function for marketplace)
         // -- Verbosity_Level: 0 = hide; 1 = single info note; 2 = consecutive info notes
 
-        // console.info(LOG_U + 'hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
+        // console.info(log + 'hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
 
         if ((VARS.Options.VERBOSITY_LEVEL !== '0') && (reason !== '')) {
             // -- in info tab mode
@@ -3350,6 +3353,19 @@
         }
 
         //console.info(log+'hidePost():', VARS.echoElFirst);
+    }
+
+    function nf_dropTags(post) {
+        // -- remove cmf's attributes/classes from empty posts.
+        post.removeAttribute(postAtt);
+        post.classList.remove(VARS.cssHide);
+        post.classList.remove(VARS.cssHideEl);
+        post.classList.remove('show');
+        // -- remove the notification tab.
+        if (post.querySelectorAll('div, h6').length > 0) {
+            post.removeChild(post.firstElementChild);
+        }
+        post[postPropDS] = 1; // -- reset scanning count
     }
 
     function hideBlock(block, link, reason) {
@@ -3973,7 +3989,13 @@
         }
         if (posts.length > 0) {
             // console.info(log+'---> mopUpTheNewsFeed()');
-            for (let post of posts) {
+            // -- fb clears out "older" posts as the user scrolls ... so, only process the last X posts.
+            let count = posts.length;
+            let start = (count < 50) ? 0 : (count - 50) ;
+            
+            // for (let post of posts) {
+            for (let i = start; i < count; i++ ) {
+                let post = posts[i];
 
                 if (post.innerHTML.length > 0) {
 
@@ -3983,15 +4005,8 @@
                         // -- already flagged ...
                         hideReason = 'hidden';
                         // -- however, fb is clearing out the posts as the user scrolls ...
-                        // -- so we remove cmf's stuff ...
-                        if (post.querySelectorAll(':scope > div').length === 1) {
-                            post.removeAttribute(postAtt);
-                            post.classList.remove(VARS.cssHide);
-                            post.classList.remove(VARS.cssHideEl);
-                            post.classList.remove('show');
-                            // -- remove the notification tab.
-                            post.removeChild(post.firstElementChild);
-                            post[postPropDS] = 1; // -- reset scanning count
+                        if (post.querySelectorAll(':scope a').length === 0) {
+                            nf_dropTags(post);
                         }
                     }
                     else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
@@ -4051,6 +4066,13 @@
                         if (VARS.hideAnInfoBox) {
                             scrubInfoBoxes(post);
                         }
+                    }
+                }
+                else {
+                    // -- post.innerHTML.length === 0
+                    if (post.hasAttribute(postAtt)) {
+                        // -- fb is clearing out the posts as the user scrolls ...
+                        nf_dropTags(post);
                     }
                 }
             }
