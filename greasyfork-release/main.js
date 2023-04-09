@@ -3,17 +3,23 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.16
+// @version      4.17
 // @author       zbluebugz (https://github.com/zbluebugz/)
-// @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
 // @match        https://*.facebook.com/*
 // @noframes
 // @grant        GM.registerMenuCommand
 // @license      MIT; https://opensource.org/licenses/MIT
+// @icon       data:image/png;base64,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
 // @icon64       data:image/png;base64,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
 // @run-at       document-start
 // ==/UserScript==
 /*
+
+    v4.17 :: March 2023
+        Fixed issue with GreaseMonkey & FireMonkey not able to run userscript
+        Updated News Feed sponsored posts rule
+        Updated Videos Feed sponsored posts rule
+        Added option to hide "# shares" on posts (news + groups)
     v4.16 :: February 2023
         Fixed issue with <no message> setting breaking FB
         Code tweaks
@@ -109,6 +115,10 @@
 (async function () {
 
     'use strict';
+
+    // Due to a GreaseMonkey bug with @require, we've copied an external script into here.
+    // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
+    function _typeof(n){return(_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(n){return typeof n}:function(n){return n&&"function"==typeof Symbol&&n.constructor===Symbol&&n!==Symbol.prototype?"symbol":typeof n})(n)}!function(n,t){"object"===("undefined"==typeof exports?"undefined":_typeof(exports))&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((n="undefined"!=typeof globalThis?globalThis:n||self).idbKeyval={})}(this,(function(n){"use strict";function t(n){return new Promise((function(t,e){n.oncomplete=n.onsuccess=function(){return t(n.result)},n.onabort=n.onerror=function(){return e(n.error)}}))}function e(n,e){var r,o=(!navigator.userAgentData&&/Safari\//.test(navigator.userAgent)&&!/Chrom(e|ium)\//.test(navigator.userAgent)&&indexedDB.databases?new Promise((function(n){var t=function(){return indexedDB.databases().finally(n)};r=setInterval(t,100),t()})).finally((function(){return clearInterval(r)})):Promise.resolve()).then((function(){var r=indexedDB.open(n);return r.onupgradeneeded=function(){return r.result.createObjectStore(e)},t(r)}));return function(n,t){return o.then((function(r){return t(r.transaction(e,n).objectStore(e))}))}}var r;function o(){return r||(r=e("keyval-store","keyval")),r}function u(n,e){return n("readonly",(function(n){return n.openCursor().onsuccess=function(){this.result&&(e(this.result),this.result.continue())},t(n.transaction)}))}n.clear=function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:o();return n("readwrite",(function(n){return n.clear(),t(n.transaction)}))},n.createStore=e,n.del=function(n){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:o();return e("readwrite",(function(e){return e.delete(n),t(e.transaction)}))},n.delMany=function(n){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:o();return e("readwrite",(function(e){return n.forEach((function(n){return e.delete(n)})),t(e.transaction)}))},n.entries=function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:o(),t=[];return u(n,(function(n){return t.push([n.key,n.value])})).then((function(){return t}))},n.get=function(n){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:o();return e("readonly",(function(e){return t(e.get(n))}))},n.getMany=function(n){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:o();return e("readonly",(function(e){return Promise.all(n.map((function(n){return t(e.get(n))})))}))},n.keys=function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:o(),t=[];return u(n,(function(n){return t.push(n.key)})).then((function(){return t}))},n.promisifyRequest=t,n.set=function(n,e){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:o();return r("readwrite",(function(r){return r.put(e,n),t(r.transaction)}))},n.setMany=function(n){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:o();return e("readwrite",(function(e){return n.forEach((function(n){return e.put(n[1],n[0])})),t(e.transaction)}))},n.update=function(n,e){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:o();return r("readwrite",(function(r){return new Promise((function(o,u){r.get(n).onsuccess=function(){try{r.put(e(this.result),n),o(t(r.transaction))}catch(n){u(n)}}}))}))},n.values=function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:o(),t=[];return u(n,(function(n){return t.push(n.value)})).then((function(){return t}))},Object.defineProperty(n,"__esModule",{value:!0})}));
 
     // *** *** Language components *** ***
     const KeyWords = {
@@ -427,6 +437,30 @@
             'defaultEnabled': false
         },
 
+        // - # shares
+        NF_SHARES: {
+            'en': '# shares',
+            'pt': '# partilhas',
+            'de': '# Mal geteilt',
+            'fr': '# partages',
+            'es': '# veces compartida',
+            'cs': '# sdílení',
+            'vi': '# lượt chia sẻ',
+            'it': 'Condivisioni: #',
+            'lv': '# dalījās',
+            'pl': '# udostępnienia',
+            'nl': '# keer gedeeld',
+            'he': '# שיתופים',
+            'ar': '# مشاركات',
+            'id': '# Kali dibagikan',
+            'zh-Hans': '#次分享',
+            'zh-Hant': '#次分享',
+            'ja': 'シェア#件',
+            'fi': '# jakoa',
+            'tr': '# Paylaşım',
+            'defaultEnabled': false
+        },
+
         // *** Groups Feed ::
 
         // - Paid partnership:
@@ -524,6 +558,29 @@
             'fi': 'Kela/lyhyt video',
             'tr': 'Hareketli GIF\'leri duraklat',
             'defaultEnabled': false,
+        },
+        // - # shares
+        GF_SHARES: {
+            'en': '# shares',
+            'pt': '# partilhas',
+            'de': '# Mal geteilt',
+            'fr': '# partages',
+            'es': '# veces compartida',
+            'cs': '# sdílení',
+            'vi': '# lượt chia sẻ',
+            'it': 'Condivisioni: #',
+            'lv': '# dalījās',
+            'pl': '# udostępnienia',
+            'nl': '# keer gedeeld',
+            'he': '# שיתופים',
+            'ar': '# مشاركات',
+            'id': '# Kali dibagikan',
+            'zh-Hans': '#次分享',
+            'zh-Hant': '#次分享',
+            'ja': 'シェア#件',
+            'fi': '# jakoa',
+            'tr': '# Paylaşım',
+            'defaultEnabled': false
         },
 
         // *** Watch Videos Feed ::
@@ -1554,6 +1611,7 @@
         cssHide: '',
         cssHideEl: '',
         cssEcho: '',
+        cssHideNumberOfShares: '',
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl: null,
         // - script's logo
@@ -1637,6 +1695,7 @@
             VARS.cssHide = generateRandomString(); // - the parent element - hides the nth level down element
             VARS.cssHideEl = generateRandomString(); // - the element to hide - where there's no child element
             VARS.cssHideStories = generateRandomString(); // - stories have an odd setup for hide & show with border ...
+            VARS.cssHideNumberOfShares = generateRandomString(); // - hide "# shares" on posts.
             VARS.cssEcho = generateRandomString();
         }
         VARS.tempStyleSheetCode = ''; // reset temp CSS code.
@@ -1661,9 +1720,14 @@
         // -- which styles to apply?
         // --- (display:block is for those span tags being a nth-of-child element.)
         styles = 'display:none !important;';
-
         addToSS(classes, styles);
 
+        // -- # shares
+        addToSS(
+            `.${VARS.cssHideNumberOfShares}`,
+            'display:none !important;'
+        );
+        
         // - echo msg
         addToSS(
             `.${VARS.cssHide} > div[${postAtt}]`,
@@ -1714,9 +1778,9 @@
             'display:block !important; '
         );
         addToSS(
-            //`.${VARS.cssHide}.show > div:not([${postAtt}]) > div[class], ` +
             `.${VARS.cssHide}.show > div:not([${postAtt}]) > div, ` +
-            `.${VARS.cssHideStories}.show > div > div > div `,
+            `.${VARS.cssHideStories}.show > div > div > div, ` + 
+            `.${VARS.cssHideNumberOfShares}.show`,
             'display:block !important; ' +
             `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.2rem 0.1rem 0.1rem 0.1rem;` // 4px
         );
@@ -2849,6 +2913,14 @@
                         el.classList.remove('show');
                     });
                 }
+                elements = Array.from(document.querySelectorAll(`.${VARS.cssHideNumberOfShares}`));
+                if (elements.length > 0) {
+                    elements.forEach(el => {
+                        el.removeAttribute(postAtt);
+                        el.classList.remove(VARS.cssHideNumberOfShares);
+                        el.classList.remove('show');
+                    });
+                }
 
                 if (VARS.isNF) {
                     mopUpTheNewsFeed();
@@ -3219,6 +3291,15 @@
                     }
                 }
             }
+            // -- show the hidden shares
+            let shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
+            if (shares.length > 0) {
+                for (let elShare of shares) {
+                    if (elShare.classList.contains('show') === false) {
+                        elShare.classList.add('show');
+                    }
+                }
+            }
         }
         else {
             // -- remove the .show class ...
@@ -3250,6 +3331,15 @@
                 for (let elBlock of flaggedBlocks) {
                     if (elBlock.classList.contains('show')) {
                         elBlock.classList.remove('show');
+                    }
+                }
+            }
+            // -- hide the hidden shares
+            let shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
+            if (shares.length > 0) {
+                for (let elShare of shares) {
+                    if (elShare.classList.contains('show')) {
+                        elShare.classList.remove('show');
                     }
                 }
             }
@@ -3387,61 +3477,37 @@
         // -- applies to News feed, Groups feed, Videos Feed
         // -- mopUpTheMarketplaceFeed() looks after marketplace feed sponsored posts/items.
 
-        // -- scan the first few levels of DIVS, looking for a certain property.
+        let isSponsoredPost = false;
+        const PARAM_FIND = '__cft__[0]=';
+        const PARAM_MIN_SIZE = 299;
 
-        let foundSponsoredCategory = false;
-
-        // console.info(log + 'isSponsored(); post:', post);
-
+        let elLinks = [] ;
         if (!VARS.isVF) {
-            try {
-                // -- news feed + groups feed
-                let divs = Array.from(post.querySelectorAll(':scope > div'));
-                divs.unshift(post); // -- add post to list of divs to scan
-                let countDivs = divs.length;
-                for (let i = 0; i < countDivs; i++) {
-                    let objValues = Object.values(divs[i]);
-                    // console.info(log+'isSponsored(); i:', i, '; divs[i]:', divs[i], '; objValues:', objValues);
-                    if (objValues.length > 1) {
-                        if (objValues[1].children?.props?.feedEdge?.category === 'SPONSORED') {
-                            foundSponsoredCategory = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (error) {
-                console.error(log + 'isSponsored(); isNF; Error:', error);
+            // -- news feed and possibly groups feed (haven't seen a sponsored post in groups for ages!)
+            elLinks = Array.from(post.querySelectorAll(`div[aria-posinset] h4 > span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
+            if (elLinks.length === 0) {
+                // -- try again, some users don't have the aria-posinet attribute.
+                elLinks = post.querySelectorAll(`div[aria-describedby] h4 > span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`);
             }
         }
         else if (VARS.isVF) {
-            // -- watch videos feed has a different set of properties for sponsored posts.
-            try {
-                let divs = Array.from(post.querySelectorAll(':scope > div, :scope > div > div, :scope > div > div > div'));
-                divs.unshift(post); // -- add post to list of divs to scan
-                let countDivs = divs.length;
-                //console.info('scanPost(); scanning:', post);
-                for (let i = 0; i < countDivs; i++) {
-                    let objValues = Object.values(divs[i]);
-                    if (objValues.length > 1) {
-                        if (objValues[1].children?.props?.story) {
-                            let objStory = Object.values(objValues[1].children?.props?.story);
-                            if (objStory.find(val => { return ((typeof val === 'object') && (val?.__typename === 'SponsoredData')) })) {
-                                foundSponsoredCategory = true;
-                                break;
-                            }
-                        }
-                    }
+            // -- watch videos feed has a slightly different html structure for sponsored posts.
+            elLinks = Array.from(post.querySelectorAll(`div > div > div > div > span > span > div > a[href*="${PARAM_FIND}"]`));
+        }
+        if (elLinks.length > 0) {
+            for (let i = 0; i < elLinks.length; i++) {
+                let el = elLinks[i];
+                let pos = el.href.indexOf(PARAM_FIND);
+                if (pos >= 0) {
+                    if (el.href.slice(pos).length > PARAM_MIN_SIZE) {
+                        isSponsoredPost = true;
+                        break;
+                    };
                 }
             }
-            catch (error) {
-                console.error(log + 'isSponsored(); isVF; Error:', error);
-            }
         }
-
-        return foundSponsoredCategory;
+        return isSponsoredPost;
     }
-
 
     function querySelectorAllNoChildren(container = document, query, minText = 0) {
         if (query === '') {
@@ -3846,6 +3912,7 @@
     function gf_setPostLinkToOpenInNewTab(post) {
         // -- open a group post in a new window from the groups feed
         // -- overcomes the fb bug in not listing the comments properly
+        // -- (there's no equivalent function for news feed posts - no quick way of getting the post's URL)
 
         try {
             // - parts of the post's link can be found in the first link
@@ -3939,6 +4006,25 @@
         }
     }
 
+    function nf_hideNumberOfShares(post) {
+        let query = `div[data-visualcompletion="ignore-dynamic"] > div:not([class]) > div:not([class]) > div:not([class]) > div[class] > div:nth-of-type(1) > div > div > span > div:not([id]) > span[dir]:not(${postAtt})`;
+        let shares = Array.from(post.querySelectorAll(query));
+        if (shares.length > 0) {
+            for (let share of shares) {
+                share.classList.add(VARS.cssHideNumberOfShares);
+                if (VARS.Options.VERBOSITY_DEBUG) {
+                    share.classList.add('show');
+                }
+                share.setAttribute(postAtt, 'Shares');
+            }
+        }
+    }
+    function gf_hideNumberOfShares(post) {
+        // -- groups feed posts have same '# shares' html structure as news feed posts.
+        // -- .. hence calling nf_hideNumberOfShares(...)
+        nf_hideNumberOfShares(post);
+    }
+
     function mopUpTheNewsFeed() {
         // mopping up the news feed page
 
@@ -3992,7 +4078,7 @@
             // -- fb clears out "older" posts as the user scrolls ... so, only process the last X posts.
             let count = posts.length;
             let start = (count < 50) ? 0 : (count - 50) ;
-            
+
             // for (let post of posts) {
             for (let i = start; i < count; i++ ) {
                 let post = posts[i];
@@ -4018,7 +4104,6 @@
                         if (hideReason === '' && VARS.Options.NF_REELS_SHORT_VIDEOS) {
                             hideReason = nf_isReelsAndShortVideos(post);
                         }
-                        // -- check short reel video post before sponsored (has hidden 'Learn more' text)
                         if (hideReason === '' && VARS.Options.NF_SHORT_REEL_VIDEO) {
                             hideReason = nf_isShortReelVideo(post);
                         }
@@ -4037,12 +4122,12 @@
                         if (hideReason === '' && VARS.Options.NF_EVENTS_YOU_MAY_LIKE) {
                             hideReason = nf_isEventsYouMayLike(post);
                         }
-                        // -- testing for sponsored here - it can be a bit aggressive in taking out some of the above rules (a hit for the wrong reason.)
-                        if (hideReason === '' && isSponsored(post)) {
-                            hideReason = KeyWords.SPONSORED[VARS.language];
-                        }
                         if (hideReason === '' && VARS.Options.NF_BLOCKED_ENABLED) {
                             hideReason = nf_isBlockedText(post);
+                        }
+                        // -- placed here due to "overlaps" between this rule and at least 1 of the above rule.
+                        if (hideReason === '' && isSponsored(post)) {
+                            hideReason = KeyWords.SPONSORED[VARS.language];
                         }
                     }
 
@@ -4065,6 +4150,10 @@
                         // -- hide info boxes
                         if (VARS.hideAnInfoBox) {
                             scrubInfoBoxes(post);
+                        }
+                        // -- hide number of shares box
+                        if (VARS.Options.NF_SHARES) {
+                            nf_hideNumberOfShares(post);
                         }
                     }
                 }
@@ -4105,7 +4194,7 @@
 
                         let hideReason = '';
 
-                        // -- add the open group in new tab link+icon. (fixes fb bug in not displaying comments properly)
+                        // -- add the open post in new tab link+icon.
                         if ((VARS.gfType === 'groups') && (post[postPropDS] === undefined)) {
                             gf_setPostLinkToOpenInNewTab(post);
                         }
@@ -4158,6 +4247,10 @@
                             // -- hide info boxes
                             if (VARS.hideAnInfoBox) {
                                 scrubInfoBoxes(post);
+                            }
+                            // -- hide number of shares box
+                            if (VARS.Options.GF_SHARES) {
+                                gf_hideNumberOfShares(post);
                             }
                         }
                     }
@@ -4216,6 +4309,10 @@
                             // -- hide info boxes
                             if (VARS.hideAnInfoBox) {
                                 scrubInfoBoxes(post);
+                            }
+                            // -- hide number of shares box
+                            if (VARS.Options.GF_SHARES) {
+                                gf_hideNumberOfShares(post);
                             }
                         }
                     }
