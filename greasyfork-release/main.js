@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.18
+// @version      4.19
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://*.facebook.com/*
 // @noframes
@@ -14,6 +14,8 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.19 :: May 2023
+        Updated News Feed posts selection rule (FB changed structure)
     v4.18 :: May 2023
         Updated News Feed sponsored posts rule
         Added News Feed sponsored video posts rule
@@ -3527,6 +3529,7 @@
                 }
             }
         }
+        // if (isSponsoredPost) console.info('post:', isSponsoredPost, post);
         return isSponsoredPost;
     }
 
@@ -3551,14 +3554,14 @@
         // -- nb: x people recently commented posts have similar structure - suggested/recommended posts don't start with a number ...
 
         // -- May 2023 - structure change
-        let query =  'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span, ' + 
-                     'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span';
+        let query = 'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span, ' +
+                    'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span';
         let elSuggestion = querySelectorAllNoChildren(post, query, 1);
 
         if (elSuggestion.length === 0) {
             // -- December 2022 - structure change - variation #2
             query = ':scope div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span, ' +
-                        ':scope div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span';
+                    ':scope div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span';
             elSuggestion = querySelectorAllNoChildren(post, query, 1);
             // console.info(log + 'nf_isSuggested; try #1:', elSuggestion.length, elSuggestion);
         }
@@ -4080,23 +4083,29 @@
         }
 
         // -- news feed stream ...
-        // -- February 2023 - fb tweaked the structure
-        let query = 'h3[dir="auto"] ~ div:not([class]) > div[class]';
+        // -- May 2023 - fb tweaked the structure
+        let query = 'h2[dir="auto"] ~ div:not([class]) > div[class]';
         let posts = Array.from(document.querySelectorAll(query));
+
         if (posts.length < 2) {
-            query = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div';
+            // -- February 2023 - fb tweaked the structure
+            query = 'h3[dir="auto"] ~ div:not([class]) > div[class]';
             posts = Array.from(document.querySelectorAll(query));
             if (posts.length < 2) {
-                // -- 21-22/10/2022 - fb tweaked the structure
+                query = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div';
+                posts = Array.from(document.querySelectorAll(query));
+            }
+            // -- 21-22/10/2022 - fb tweaked the structure
+            if (posts.length < 2) {
                 posts = Array.from(document.querySelectorAll(query + ' > div'));
             }
+            // -- December 2022 - try the [data-pagelet] attribute
             if (posts.length < 2) {
-                // -- December 2022 - try the [data-pagelet] attribute
                 query = 'span[id="ssrb_feed_start"] ~ div > div div[data-pagelet]';
                 posts = Array.from(document.querySelectorAll(query));
             }
+            // -- 31/10/2022 - fb tweaked the structure
             if (posts.length < 2) {
-                // -- 31/10/2022 - fb tweaked the structure
                 query = 'h3[dir="auto"] ~ div:not([class]) > div[class] > div';
                 posts = Array.from(document.querySelectorAll(query));
             }
