@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.19
+// @version      4.20
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://*.facebook.com/*
 // @noframes
@@ -14,6 +14,9 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.20 :: May 2023
+        Added "Feeds (most recent)" to the clean up rules (FB recently introduced the "Feeds (most recent)" feature)
+        Updated Search Feed sponsored posts rule
     v4.19 :: May 2023
         Updated News Feed posts selection rule (FB changed structure)
     v4.18 :: May 2023
@@ -3031,7 +3034,13 @@
             VARS.isSF = false;
             if ((VARS.prevPathname === '/') || (VARS.prevPathname === '/home.php')) {
                 // -- news feed
-                VARS.isNF = true;
+                // -- nb: "Feeds (most recent)" combines a few feeds into one ... apply NF rules to all, except Groups.
+                if (VARS.prevQuery.indexOf('?filter=groups') < 0) {
+                    VARS.isNF = true;
+                }
+                else {
+                    VARS.isGF = true;
+                }
             }
             else if (VARS.prevPathname.indexOf('/groups/') >= 0) {
                 // -- groups feed
@@ -3484,18 +3493,25 @@
 
         let isSponsoredPost = false;
         const PARAM_FIND = '__cft__[0]=';
-        const PARAM_MIN_SIZE = 299;
+        const PARAM_MIN_SIZE = (VARS.isSF) ? 254 : 299;
 
         let elLinks = [];
-        if (!VARS.isVF) {
+        if (VARS.isNF || VARS.isGF) {
             // -- news feed
             // -- and possibly groups feed (haven't seen a sponsored post in groups for ages!)
-            // -- May 2023 update
-            elLinks = Array.from(post.querySelectorAll(`div[aria-posinset] h4 span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
+            // -- May 2023 update (#3) - works with the introduced "Feeds (most recent)" feature
+            elLinks = Array.from(post.querySelectorAll(`div[aria-posinset] span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
             if (elLinks.length === 0) {
                 // -- try again, some users don't have the aria-posinet attribute.
-                elLinks = Array.from(post.querySelectorAll(`div[aria-describedby] h4 span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
+                elLinks = Array.from(post.querySelectorAll(`div[aria-describedby] span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
             }
+
+            // -- May 2023 update (disabled - May 2023 #3 takes care of this fix)
+            // elLinks = Array.from(post.querySelectorAll(`div[aria-posinset] h4 span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
+            // if (elLinks.length === 0) {
+            //     // -- try again, some users don't have the aria-posinet attribute.
+            //     elLinks = Array.from(post.querySelectorAll(`div[aria-describedby] h4 span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
+            // }
 
             // -- March 2023 udpate (disabled - May 2023 takes care of March's fix.)
             // elLinks = Array.from(post.querySelectorAll(`div[aria-posinset] h4 > span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
@@ -3505,17 +3521,21 @@
             // }
 
             // -- April 2023, possible sponsored video post in News Feed ("LIVE")
-            if (elLinks.length === 0) {
-                elLinks = Array.from(post.querySelectorAll(`div[aria-posinset] h4 > span > strong > span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
-                if (elLinks.length === 0) {
-                    // -- try again, some users don't have the aria-posinet attribute.
-                    elLinks = post.querySelectorAll(`div[aria-describedby] h4 > span > strong > span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`);
-                }
-            }
+            // if (elLinks.length === 0) {
+            //     elLinks = Array.from(post.querySelectorAll(`div[aria-posinset] h4 > span > strong > span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`));
+            //     if (elLinks.length === 0) {
+            //         // -- try again, some users don't have the aria-posinet attribute.
+            //         elLinks = post.querySelectorAll(`div[aria-describedby] h4 > span > strong > span > a[href*="${PARAM_FIND}"]:not([href^="/groups/"]):not([href*="section_header_type"])`);
+            //     }
+            // }
         }
         else if (VARS.isVF) {
             // -- watch videos feed has a slightly different html structure for sponsored posts.
             elLinks = Array.from(post.querySelectorAll(`div > div > div > div > span > span > div > a[href*="${PARAM_FIND}"]`));
+        }
+        else if (VARS.isSF) {
+            // -- search feed - has a slightly different html structure for sponsored posts.
+            elLinks = Array.from(post.querySelectorAll(`div[role="article"] span > a[href*="${PARAM_FIND}"]`));
         }
         if (elLinks.length > 0) {
             for (let i = 0; i < elLinks.length; i++) {
