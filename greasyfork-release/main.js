@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.20
+// @version      4.21
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://*.facebook.com/*
 // @noframes
@@ -14,6 +14,11 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.21 :: June 2023
+        Updated news feed detection rules - for older HTML structures
+        Updated watch videos feed detection rules
+        Added Greek (Ελληνικά)
+        Updated various functions
     v4.20 :: May 2023
         Added "Feeds (most recent)" to the clean up rules (FB recently introduced the "Feeds (most recent)" feature)
         Updated Search Feed sponsored posts rule
@@ -154,6 +159,7 @@
             'ja', // Japanese (Japan)
             'fi', // Suomi - Finnish (Finland)
             'tr', // Türkçe (Turkey)
+            'el', // Ελληνικά (Greek)
         ],
 
         // - Sponsored
@@ -177,6 +183,7 @@
             'ja': '広告',
             'fi': 'Sponsoroitu',
             'tr': 'Sponsorlu',
+            'el': 'Χορηγούμενη',
         },
 
         // *** News Feed ::
@@ -202,6 +209,7 @@
             'ja': '「Stories | Reels | Rooms」タブのリストボックス',
             'fi': '"Tarinat | Reels | Rooms" -välilehtien luetteloruutu',
             'tr': '"Hikayeler | Makaralar | Odalar" sekmeleri liste kutusu',
+            'el': 'Λίστα καρτελών "Ιστορίες | Reels | Δωμάτια"',
             'defaultEnabled': false
         },
         // - "Stories" box (same area as the tablist box, standalone)
@@ -225,6 +233,7 @@
             'ja': 'Stories',
             'fi': 'Tarinat',
             'tr': 'Hikayeler',
+            'el': 'Ιστορίες',
             'defaultEnabled': false
         },
         // - "Create Room" - near top of News Feed, below "What's on your mind, <name>?"
@@ -240,7 +249,6 @@
             'lv': 'Izveidot istabu',
             'pl': 'Utwórz pokój',
             'nl': 'Ruimte maken',
-            // -- needs translation
             'he': 'צור חדר',
             'ar': 'إنشاء غرفة',
             'id': 'Buat ruangan',
@@ -249,6 +257,7 @@
             'ja': 'ルームを作成',
             'fi': 'Luo huone',
             'tr': 'Oda yarat',
+            'el': 'Δημιουργήστε δωμάτιο',
             'defaultEnabled': false
         },
         // - People you may know:
@@ -272,6 +281,7 @@
             'ja': 'あなたが知っているかもしれない人々',
             'fi': 'Ihmiset, jotka saatat tuntea',
             'tr': 'Tanıyor olabileceğin kişiler',
+            'el': 'Άτομα που ίσως γνωρίζετε',
             'defaultEnabled': false
         },
 
@@ -297,6 +307,7 @@
             'ja': '有償パートナーシップ',
             'fi': 'Maksettu kumppanuus',
             'tr': 'ücretli ortaklık',
+            'el': 'Πληρωμένη συνεργασία',
             'defaultEnabled': true
         },
 
@@ -322,6 +333,7 @@
             'ja': '後援 · ______ による支払い',
             'fi': 'Sponsoroitu · Maksaja ______',
             'tr': 'Sponsorlu · ______ tarafından ödendi',
+            'el': 'Χορηγούμενο · Πληρωμένο από ______',
             'defaultEnabled': true
         },
 
@@ -346,6 +358,7 @@
             'ja': '提案/推奨事項',
             'fi': 'Ehdotuksia / Suosituksia',
             'tr': 'Öneriler',
+            'el': 'Προτάσεις / Συστάσεις',
             'defaultEnabled': false
         },
 
@@ -370,6 +383,7 @@
             'ja': 'リールとショート動画',
             'fi': 'Keloja ja lyhyitä videoita',
             'tr': 'Makaralar ve kısa videolar',
+            'el': 'Reel και σύντομα βίντεο',
             'defaultEnabled': false
         },
 
@@ -394,6 +408,7 @@
             'ja': 'リール/ショートビデオ',
             'fi': 'Kela/lyhyt video',
             'tr': 'makara/kısa video',
+            'el': 'Ριλς/μικρό βίντεο',
             'defaultEnabled': false
         },
 
@@ -418,6 +433,7 @@
             'ja': 'リール/ショートビデオ',
             'fi': 'Kela/lyhyt video',
             'tr': 'makara/kısa video',
+            'el': 'Εκδηλώσεις που μπορεί να σας αρέσουν',
             'defaultEnabled': false,
         },
 
@@ -442,6 +458,7 @@
             'ja': 'アニメーション GIF を一時停止する',
             'fi': 'Keskeytä animoidut GIF-kuvat',
             'tr': 'Hareketli GIF\'leri duraklat',
+            'el': 'Παύση κινούμενων GIF',
             'defaultEnabled': false
         },
 
@@ -466,6 +483,7 @@
             'ja': 'シェア#件',
             'fi': '# jakoa',
             'tr': '# Paylaşım',
+            'el': '# μερίδια',
             'defaultEnabled': false
         },
 
@@ -493,6 +511,7 @@
             'ja': '有償パートナーシップ',
             'fi': 'Maksettu kumppanuus',
             'tr': 'ücretli ortaklık',
+            'el': 'Πληρωμένη συνεργασία',
             'defaultEnabled': true
         },
 
@@ -517,6 +536,7 @@
             'ja': '提案/推奨事項',
             'fi': 'Ehdotuksia / Suosituksia',
             'tr': 'Öneriler',
+            'el': 'Προτάσεις / Συστάσεις',
             'defaultEnabled': false
         },
 
@@ -541,6 +561,7 @@
             'ja': 'リールとショートビデオ',
             'fi': 'Keloja ja lyhyitä videoita',
             'tr': 'makara/kısa video',
+            'el': 'Ριλς/μικρό βίντεο',
             'defaultEnabled': false
         },
 
@@ -565,6 +586,7 @@
             'ja': 'リール/ショートビデオ',
             'fi': 'Kela/lyhyt video',
             'tr': 'Hareketli GIF\'leri duraklat',
+            'el': 'Παύση κινούμενων GIF',
             'defaultEnabled': false,
         },
         // - # shares
@@ -588,6 +610,7 @@
             'ja': 'シェア#件',
             'fi': '# jakoa',
             'tr': '# Paylaşım',
+            'el': '# μερίδια',
             'defaultEnabled': false
         },
 
@@ -614,6 +637,7 @@
             'ja': 'アニメーション GIF を一時停止する',
             'fi': 'Keskeytä animoidut GIF-kuvat',
             'tr': 'Hareketli GIF\'leri duraklat',
+            'el': 'Παύση κινούμενων GIF',
             'defaultEnabled': false,
         },
 
@@ -640,6 +664,7 @@
             'ja': ['ニュースフィード', 'グループ フィード', '動画フィード'],
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
+            'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
             'defaultEnabled': ['1', '0', '0'],
         },
         // - text filter for Groups Feed:
@@ -663,6 +688,7 @@
             'ja': ['ニュースフィード', 'グループ フィード', '動画フィード'],
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
+            'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
             'defaultEnabled': ['0', '1', '0'],
         },
         // - text filter for Vidoes Feed:
@@ -686,6 +712,7 @@
             'ja': ['ニュースフィード', 'グループ フィード', '動画フィード'],
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
+            'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
             'defaultEnabled': ['0', '0', '1'],
         },
         // - text filter for Marketplace feed:
@@ -709,6 +736,7 @@
             'ja': ['マーケットプレイス フィード'],
             'fi': ['Marketplace-syöte'],
             'tr': ['Pazar Yeri Feed\'i'],
+            'el': ['Ροή Marketplace'],
             'defaultEnabled': ['1', '0', '0'],
         },
 
@@ -736,6 +764,7 @@
             'ja': 'コロナウイルス（インフォメーションボックス）',
             'fi': 'Koronavirus (tietolaatikko)',
             'tr': 'Koronavirüs (bilgi kutusu)',
+            'el': 'Κορονοϊός (πλαίσιο πληροφοριών)',
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/',
         },
@@ -761,6 +790,7 @@
             'ja': '気候科学（情報ボックス）',
             'fi': 'Ilmastotiede (tietolaatikko)',
             'tr': 'İklim Bilimi (bilgi kutusu)',
+            'el': 'Επιστήμη του κλίματος (πλαίσιο πληροφοριών)',
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
         },
@@ -786,6 +816,7 @@
             'ja': '購読する（情報ボックス）',
             'fi': 'Rekisteröidy (tietolaatikko)',
             'tr': 'Abone ol (bilgi kutusu)',
+            'el': 'Εγγραφή (πλαίσιο πληροφοριών)',
             'defaultEnabled': false,
             'pathMatch': '/support/',
         },
@@ -813,6 +844,7 @@
             'ja': 'フィードをクリーンアップ',
             'fi': 'Puhdista syötteeni',
             'tr': 'Feed\'lerimi temizle',
+            'el': 'Καθαρισμός των ροών μου',
         },
 
         // - label for News Feed:
@@ -836,6 +868,7 @@
             'ja': 'ニュースフィード',
             'fi': 'Uutisvirta',
             'tr': 'Haber akışı',
+            'el': 'Ροή ειδήσεων',
         },
 
         // - label for Groups Feed:
@@ -859,6 +892,7 @@
             'ja': 'グループ フィード',
             'fi': 'Ryhmäsyöte',
             'tr': 'Gruplar Feed\'i',
+            'el': 'Ροή ομάδων',
         },
 
         // - label for Videos Feed:
@@ -882,6 +916,7 @@
             'ja': '動画フィード',
             'fi': 'Videosyöte',
             'tr': 'Video Beslemelerini İzle',
+            'el': 'Ροή βίντεο',
         },
 
         // - label for Marketplace Feed:
@@ -905,6 +940,7 @@
             'ja': 'マーケットプレイス フィード',
             'fi': 'Marketplace-syöte',
             'tr': 'Pazar Yeri Feed\'i',
+            'el': 'Ροή Marketplace',
         },
 
         // - label for Miscellaneous/Other items:
@@ -928,6 +964,7 @@
             'ja': 'その他のアイテム',
             'fi': 'Sekalaiset tavarat',
             'tr': 'Diğer öğeler',
+            'el': 'Διάφορα αντικείμενα',
         },
 
         // - text filter label (title)
@@ -951,6 +988,7 @@
             'ja': 'テキストフィルター',
             'fi': 'Tekstisuodatin',
             'tr': 'Metin filtresi',
+            'el': 'Φίλτρο κειμένου',
         },
 
         // - text filter - separate keywords with new line:
@@ -974,6 +1012,7 @@
             'ja': '(改行で単語または語句を区切ります)',
             'fi': '(erottele sanat tai lauseet rivinvaihdolla)',
             'tr': '(sözcükleri veya tümcecikleri satır sonu ile ayırın)',
+            'el': '(διαχωρίστε λέξεις ή φράσεις με αλλαγή γραμμής)',
         },
 
         NF_BLOCKED_ENABLED: {
@@ -996,6 +1035,7 @@
             'ja': '有効化',
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
+            'el': 'Ενεργοποιημένο',
             'defaultEnabled': false,
         },
 
@@ -1019,6 +1059,7 @@
             'ja': '有効化',
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
+            'el': 'Ενεργοποιημένο',
             'defaultEnabled': false,
         },
 
@@ -1042,6 +1083,7 @@
             'ja': '有効化',
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
+            'el': 'Ενεργοποιημένο',
             'defaultEnabled': false,
         },
 
@@ -1065,6 +1107,7 @@
             'ja': '有効化',
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
+            'el': 'Ενεργοποιημένο',
             'defaultEnabled': false,
         },
 
@@ -1089,6 +1132,7 @@
             'ja': '詳細度',
             'fi': 'Monisanaisuus',
             'tr': 'Ayrıntı',
+            'el': 'Πολυλογία',
             'defaultValue': '1',
         },
 
@@ -1113,6 +1157,7 @@
             'ja': '投稿が非表示の場合にメッセージを表示する',
             'fi': 'Näytä viesti, jos postaus on piilotettu',
             'tr': 'Bir gönderi gizlenmişse bir mesaj göster',
+            'el': 'Εμφάνιση μηνύματος αν ένας δημοσίευση είναι κρυμμένη',
         },
 
         // - Verbosity - say nothing:
@@ -1136,6 +1181,7 @@
             'ja': 'メッセージなし',
             'fi': 'ei viestiä',
             'tr': 'esaj yok',
+            'el': 'Κανένα μήνυμα',
         },
 
         // - notification
@@ -1159,6 +1205,7 @@
             'ja': ['1 件の投稿が非表示になっています。 ルール： ', ' 件の投稿が非表示'],
             'fi': ['1 viesti piilotettu. Sääntö: ', ' viestiä piilotettu'],
             'tr': ['1 gönderi gizlendi. Kural: ', ' gönderi gizlendi'],
+            'el': ['1 δημοσίευση κρυμμένη. Κανόνας: ', ' δημοσιεύσεις κρυμμένες']
         },
 
         // - colour of the verbosity message:
@@ -1182,6 +1229,7 @@
             'ja': 'テキストの色',
             'fi': 'Tekstin väri',
             'tr': 'Metin rengi',
+            'el': 'Χρώμα κειμένου',
         },
 
         // - background colour of the verbosity message:
@@ -1205,6 +1253,7 @@
             'ja': '背景色',
             'fi': 'Taustaväri',
             'tr': 'Arka plan rengi',
+            'el': 'Χρώμα φόντου',
             'defaultValue': 'LightGrey',
         },
 
@@ -1229,6 +1278,7 @@
             'ja': '「非表示」の投稿を強調表示する',
             'fi': 'Korosta "piilotetut" postaus',
             'tr': '"Gizli" gönderileri vurgulayın',
+            'el': 'Επισήμανση "κρυφών αναρτήσεων"',
             'defaultValue': false,
         },
 
@@ -1253,6 +1303,7 @@
             'ja': 'カスタマイズ',
             'fi': 'Räätälöinnit',
             'tr': 'özelleştirmeler',
+            'el': 'Προσαρμογές',
         },
 
         // - label for location of button:
@@ -1276,6 +1327,7 @@
             'ja': '「フィードをクリーンアップ」ボタンの配置',
             'fi': 'Puhdista syötteeni -painikkeen sijainti',
             'tr': '"Feed\'lerimi temizle" için düğmenin konumu',
+            'el': 'Τοποθεσία του κουμπιού "Καθαρισμός των ροών μου"',
         },
 
         // - location of button:
@@ -1299,6 +1351,7 @@
             'ja': ['下左', '上右', '無効 ([ユーザー スクリプト コマンド] メニューの [設定] を使用)'],
             'fi': ['alhaalla vasemmalla', 'ylhäällä oikealle', 'pois käytöstä (käytä "Asetukset" User Script Commands -valikossa)'],
             'tr': ['sol alt', 'sağ üst', 'devre dışı (Kullanıcı Komut Dosyası Komutları menüsünde "Ayarlar"ı kullanın)'],
+            'el': ['κάτω αριστερά', 'πάνω δεξιά', 'απενεργοποιημένο (χρησιμοποιήστε "Ρυθμίσεις" στο μενού "Εντολές σεναρίου χρήστη")'],
             'defaultValue': '0',
         },
         // - script manager's menu item "Settings"
@@ -1322,6 +1375,7 @@
             'ja': '設定',
             'fi': 'Asetukset',
             'tr': 'Ayarlar',
+            'el': 'Ρυθμίσεις',
         },
 
         // - label for location of dialog:
@@ -1345,6 +1399,7 @@
             'ja': '[フィードの消去] ダイアログ ボックスの配置',
             'fi': 'Puhdista syötteeni -valintaikkunan sijainti',
             'tr': '"Feed\'lerimi temizle" iletişim kutusunun konumu',
+            'el': 'Τοποθεσία της διαλόγου "Καθαρισμός των ροών μου"',
         },
 
         // - location of dialog:
@@ -1368,6 +1423,7 @@
             'ja': ['左側', '右側'],
             'fi': ['vasen puoli', 'oikea puoli'],
             'tr': ['sol yan', 'sağ yan'],
+            'el': ['αριστερή πλευρά', 'δεξιά πλευρά'],
             'defaultValue': '0',
         },
 
@@ -1392,6 +1448,7 @@
             'ja': 'テキストの色',
             'fi': 'Tekstin väri',
             'tr': 'Metin rengi',
+            'el': 'Χρώμα κειμένου',
             'defaultValue': '',
         },
 
@@ -1416,6 +1473,7 @@
             'ja': '背景色',
             'fi': 'Taustaväri',
             'tr': 'Arka plan rengi',
+            'el': 'Χρώμα φόντου',
             'defaultValue': '',
         },
 
@@ -1440,6 +1498,7 @@
             'ja': 'ボーダーカラー',
             'fi': 'Reunuksen väri',
             'tr': 'Kenarlık rengi',
+            'el': 'Χρώμα περιγράμματος',
             'defaultValue': 'OrangeRed',
         },
 
@@ -1464,6 +1523,7 @@
             'ja': 'ヒント',
             'fi': 'Vinkkejä',
             'tr': 'Ipuçları',
+            'el': 'Συμβουλές',
         },
 
         // - tip's content:
@@ -1487,6 +1547,7 @@
             'ja': 'ブラウザのキャッシュをクリアすると、設定がデフォルト値にリセットされます。\n\n[エクスポート] および [インポート] ボタンを使用して、カスタマイズした設定をバックアップおよび復元します。',
             'fi': 'Selaimen välimuistin tyhjentäminen palauttaa asetuksesi oletusarvoihinsa.\n\nKäytä "Vie"- ja "Tuo"-painikkeita varmuuskopioidaksesi ja palauttaaksesi mukautetut asetukset.',
             'tr': 'Tarayıcınızın önbelleğini temizlemek, ayarlarınızı varsayılan değerlerine sıfırlayacaktır. \n\nÖzelleştirilmiş ayarlarınızı yedeklemek ve geri yüklemek için "Dışa Aktar" ve "İçe Aktar" düğmelerini kullanın.',
+            'el': 'Η εκκαθάριση της μνήμης cache του προγράμματος περιήγησης θα επαναφέρει τις ρυθμίσεις σας στις προεπιλεγμένες τιμές τους.\n\nΧρησιμοποιήστε τα κουμπιά "Εξαγωγή" και "Εισαγωγή" για να δημιουργήσετε αντίγραφο ασφαλείας και να επαναφέρετε τις εξατομικευμένες ρυθμίσεις σας.',
         },
 
         // - dailog's action buttons:
@@ -1510,6 +1571,7 @@
             'ja': ['セーブ', 'クローズ', '輸出する', '輸入'],
             'fi': ['Tallentaa', 'Sulkea', 'Vienti', 'Tuonti'],
             'tr': ['Kaydetmek', 'Kapat', 'İhracat', 'İçe aktarmak'],
+            'el': ['Αποθήκευση', 'Κλείσιμο', 'Εξαγωγή', 'Εισαγωγή'],
         },
 
         DLG_FB_COLOUR_HINT: {
@@ -1532,6 +1594,7 @@
             'ja': '空白のままにすると、FB の配色が使用されます',
             'fi': 'Jätä tyhjäksi käyttääksesi FB:n värimaailmaa',
             'tr': 'FB\'un renk düzenini kullanmak için boş bırakın',
+            'el': 'Αφήστε κενό για να χρησιμοποιήσετε το χρωματικό σχήμα του FB'
         }
     };
 
@@ -1620,6 +1683,7 @@
         cssHideEl: '',
         cssEcho: '',
         cssHideNumberOfShares: '',
+        cssShow: 'show',
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl: null,
         // - script's logo
@@ -1651,13 +1715,15 @@
     // -- used for css classes
     // -- used for postAttCPID
     function generateRandomString() {
-        // - generate random names (first letter must be an alphabet)
-        let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let str = chars.charAt(Math.floor(Math.random() * (chars.length - 10)));
+        // - generate random text (first letter must be an alphabet)
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const strArray = [chars.charAt(Math.floor(Math.random() * 52))]; // First letter must be an alphabet
+
         for (let i = 0; i < 12; i++) {
-            str += chars.charAt(Math.floor(Math.random() * chars.length));
+            strArray.push(chars.charAt(Math.floor(Math.random() * 62)));
         }
-        return str;
+
+        return strArray.join('');
     }
 
     // -- stylesheet builder
@@ -2900,7 +2966,7 @@
                             el.removeAttribute(postAtt);
                             el.classList.remove(VARS.cssHide);
                             el.classList.remove(VARS.cssHideEl);
-                            el.classList.remove('show');
+                            el.classList.remove(VARS.cssShow);
                         }
                     });
                 }
@@ -2910,7 +2976,7 @@
                     elements.forEach(el => {
                         el.classList.remove(VARS.cssHide);
                         el.classList.remove(VARS.cssHideEl);
-                        el.classList.remove('show');
+                        el.classList.remove(VARS.cssShow);
                     });
                 }
                 elements = Array.from(document.querySelectorAll(`.${VARS.cssHideEl}`));
@@ -2918,7 +2984,7 @@
                     elements.forEach(el => {
                         el.classList.remove(VARS.cssHideEl);
                         el.classList.remove(VARS.cssHide);
-                        el.classList.remove('show');
+                        el.classList.remove(VARS.cssShow);
                     });
                 }
                 elements = Array.from(document.querySelectorAll(`.${VARS.cssHideNumberOfShares}`));
@@ -2926,7 +2992,7 @@
                     elements.forEach(el => {
                         el.removeAttribute(postAtt);
                         el.classList.remove(VARS.cssHideNumberOfShares);
-                        el.classList.remove('show');
+                        el.classList.remove(VARS.cssShow);
                     });
                 }
 
@@ -3016,7 +3082,7 @@
     // -- toggleDialog() function placed here to allow a GM.registerMenuCommand(...) to call it.
     function toggleDialog() {
         let dlg = document.getElementById('fbcmf');
-        dlg.classList.toggle('show');
+        dlg.classList.toggle(VARS.cssShow);
     }
 
     // adjust some settings - if URL has changed.
@@ -3106,12 +3172,12 @@
             // when to display the cmf button
             if (VARS.isAF) {
                 if (VARS.btnToggleEl) {
-                    VARS.btnToggleEl.classList.add('show');
+                    VARS.btnToggleEl.classList.add(VARS.cssShow);
                 }
             }
             else {
                 if (VARS.btnToggleEl) {
-                    VARS.btnToggleEl.classList.remove('show');
+                    VARS.btnToggleEl.classList.remove(VARS.cssShow);
                 }
             }
 
@@ -3135,12 +3201,11 @@
             scanCount = (scanCount < VARS.scanCountStart) ? VARS.scanCountStart : scanCount;
         }
         if (scanCount < VARS.scanCountMaxLoop) {
-            let dustySpots = Array.from(post.querySelectorAll('[data-0="0"]'));
-            if (dustySpots.length > 0) {
-                let len = dustySpots.length - 1;
-                for (let i = len; i >= 0; i--) {
-                    dustySpots[i].parentElement.removeChild(dustySpots[i]);
-                }
+            const dustySpots = post.querySelectorAll('[data-0="0"]');
+            if (dustySpots) {
+                dustySpots.forEach((element) => {
+                    element.remove();
+                });
             }
             scanCount++;
             post[postPropDS] = scanCount;
@@ -3148,11 +3213,70 @@
     }
 
     function scanTreeForText(theNode) {
-        let arrayTextValues = [];
-        let n,
-            walk = document.createTreeWalker(theNode, NodeFilter.SHOW_TEXT, null, false);
+        const arrayTextValues = [];
+        const divs = theNode.querySelectorAll(':scope > div');
+
+        for (const theDiv of divs) {
+            if (theDiv.hasAttribute('aria-hidden') && theDiv.getAttribute('aria-hidden') === "false") {
+                // -- skip this branch (hidden)
+                continue;
+            }
+
+            // -- scan this branch
+            const walk = document.createTreeWalker(theDiv, NodeFilter.SHOW_TEXT, null);
+            let n;
+            while ((n = walk.nextNode())) {
+                const elParent = n.parentElement;
+                const elParentTN = elParent.tagName.toLowerCase();
+                const val = cleanText(n.textContent).trim();
+
+                if (val === '' || val.toLowerCase() === 'facebook') {
+                    // -- skip this node
+                    // console.info(log + 'scanTreeForText(); skipping (<empty/facebook>):', elParent);
+                    continue;
+                }
+
+                if (elParent.hasAttribute('aria-hidden') && elParent.getAttribute('aria-hidden') === 'true') {
+                    // -- skip this node
+                    // console.info(log + 'scanTreeForText(); skipping (aria-hidden=true):', elParent);
+                    continue;
+                }
+
+                if (elParentTN === 'title') {
+                    // -- skip this node
+                    // console.info(log + 'scanTreeForText(); skipping (<title>):', elParent);
+                    continue;
+                }
+
+                if (elParentTN === 'div' && elParent.hasAttribute('role') && elParent.getAttribute('role') === 'button') {
+                    // -- skip this node
+                    // console.info(log + 'scanTreeForText(); skipping (role=button):', elParent);
+                    continue;
+                }
+
+                const elGeneric = elParent.closest('div[role="button"]');
+                if (elGeneric === null && val.length > 1) {
+                    // - keep 2+ char strings.
+                    arrayTextValues.push(...val.split('\n'));
+                }
+                else {
+                    // -- skip this node (hidden / meta info)
+                    // console.info(log + 'scanTreeForText(); skipping (<hidden/role=button>):', elParent);
+                }
+            }
+        }
+
+        // -- remove duplicates and return results.
+        // console.info(log + 'scanTreeForText(); returning::', theNode, arrayTextValues);
+        return [...new Set(arrayTextValues)];
+    }
+
+    function scanTreeForTextMP(theNode) {
+        const arrayTextValues = [];
+        let n;
+        const walk = document.createTreeWalker(theNode, NodeFilter.SHOW_TEXT, null);
         while ((n = walk.nextNode())) {
-            let val = n.textContent.trim();
+            let val = cleanText(n.textContent).trim();
             if ((val !== '') && (val.length > 1) && (val.toLowerCase() !== 'facebook')) {
                 // - keep 2+ char strings.
                 arrayTextValues.push(val);
@@ -3160,21 +3284,25 @@
         }
         return arrayTextValues;
     }
+
     function scanImagesForAltText(theNode) {
-        let arrayAltTextValues = [];
-        Array.from(theNode.querySelectorAll('img[alt]')).forEach(img => {
-            if (img.alt.length > 0) {
-                if (img.width && img.width < 33) {
-                    // -- emojis usually have widths < 32 ... skip them.
-                }
-                else {
-                    if (arrayAltTextValues.indexOf(img.alt) < 0) {
-                        arrayAltTextValues.push(img.alt);
-                    }
+        const arrayAltTextValues = [];
+        const images = theNode.querySelectorAll('img[alt]');
+        for (let i = 0; i < images.length; i++) {
+            const img = images[i];
+            if (img.alt.length > 0 && img.naturalWidth > 32) {
+                // -- (emojis usually have widths < 33 ... skip them)
+                const sAlt = cleanText(img.alt);
+                if (!arrayAltTextValues.includes(sAlt)) {
+                    arrayAltTextValues.push(sAlt);
                 }
             }
-        });
+        }
         return arrayAltTextValues;
+    }
+
+    function countDescendants(element) {
+        return element.querySelectorAll('div, span').length;
     }
 
     function extractTextContent(post, selector, maxBlocks) {
@@ -3185,42 +3313,38 @@
         //    post: post to scan
         //    selector: querySelector's query
         //    maxBlocks: max number of blocks to scan
-        let blocks = Array.from(post.querySelectorAll(selector));
-        // console.info(log+'extractTC:', selector, maxBlocks, blocks, post);
-        let arrayTextValues = [];
-        if (blocks.length) {
-            // - process first maxBlocks blocks
-            // - block 0 = Suggested headings, block 1 = title/heading, block 2 = content, block 3 = info box / comments, block 4 = comments
-            // - nb: some suggested posts only have one block ...
-            let bL = Math.min(maxBlocks, blocks.length);
-            for (let b = 0; b < bL; b++) {
-                if (blocks[b].innerHTML.length > 0) {
-                    arrayTextValues = arrayTextValues.concat(scanTreeForText(blocks[b]));
-                    let imgAltText = scanImagesForAltText(blocks[b]);
-                    if (imgAltText.length > 0) {
-                        arrayTextValues = arrayTextValues.concat(imgAltText);
-                    }
-                }
+        const blocks = post.querySelectorAll(selector);
+        const arrayTextValues = [];
+
+        // - process first maxBlocks blocks
+        // - block 0 = Suggested headings, block 1 = title/heading, block 2 = content, block 3 = info box / comments, block 4 = comments
+        // - nb: some suggested posts only have one block ...
+        for (let b = 0; b < Math.min(maxBlocks, blocks.length); b++) {
+            const block = blocks[b];
+            if (countDescendants(block) > 0) {
+                arrayTextValues.push(...scanTreeForText(block));
+                arrayTextValues.push(...scanImagesForAltText(block));
             }
         }
-        return arrayTextValues;
+
+        return arrayTextValues.filter(item => item !== '');
     }
 
     function createInfoNote(reason) {
-        let echoEl = document.createElement('div');
+        const echoEl = document.createElement('div');
         echoEl.setAttribute(postAtt, '0');
 
-        let echoBtnBox = document.createElement('div');
-        let echoBtn = document.createElement('button');
-        let echoTxt = document.createElement('div');
+        const echoBtnBox = document.createElement('div');
+        echoBtnBox.className = 'wbtn';
 
+        const echoBtn = document.createElement('button');
         echoBtn.textContent = '___';
         echoBtn.addEventListener('click', togglePost, false);
         echoBtnBox.appendChild(echoBtn);
-        echoBtnBox.className = 'wbtn';
 
+        const echoTxt = document.createElement('div');
         echoTxt.className = 'wtxt';
-        echoTxt.innerText = KeyWords.VERBOSITY_MESSAGE[VARS.language][0] + reason;
+        echoTxt.textContent = KeyWords.VERBOSITY_MESSAGE[VARS.language][0] + reason;
 
         echoEl.appendChild(echoBtnBox);
         echoEl.appendChild(echoTxt);
@@ -3228,10 +3352,11 @@
         echoEl.addEventListener('click', togglePost, false);
         return echoEl;
     }
+
     function createMiniTab(reason) {
-        let elMiniTab = document.createElement('h6');
+        const elMiniTab = document.createElement('h6');
         elMiniTab.setAttribute(postAtt, '0');
-        elMiniTab.innerText = reason;
+        elMiniTab.textContent = reason;
         return elMiniTab;
     }
 
@@ -3245,17 +3370,17 @@
             if (postFirstChild) {
                 postFirstChild.before(echoEl);
             }
-            else {
-                // -- post has been changed while being processed (very rare)
-            }
+            // else {
+            //     // -- post has been changed while being processed (very rare)
+            // }
         }
 
-        if (!isStories) {
-            post.classList.add(VARS.cssHide);
+        if (isStories === true) {
+            post.classList.add(VARS.cssHideStories);
             post.setAttribute(postAtt, reason);
         }
         else {
-            post.classList.add(VARS.cssHideStories);
+            post.classList.add(VARS.cssHide);
             post.setAttribute(postAtt, reason);
         }
 
@@ -3267,7 +3392,7 @@
 
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            post.classList.add('show');
+            post.classList.add(VARS.cssShow);
         }
     }
 
@@ -3278,12 +3403,12 @@
             let flaggedContainers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
             if (flaggedContainers.length > 0) {
                 for (let elContainer of flaggedContainers) {
-                    if (elContainer.classList.contains('show') === false) {
-                        elContainer.classList.add('show');
+                    if (elContainer.classList.contains(VARS.cssShow) === false) {
+                        elContainer.classList.add(VARS.cssShow);
                     }
                     let elNote = elContainer.querySelector(`:scope > div[${postAtt}]`);
                     if (elNote) {
-                        elNote.classList.add('show');
+                        elNote.classList.add(VARS.cssShow);
                     }
                 }
             }
@@ -3291,8 +3416,8 @@
             let storiesBlock = Array.from(document.querySelectorAll('.' + VARS.cssHideStories));
             if (storiesBlock.length > 0) {
                 for (let elStory of storiesBlock) {
-                    if (elStory.classList.contains('show') === false) {
-                        elStory.classList.add('show');
+                    if (elStory.classList.contains(VARS.cssShow) === false) {
+                        elStory.classList.add(VARS.cssShow);
                     }
                 }
             }
@@ -3300,8 +3425,8 @@
             let flaggedBlocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
             if (flaggedBlocks.length > 0) {
                 for (let elBlock of flaggedBlocks) {
-                    if (elBlock.classList.contains('show') === false) {
-                        elBlock.classList.add('show');
+                    if (elBlock.classList.contains(VARS.cssShow) === false) {
+                        elBlock.classList.add(VARS.cssShow);
                     }
                 }
             }
@@ -3309,8 +3434,8 @@
             let shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
             if (shares.length > 0) {
                 for (let elShare of shares) {
-                    if (elShare.classList.contains('show') === false) {
-                        elShare.classList.add('show');
+                    if (elShare.classList.contains(VARS.cssShow) === false) {
+                        elShare.classList.add(VARS.cssShow);
                     }
                 }
             }
@@ -3321,12 +3446,12 @@
             let flaggedContainers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
             if (flaggedContainers.length > 0) {
                 for (let elContainer of flaggedContainers) {
-                    if (elContainer.classList.contains('show')) {
-                        elContainer.classList.remove('show');
+                    if (elContainer.classList.contains(VARS.cssShow)) {
+                        elContainer.classList.remove(VARS.cssShow);
                     }
                     let elNote = elContainer.querySelector(`:scope > div[${postAtt}]`);
                     if (elNote) {
-                        elNote.classList.remove('show');
+                        elNote.classList.remove(VARS.cssShow);
                     }
                 }
             }
@@ -3334,8 +3459,8 @@
             let storiesBlock = Array.from(document.querySelectorAll('.' + VARS.cssHideStories));
             if (storiesBlock.length > 0) {
                 for (let elStory of storiesBlock) {
-                    if (elStory.classList.contains('show')) {
-                        elStory.classList.remove('show');
+                    if (elStory.classList.contains(VARS.cssShow)) {
+                        elStory.classList.remove(VARS.cssShow);
                     }
                 }
             }
@@ -3343,8 +3468,8 @@
             let flaggedBlocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
             if (flaggedBlocks.length > 0) {
                 for (let elBlock of flaggedBlocks) {
-                    if (elBlock.classList.contains('show')) {
-                        elBlock.classList.remove('show');
+                    if (elBlock.classList.contains(VARS.cssShow)) {
+                        elBlock.classList.remove(VARS.cssShow);
                     }
                 }
             }
@@ -3352,8 +3477,8 @@
             let shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
             if (shares.length > 0) {
                 for (let elShare of shares) {
-                    if (elShare.classList.contains('show')) {
-                        elShare.classList.remove('show');
+                    if (elShare.classList.contains(VARS.cssShow)) {
+                        elShare.classList.remove(VARS.cssShow);
                     }
                 }
             }
@@ -3363,28 +3488,28 @@
     function togglePost(ev) {
         ev.stopPropagation();
         // -- grab the note container
-        let elInfoNote = ev.target.closest(`div[${postAtt}]`);
+        const elInfoNote = ev.target.closest(`div[${postAtt}]`);
         // -- grab the note's parent (post)
-        let elPost = elInfoNote.parentElement;
-        // -- then toggle the 'show' class on the post.
+        const elPost = elInfoNote.parentElement;
+        // -- then toggle the VARS.cssShow class on the post.
         if (!elInfoNote.hasAttribute(postAttCPID)) {
             // -- single post being hidden
-            elPost.classList.toggle('show');
+            elPost.classList.toggle(VARS.cssShow);
         }
         else {
             // -- multiple consecutive posts being hidden
-            let cpid = elInfoNote.getAttribute(postAttCPID);
-            let flaggedPosts = Array.from(document.querySelectorAll(`[${postAttCPID}=${cpid}]`));
+            const cpid = elInfoNote.getAttribute(postAttCPID);
+            const flaggedPosts = document.querySelectorAll(`[${postAttCPID}=${cpid}]`);
             if (flaggedPosts.length > 0) {
                 // -- cannot use classList.toggle() while posts are still being loaded ...
-                if (elPost.classList.contains('show')) {
+                if (elPost.classList.contains(VARS.cssShow)) {
                     for (let fPost of flaggedPosts) {
-                        fPost.classList.remove('show');
+                        fPost.classList.remove(VARS.cssShow);
                     }
                 }
                 else {
                     for (let fPost of flaggedPosts) {
-                        fPost.classList.add('show');
+                        fPost.classList.add(VARS.cssShow);
                     }
                 }
             }
@@ -3453,7 +3578,7 @@
 
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            post.classList.add('show');
+            post.classList.add(VARS.cssShow);
         }
 
         //console.info(log+'hidePost():', VARS.echoElFirst);
@@ -3464,7 +3589,7 @@
         post.removeAttribute(postAtt);
         post.classList.remove(VARS.cssHide);
         post.classList.remove(VARS.cssHideEl);
-        post.classList.remove('show');
+        post.classList.remove(VARS.cssShow);
         // -- remove the notification tab.
         if (post.querySelectorAll('div, h6').length > 0) {
             post.removeChild(post.firstElementChild);
@@ -3477,13 +3602,18 @@
         link.setAttribute(postAtt, reason);
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            block.classList.add('show');
+            block.classList.add(VARS.cssShow);
         }
     }
 
     function cleanText(text) {
         // - fb is using ASCII code 160 for whitespace ...
-        return text.replaceAll(String.fromCharCode(160), String.fromCharCode(32));
+        // -- also "normalise" the text (i.e. convert unicode magic to normal ascii code)
+        // -- (unicode magic used to bold/italic/etc characters without html/css/style)
+        // return text.replaceAll(String.fromCharCode(160), String.fromCharCode(32)).normalize('NFKC');
+        // -- normalise(NKFC) will convert 160(00A0) to 32(0020)
+        // -- https://www.unicode.org/charts/normalization/index.html
+        return text.normalize('NFKC');
     }
 
     function isSponsored(post) {
@@ -3549,73 +3679,83 @@
                 }
             }
         }
-        // if (isSponsoredPost) console.info('post:', isSponsoredPost, post);
+        // if (isSponsoredPost) console.info(log + 'isSponsored(); isSponsoredPost:', isSponsoredPost, post);
         return isSponsoredPost;
     }
 
-    function querySelectorAllNoChildren(container = document, query, minText = 0) {
-        if (query === '') {
+    function querySelectorAllNoChildren(container = document, queries = [], minText = 0, executeAllQueries = false) {
+        // -- nb: .querySelectorAll(..) can have multiple queries and will execute them all (regardless of results)
+        if (!Array.isArray(queries)) {
+            queries = [queries];
+        }
+
+        if (queries.length === 0) {
             return [];
         };
-        let elements = container.querySelectorAll(query);
-        if (elements) {
-            return Array.from(elements).filter((el) => {
-                return ((el.children.length === 0) && (el.textContent.length >= minText));
+
+        if (executeAllQueries) {
+            return Array.from(container.querySelectorAll(queries)).filter((el) => {
+                return el.children.length === 0 && el.textContent.length >= minText;
             });
         }
-        else {
-            return [];
+
+        for (const query of queries) {
+            const elements = container.querySelectorAll(query);
+            for (const element of elements) {
+                if (element.children.length === 0 && element.textContent.length >= minText) {
+                    return [element];
+                }
+            }
         }
+
+        return [];
     }
 
     function nf_isSuggested(post) {
         // - check if any of the suggestions / recommendations type post
-        // -- nb: <name> commented / <name> replied to a commment posts have similar structure - but have extra elements ...
-        // -- nb: x people recently commented posts have similar structure - suggested/recommended posts don't start with a number ...
+        // -- nb: "<name> commented / <name> replied to a commment" posts have similar structure - but have extra elements ...
+        // -- nb: "x people recently commented" posts have similar structure - suggested/recommended posts don't start with a number ...
 
-        // -- May 2023 - structure change
-        let query = 'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span, ' +
-                    'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span';
-        let elSuggestion = querySelectorAllNoChildren(post, query, 1);
+        const queries = [
+            // -- May 2023
+            'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span',
+            'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span',
+            // -- February 2023 (no need for light dusting ...)
+            ':scope div[aria-posinset] > div > div > div > div > div > div:not([data-0]) > div > div > div:nth-of-type(1) > div > div > div > div > span',
+            ':scope div[aria-describedby] > div > div > div > div > div > div:not([data-0]) > div > div > div:nth-of-type(1) > div > div > div > div > span',
+            // -- December 2022 - #2
+            ':scope div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span',
+            ':scope div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span',
+            // -- December 2022 - #1
+            ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span',
+            // -- < December 2022
+            ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span',
+            ':scope > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span'
+        ];
 
-        if (elSuggestion.length === 0) {
-            // -- December 2022 - structure change - variation #2
-            query = ':scope div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span, ' +
-                    ':scope div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span';
-            elSuggestion = querySelectorAllNoChildren(post, query, 1);
-            // console.info(log + 'nf_isSuggested; try #1:', elSuggestion.length, elSuggestion);
-        }
-        if (elSuggestion.length === 0) {
-            // -- December 2022 - structure change - variation #1
-            query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span';
-            elSuggestion = querySelectorAllNoChildren(post, query, 1);
-            // console.info(log + 'nf_isSuggested; try #2:', elSuggestion.length, elSuggestion);
-        }
-        if (elSuggestion.length === 0) {
-            query = ':scope > div > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
-            elSuggestion = querySelectorAllNoChildren(post, query, 1);
-            // console.info(log + 'nf_isSuggested; try #3:', elSuggestion.length, elSuggestion);
-        }
-        if (elSuggestion.length === 0) {
-            query = ':scope > div > div > div > div > div > div > div > div > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div > div > span';
-            elSuggestion = querySelectorAllNoChildren(post, query, 1);
-            // console.info(log + 'nf_isSuggested; try #4:', elSuggestion.length, elSuggestion);
-        }
-
+        const elSuggestion = querySelectorAllNoChildren(post, queries, 1);
         if (elSuggestion.length > 0) {
             if (nf_isReelsAndShortVideos(post).length > 0) {
                 // -- false-positive hit.
-                // -- let nf_isReelsAndShortVideos() take care of this post.
                 return '';
             }
-            const pattern = /([0-9]|[\u0660-\u0669])/;
-            let firstCharacter = cleanText(elSuggestion[0].textContent).trim().slice(0, 1);
+            // -- pattern: a digit from 0 to 9 or any number in the unicode space
+            // --- Basic Latin: \u0030-\u0039 (Range: 0-9)
+            // --- Arabic-Indic Digits: \u0660-\u0669 (Range: ٠-٩)
+            // --- Eastern Arabic-Indic Digits: \u06F0-\u06F9 (Range: ۰-۹)
+            // --- Devanagari Digits: \u0966-\u096F (Range: ०-९)
+            // --- Bengali Digits: \u09E6-\u09EF (Range: ০-৯)
+            // --- Myanmar Digits: \u1040-\u1049 (Range: ၀-၉)
+            // --- Thai Digits: \u0E50-\u0E59 (Range: ๐-๙)
+            // --- Tibetan Digits: \u0F20-\u0F29 (Range: ༠-༩)
+            // const pattern = /([0-9]|[\u0660-\u0669])/;
+            const pattern = /([0-9]|[\u0660-\u0669]|[\u06F0-\u06F9]|[\u0966-\u096F]|[\u09E6-\u09EF]|[\u1040-\u1049]|[\u0E50-\u0E59]|[\u0F20-\u0F29])/;
+            // -- if text starts with a number, return nothing, else the trigger word.
+            const firstCharacter = cleanText(elSuggestion[0].textContent).trim().slice(0, 1);
             // console.info(log+'isSuggested - match test:', firstCharacter, pattern.test(firstCharacter), pattern.test(firstCharacter) ? 'No': 'Yes' );
             return (pattern.test(firstCharacter)) ? '' : KeyWords.NF_SUGGESTIONS[VARS.language];
         }
-        else {
-            return '';
-        }
+        return '';
     }
 
     function gf_isSuggested(post) {
@@ -3766,6 +3906,7 @@
                 break;
             }
         }
+        // if (blockedText.length > 0) console.info(log + 'vf_isBlockedText():', blockedText, post, ptexts);
         return blockedText;
     }
 
@@ -3780,7 +3921,7 @@
                 let blockedText = '';
                 // - first block, has prices and sometimes old price. we ignore 2nd price (old one).
                 // - compare as exact match
-                let itemPrices = scanTreeForText(blocksOfText[0]);
+                let itemPrices = scanTreeForTextMP(blocksOfText[0]);
                 let itemPrice = itemPrices[0].toLowerCase();
                 let idx = VARS.Filters.MP_BLOCKED_TEXT_LC.indexOf(itemPrice);
                 if (idx >= 0) {
@@ -3790,7 +3931,7 @@
                     // - second + subsequent blocks of text ...
                     //  - compare as partial match (description/location of item)
                     for (let i = 1; i < blocksOfText.length; i++) {
-                        let ptexts = scanTreeForText(blocksOfText[i]);
+                        let ptexts = scanTreeForTextMP(blocksOfText[i]);
                         if (ptexts.length > 0) {
                             let ptext = ptexts.join(' ').toLowerCase();
                             let btL = VARS.Filters.MP_BLOCKED_TEXT_LC.length;
@@ -4064,7 +4205,7 @@
             for (let share of shares) {
                 share.classList.add(VARS.cssHideNumberOfShares);
                 if (VARS.Options.VERBOSITY_DEBUG) {
-                    share.classList.add('show');
+                    share.classList.add(VARS.cssShow);
                 }
                 share.setAttribute(postAtt, 'Shares');
             }
@@ -4074,6 +4215,34 @@
         // -- groups feed posts have same '# shares' html structure as news feed posts.
         // -- .. hence calling nf_hideNumberOfShares(...)
         nf_hideNumberOfShares(post);
+    }
+
+    function nf_getCollectionOfPosts() {
+        let posts = [];
+        // -- various news feed queries
+        const queries = [
+            // -- December 2022 - try the [data-pagelet] attribute
+            'span[id="ssrb_feed_start"] ~ div > div div[data-pagelet]',
+            // -- May 2023 - fb tweaked the structure
+            'h2[dir="auto"] ~ div:not([class]) > div[class]',
+            // -- February 2023 - fb tweaked the structure
+            'h3[dir="auto"] ~ div:not([class]) > div[class]',
+            // -- older ...
+            'span[id="ssrb_feed_start"] ~ div > h3 ~ div',
+            // -- 31/10/2022 - fb tweaked the structure
+            'h3[dir="auto"] ~ div:not([class]) > div[class] > div'
+        ]
+
+        for (const query of queries) {
+            const nodeList = document.querySelectorAll(query);
+            if (nodeList.length > 1) {
+                posts = Array.from(nodeList);
+                break;
+            }
+        }
+
+        return posts;
+
     }
 
     function mopUpTheNewsFeed() {
@@ -4102,34 +4271,10 @@
             nf_scrubTheRoom();
         }
 
-        // -- news feed stream ...
-        // -- May 2023 - fb tweaked the structure
-        let query = 'h2[dir="auto"] ~ div:not([class]) > div[class]';
-        let posts = Array.from(document.querySelectorAll(query));
+        let posts = nf_getCollectionOfPosts();
 
-        if (posts.length < 2) {
-            // -- February 2023 - fb tweaked the structure
-            query = 'h3[dir="auto"] ~ div:not([class]) > div[class]';
-            posts = Array.from(document.querySelectorAll(query));
-            if (posts.length < 2) {
-                query = 'span[id="ssrb_feed_start"] ~ div > h3 ~ div';
-                posts = Array.from(document.querySelectorAll(query));
-            }
-            // -- 21-22/10/2022 - fb tweaked the structure
-            if (posts.length < 2) {
-                posts = Array.from(document.querySelectorAll(query + ' > div'));
-            }
-            // -- December 2022 - try the [data-pagelet] attribute
-            if (posts.length < 2) {
-                query = 'span[id="ssrb_feed_start"] ~ div > div div[data-pagelet]';
-                posts = Array.from(document.querySelectorAll(query));
-            }
-            // -- 31/10/2022 - fb tweaked the structure
-            if (posts.length < 2) {
-                query = 'h3[dir="auto"] ~ div:not([class]) > div[class] > div';
-                posts = Array.from(document.querySelectorAll(query));
-            }
-        }
+        // console.info(log + 'mopUpTheNewsFeed(); posts:', posts);
+
         if (posts.length > 0) {
             // console.info(log+'---> mopUpTheNewsFeed()');
             // -- fb clears out "older" posts as the user scrolls ... so, only process the last X posts.
@@ -4387,7 +4532,8 @@
         if (VARS.vfType === 'videos') {
             // -- normal feed
             query = 'div[id="watch_feed"] > div > div > div > div > div > div';
-            queryBlocks = ':scope > div > div > div > div > div:nth-of-type(2) > div';
+            //queryBlocks = ':scope > div > div > div > div > div:nth-of-type(2) > div';
+            queryBlocks = ':scope > div > div > div > div > div > div:nth-of-type(2) > div';
         }
         else if (VARS.vfType === 'search') {
             // -- videos --> search
@@ -4403,6 +4549,7 @@
         else {
             return;
         }
+
         if (VARS.vfType !== 'search') {
             let posts = Array.from(document.querySelectorAll(query));
             if (posts.length) {
@@ -4429,6 +4576,7 @@
                             if (hideReason === '' && VARS.Options.VF_BLOCKED_ENABLED) {
                                 hideReason = vf_isBlockedText(post, queryBlocks);
                             }
+                            // console.info(log + 'mopUpTheWatchVideosFeed(); ::: hideReason:', hideReason, post, queryBlocks);
                         }
 
                         if (hideReason.length > 0) {
@@ -4504,7 +4652,7 @@
         box.classList.add(VARS.cssHideEl);
         box.setAttribute(postAtt, reason);
         if (VARS.Options.VERBOSITY_DEBUG) {
-            box.classList.add('show');
+            box.classList.add(VARS.cssShow);
         }
     }
 
@@ -4517,8 +4665,6 @@
             // -- "sponsored" is _not_ obfuscated;
             // -- nb: adguard base filter hides the label, but not the item/product ...
             let queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
-            // let queryItems = `div[style]:not([${postAtt}]) > span > div > div > div > a:not([href*="marketplace"])`;
-            // let queryItems = `div[style]:not([${postAtt}]) > span > div > div > div:first-of-type > a:not([href*="marketplace"])`;
             let queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
             let headings = document.querySelectorAll(queryHeadings);
             let items = document.querySelectorAll(queryItems);
@@ -4528,9 +4674,6 @@
                     mp_hideBox(heading.parentElement, KeyWords.SPONSORED[VARS.language]);
                 }
                 for (let item of items) {
-                    //item = item.closest('span').parentElement;
-                    // item = item.closest('div[style]');
-                    // let parItem = item.parentElement.parentElement.parentElement.parentElement.parentElement;
                     let parItem = item.parentElement.parentElement.parentElement;
                     mp_hideBox(parItem, KeyWords.SPONSORED[VARS.language]);
                 }
