@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.21
+// @version      4.22
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://*.facebook.com/*
 // @noframes
@@ -14,6 +14,9 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.22 :: July 2023
+        Updated News Feed posts selection rule (FB changed structure)
+        Updated Events you may like detection rule
     v4.21 :: June 2023
         Updated news feed detection rules - for older HTML structures
         Updated watch videos feed detection rules
@@ -3831,7 +3834,8 @@
 
     function nf_isEventsYouMayLike(post) {
         // -- events you may linke posts
-        let query = ':scope > div:nth-of-type(2) > div > div >  h3 > span';
+        // let query = ':scope > div:nth-of-type(2) > div > div >  h3 > span';
+        const query = (':scope div > div:nth-of-type(2) > div > div >  h3 > span');
         let events = querySelectorAllNoChildren(post, query, 0);
         return (events.length === 0) ? '' : KeyWords.NF_EVENTS_YOU_MAY_LIKE[VARS.language];
     }
@@ -4221,6 +4225,12 @@
         let posts = [];
         // -- various news feed queries
         const queries = [
+           // -- July 2023 - fb tweaked the structure - random div levels.
+            // -- - home news feed
+            'h3[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
+            // -- - "recent" feed
+            'h2[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
+
             // -- December 2022 - try the [data-pagelet] attribute
             'span[id="ssrb_feed_start"] ~ div > div div[data-pagelet]',
             // -- May 2023 - fb tweaked the structure
@@ -4242,7 +4252,6 @@
         }
 
         return posts;
-
     }
 
     function mopUpTheNewsFeed() {
