@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.22
+// @version      4.23
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://*.facebook.com/*
 // @noframes
@@ -14,6 +14,13 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.23 :: August 2023
+        Fixed bug with showing Marketplace's hidden items
+        Updated Marketplace detection rules
+        Split Marketplace's text filter into two - prices and description
+        Merged "Stories" with "Stories | Reels | Rooms" detection rules.
+        Fixed bug with CMF's hidden dialog box's text being included in CTRL+F search (now excluded)
+        Dropped "Create room" detection component (no longer listed in FB)
     v4.22 :: July 2023
         Updated News Feed posts selection rule (FB changed structure)
         Updated Events you may like detection rule
@@ -47,66 +54,6 @@
         Updated News Feed Suggestion/Recommendation posts rule (FB changed structure)
         Updated News Feed verbosity behaviour. FB limits 40 posts in News Feed. Show either no notification or 1 post hidden. 2+ posts hidden notification disabled.
         Groups Feed posts - added icon to open post in new window (fix annoying FB bug with not showing comments properly)
-    v4.13 :: December 2022
-        Updated News Feed Suggestion/Recommendation posts rule (FB changed structure)
-        Updated Groups Feed Suggestion/Recommendation posts rule (FB changed structure)
-        Updated News Feed blocked text filter (excluding comments)
-        Updated Groups Feed blocked text filter (excluding comments)
-        Code tweaks
-    v4.12 :: December 2022
-        Added @noframes directive
-        Added Marketplace text filter
-        Added option to share text filter between feeds
-        Added post's image's ALT text in text-filtering
-        Fixed bug with certain sections not hidden when <no message> was been enabled.
-        Code tweaks
-    v4.11 :: November 2022
-        Updated News Feed suggested/recommended rule
-    v4.10 :: November 2022
-        Updated selection rule for News Feed posts
-        Code tweaks
-    v4.09 :: October 2022
-        Fixed bug in previous fix for News Feed sponsored posts
-    v4.08 :: October 2022
-        Updated News Feed sponsored posts rule
-        Updateds News Feed suggestion posts rule
-        Code tweaks
-    v4.07 :: October 2022
-        Updated News Feed selection rule
-        Reduced false-positive hits for News Feed sponsored rule
-        Updated Friends you may know rule
-    v4.06 :: October 2022
-        Updated News Feed rules
-        Updates News Feed side columnn's Suggested rule
-    v4.05 :: October 2022
-        Updated News Feed Sponsored rule
-        Updated News Feed suggestion/recommended rule
-        Revised Group suggestion/recommendation rule
-        Updated Chinese text
-        Revised information boxes rule
-        Revised hidden post info/note
-        Added Events you may like rule (News feed)
-        Added Menu item "Settings" to the User Script Commands menu
-        Added option to hide Stories (top of feed)
-        Added option to hide Create Room (top of feed)
-    v4.04 :: October 2022
-        Previous changes did not go through
-    v4.03 :: October 2022
-        Updated news feed selection code
-    v4.02 :: September 2022
-        Removed invalid UserScript tag
-    v4.01 :: September 2022
-        Major rewrite - less dependent on language text for matching component/posts
-        Various Suggestions/Recommendations combined into one option
-        Added 简体中文 (Chinese Simplified)
-        Added 繁體中文 (Chinese Traditional)
-        Added 日本 (Japan)
-        Added Sumoi (Finland)
-        Added Türkçe (Turkey)
-    v3.28 :: September 2022
-        Code tweaks
-    v3.27 :: August 2022
-        Keywords and code tweaks
 
     Attribution: Mop & Bucket icon:
     - made by Freepik (https://www.freepik.com) @ flaticon (https://www.flaticon.com/)
@@ -192,6 +139,7 @@
         // *** News Feed ::
 
         // - "Stories | Reels | Rooms" tablist box
+        // -- includes the standalone Stories component
         NF_TABLIST_STORIES_REELS_ROOMS: {
             'en': '"Stories | Reels | Rooms" tabs list box',
             'pt': 'Caixa de listagem da guia "Stories | Vídeos do Reels | Salas"',
@@ -215,54 +163,7 @@
             'el': 'Λίστα καρτελών "Ιστορίες | Reels | Δωμάτια"',
             'defaultEnabled': false
         },
-        // - "Stories" box (same area as the tablist box, standalone)
-        NF_STORIES: {
-            'en': 'Stories',
-            'pt': 'Stories',
-            'de': 'Stories',
-            'fr': 'Stories',
-            'es': 'Historias',
-            'cs': 'Stories',
-            'vi': 'Tin',
-            'it': 'Storie"',
-            'lv': 'Stāsti',
-            'pl': 'Relacje',
-            'nl': 'Verhalen',
-            'he': 'סטוריז ',
-            'ar': 'القصص',
-            'id': 'Cerita',
-            'zh-Hans': '故事',
-            'zh-Hant': '故事',
-            'ja': 'Stories',
-            'fi': 'Tarinat',
-            'tr': 'Hikayeler',
-            'el': 'Ιστορίες',
-            'defaultEnabled': false
-        },
-        // - "Create Room" - near top of News Feed, below "What's on your mind, <name>?"
-        NF_CREATE_ROOM: {
-            'en': 'Create room',
-            'pt': 'Criar sala',
-            'de': 'Room erstellen',
-            'fr': 'Créer un salon',
-            'es': 'Crear sala',
-            'cs': 'Vytvořit místnost',
-            'vi': 'Tạo phòng họp mặt',
-            'it': 'Crea stanza',
-            'lv': 'Izveidot istabu',
-            'pl': 'Utwórz pokój',
-            'nl': 'Ruimte maken',
-            'he': 'צור חדר',
-            'ar': 'إنشاء غرفة',
-            'id': 'Buat ruangan',
-            'zh-Hans': '创建房间',
-            'zh-Hant': '創建房間',
-            'ja': 'ルームを作成',
-            'fi': 'Luo huone',
-            'tr': 'Oda yarat',
-            'el': 'Δημιουργήστε δωμάτιο',
-            'defaultEnabled': false
-        },
+
         // - People you may know:
         NF_PEOPLE_YOU_MAY_KNOW: {
             'en': 'People you may know',
@@ -1626,6 +1527,8 @@
     const postAttCPID = 'cmfcpid';
     // - post property - # of light dusting duties done
     const postPropDS = 'cmfDusted';
+    // - post's child element attribute - used for queries that original don't include the parent element.
+    const postAttChildFlag = 'cmfrcf';
 
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
@@ -1686,6 +1589,7 @@
         cssHideEl: '',
         cssEcho: '',
         cssHideNumberOfShares: '',
+        cssHideStories: '',
         cssShow: 'show',
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl: null,
@@ -1720,13 +1624,11 @@
     function generateRandomString() {
         // - generate random text (first letter must be an alphabet)
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const strArray = [chars.charAt(Math.floor(Math.random() * 52))]; // First letter must be an alphabet
-
+        let randomString = chars.charAt(Math.floor(Math.random() * 52)); // First letter must be an alphabet
         for (let i = 0; i < 12; i++) {
-            strArray.push(chars.charAt(Math.floor(Math.random() * 62)));
+            randomString += chars.charAt(Math.floor(Math.random() * 62));
         }
-
-        return strArray.join('');
+        return randomString;
     }
 
     // -- stylesheet builder
@@ -1735,11 +1637,12 @@
         // -- formats and builds the StyleSheet code
         // -- parameters: classes (separated by comma), styles (separated by semicolon)
         // -- array actions: .filter - remove empties, .map - trim (or pad + trim)
-        let tClasses = classes.split(',').filter(function (e) { return e.trim() }).map(e => e.trim());
-        let tStyleLines = styles.split(';').filter(function (e) { return e.trim() });
-        tStyleLines = tStyleLines.map(function (e) { let temp = e.split(':'); return '    ' + temp[0].trim() + ':' + temp[1].trim() });
-        let temp = tClasses.join(',\n') + ' {\n';
-        temp += tStyleLines.join(';\n') + ';\n';
+        const listOfClasses = classes.split(',').filter(function (e) { return e.trim() }).map(e => e.trim());
+        let styleLines = styles.split(';').filter(function (e) { return e.trim() });
+        styleLines = styleLines.map(function (e) { let temp = e.split(':'); return '    ' + temp[0].trim() + ':' + temp[1].trim() });
+
+        let temp = listOfClasses.join(',\n') + ' {\n';
+        temp += styleLines.join(';\n') + ';\n';
         temp += '}\n';
         VARS.tempStyleSheetCode += temp;
     }
@@ -1842,8 +1745,9 @@
             'transform: rotate(180deg);transition: transform 0.15s linear;'
         );
         // - flagged post's mini-tab
+        // `.${VARS.cssHide} > div:not([${postAtt}]) > div > div > h6[${postAtt}]`,
         addToSS(
-            `.${VARS.cssHide} > div:not([${postAtt}]) > div > div > h6[${postAtt}]`,
+            `.${VARS.cssHide} > div:not([${postAtt}]) > div h6[${postAtt}] `,
             'border-radius: 0.55rem 0.55rem 0 0; width:75%; margin:0 auto; padding: 0.45rem 0.25rem; font-style:italic; text-align:center; font-weight:normal;' +
             ((VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `  color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `) +
             `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `
@@ -1874,7 +1778,7 @@
         // - non-standard post's show state
         addToSS(
             `.${VARS.cssHideEl}.show `,
-            `display: block; border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.1rem;` // 4px
+            `display: block !important; border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.1rem;` // 4px
         );
         // - dailog box CSS
         // --- dialog box; position + flex
@@ -1884,7 +1788,7 @@
         addToSS(
             '.fb-cmf ',
             'position:fixed; top:0.15rem; bottom:0.15rem; display:flex; flex-direction:column; max-width:30rem; padding:0 1rem; z-index:5;' +
-            `border:2px solid ${bColour}; border-radius:1rem; opacity:0; color:${tColour};`
+            `border:2px solid ${bColour}; border-radius:1rem; opacity:0; color:${tColour}; visibility:hidden;`
         );
         if ((VARS.Options.CMF_DIALOG_BG_COLOUR === '') || (VARS.Options.CMF_DIALOG_BG_COLOUR === undefined)) {
             addToSS('.__fb-light-mode .fb-cmf', 'background-color:#fefefa;');
@@ -1992,7 +1896,7 @@
         // -- show dialog box (default is not to show)
         addToSS(
             '.fb-cmf.show',
-            'opacity:1; transform:scale(1);'
+            'opacity:1; transform:scale(1); visibility:visible;'
         );
         // -- new window icon
         addToSS(
@@ -2086,7 +1990,7 @@
         addToSS(
             '.fb-cmf',
             styles +
-            'transition:transform .45s ease, opacity .25s ease;'
+            'transition:transform .45s ease, opacity .25s ease, visibility 1s ease;'
         );
         if (VARS.tempStyleSheetCode.length > 0) {
             styleEl.appendChild(document.createTextNode(VARS.tempStyleSheetCode));
@@ -2227,7 +2131,10 @@
             VARS.Options.MP_BLOCKED_TEXT = '';
             changed = true;
         }
-
+        if (!VARS.Options.hasOwnProperty('MP_BLOCKED_TEXT_DESCRIPTION')) {
+            VARS.Options.MP_BLOCKED_TEXT_DESCRIPTION = '';
+            changed = true;
+        }
         if (!VARS.Options.hasOwnProperty('VERBOSITY_LEVEL')) {
             VARS.Options.VERBOSITY_LEVEL = KeyWords.DLG_VERBOSITY.defaultValue;
             changed = true;
@@ -2312,6 +2219,7 @@
         let gfBlockedText = '';
         let vfBlockedText = '';
         let mpBlockedText = '';
+        let mpBlockedTextDesc = '';
         if (VARS.Options.NF_BLOCKED_ENABLED === true) {
             nfBlockedText = VARS.Options.NF_BLOCKED_TEXT;
         }
@@ -2323,6 +2231,7 @@
         }
         if (VARS.Options.MP_BLOCKED_ENABLED === true) {
             mpBlockedText = VARS.Options.MP_BLOCKED_TEXT;
+            mpBlockedTextDesc = VARS.Options.MP_BLOCKED_TEXT_DESCRIPTION;
         }
 
         // -- final list of text for each feed
@@ -2330,6 +2239,7 @@
         let gfBlockedTextList = '';
         let vfBlockedTextList = '';
         let mpBlockedTextList = '';
+        let mpBlockedTextDescList = '';
 
         // -- ##_BLOCKED_FEED[X] : 0 = NF, 1 = GF, 2 = VF.
         // -- rule: both feeds must be enabled before appending text list from one feed to another text list
@@ -2384,6 +2294,7 @@
         // -- market place (stand-alone)
         if (VARS.Options.MP_BLOCKED_ENABLED) {
             mpBlockedTextList = mpBlockedText;
+            mpBlockedTextDescList = mpBlockedTextDesc;
         }
 
         // -- populate the VARS.Filters.###...
@@ -2417,13 +2328,20 @@
         // -- marketplace  feed
         VARS.Filters.MP_BLOCKED_TEXT = [];
         VARS.Filters.MP_BLOCKED_TEXT_LC = [];
+        VARS.Filters.MP_BLOCKED_TEXT_DESCRIPTION = [];
+        VARS.Filters.MP_BLOCKED_TEXT_DESCRIPTION_LC = [];
         VARS.Filters.MP_BLOCKED_ENABLED = false;
-        if (VARS.Options.MP_BLOCKED_ENABLED && mpBlockedTextList.length > 0) {
+        if (VARS.Options.MP_BLOCKED_ENABLED && ((mpBlockedTextList.length > 0) || (mpBlockedTextDescList.length > 0))) {
             VARS.Filters.MP_BLOCKED_ENABLED = true;
+            // -- prices ::
             VARS.Filters.MP_BLOCKED_TEXT = mpBlockedTextList.split(VARS.SEP);
             VARS.Filters.MP_BLOCKED_TEXT_LC = VARS.Filters.MP_BLOCKED_TEXT.map(btext => btext.toLowerCase());
+            // -- description ::
+            VARS.Filters.MP_BLOCKED_TEXT_DESCRIPTION = mpBlockedTextDescList.split(VARS.SEP);
+            VARS.Filters.MP_BLOCKED_TEXT_DESCRIPTION_LC = VARS.Filters.MP_BLOCKED_TEXT_DESCRIPTION.map(btext => btext.toLowerCase());
         }
 
+        // console.info(log + 'getUserOptions() - Options:', VARS.Options);
         // console.info(log + 'getUserOptions() - Filters:', VARS.Filters);
 
         VARS.optionsReady = true;
@@ -2687,8 +2605,12 @@
             createMultipeCBs('MP_BLOCKED_FEED', 0).forEach(el => {
                 fs.appendChild(el);
             });
-
+            // -- 2 x textarea boxes; one for prices and one for description
             fs.appendChild(createSingleCB('MP_BLOCKED_ENABLED'));
+            l = document.createElement('strong');
+            l.textContent = 'Prices: ';
+            fs.appendChild(l);
+            fs.appendChild(document.createElement('br'));
             s = document.createElement('small');
             s.appendChild(document.createTextNode(KeyWords.DLG_BLOCK_NEW_LINE[VARS.language]));
             fs.appendChild(s);
@@ -2696,6 +2618,21 @@
             ta.name = 'MP_BLOCKED_TEXT';
             ta.textContent = VARS.Options.MP_BLOCKED_TEXT.split(VARS.SEP).join('\n');
             fs.appendChild(ta);
+            fs.appendChild(document.createElement('br'));
+            fs.appendChild(document.createElement('br'));
+
+            l = document.createElement('strong');
+            l.textContent = 'Description: ';
+            fs.appendChild(l);
+            fs.appendChild(document.createElement('br'));
+            s = document.createElement('small');
+            s.appendChild(document.createTextNode(KeyWords.DLG_BLOCK_NEW_LINE[VARS.language]));
+            fs.appendChild(s);
+            ta = document.createElement('textarea');
+            ta.name = 'MP_BLOCKED_TEXT_DESCRIPTION';
+            ta.textContent = VARS.Options.MP_BLOCKED_TEXT_DESCRIPTION.split(VARS.SEP).join('\n');
+            fs.appendChild(ta);
+
             cnt.appendChild(fs);
 
             // -- Other items options
@@ -2950,50 +2887,40 @@
                 VARS.scanCountStart += 100;
                 VARS.scanCountMaxLoop += 100;
                 // -- "purge" notifications
-                let elements = Array.from(document.querySelectorAll(`div[${postAtt}="0"]`));
-                if (elements.length > 0) {
-                    elements.forEach(el => {
-                        let elParent = el.parentElement;
-                        elParent.removeChild(el);
-                    });
+                let elements = document.querySelectorAll(`div[${postAtt}="0"]`);
+                for (const el of elements) {
+                    const elParent = el.parentElement;
+                    elParent.removeChild(el);
                 }
                 // -- remove attribute
-                elements = Array.from(document.querySelectorAll(`[${postAtt}]`));
-                if (elements.length > 0) {
-                    elements.forEach(el => {
-                        if (el.tagName === "H6") {
-                            let elParent = el.parentElement;
-                            elParent.removeChild(el);
-                        }
-                        else {
-                            el.removeAttribute(postAtt);
-                            el.classList.remove(VARS.cssHide);
-                            el.classList.remove(VARS.cssHideEl);
-                            el.classList.remove(VARS.cssShow);
-                        }
-                    });
-                }
-                // -- check that the classes have been removed
-                elements = Array.from(document.querySelectorAll(`.${VARS.cssHide}`));
-                if (elements.length > 0) {
-                    elements.forEach(el => {
-                        el.classList.remove(VARS.cssHide);
-                        el.classList.remove(VARS.cssHideEl);
-                        el.classList.remove(VARS.cssShow);
-                    });
-                }
-                elements = Array.from(document.querySelectorAll(`.${VARS.cssHideEl}`));
-                if (elements.length > 0) {
-                    elements.forEach(el => {
-                        el.classList.remove(VARS.cssHideEl);
-                        el.classList.remove(VARS.cssHide);
-                        el.classList.remove(VARS.cssShow);
-                    });
-                }
-                elements = Array.from(document.querySelectorAll(`.${VARS.cssHideNumberOfShares}`));
-                if (elements.length > 0) {
-                    elements.forEach(el => {
+                elements = document.querySelectorAll(`[${postAtt}]`);
+                for (const el of elements) {
+                    if (el.tagName === "H6") {
+                        let elParent = el.parentElement;
+                        elParent.removeChild(el);
+                    }
+                    else {
                         el.removeAttribute(postAtt);
+                        el.classList.remove(VARS.cssHide);
+                        el.classList.remove(VARS.cssHideEl);
+                        el.classList.remove(VARS.cssHideStories);
+                        el.classList.remove(VARS.cssHideNumberOfShares);
+                        el.classList.remove(VARS.cssShow);
+                    }
+                }
+                // -- remove classes
+                // -- (don't add .show to query, the button needs it ...)
+                elements = document.querySelectorAll(`
+                    .${VARS.cssHide},
+                    .${VARS.cssHideEl},
+                    .${VARS.cssHideStories},
+                    .${VARS.cssHideNumberOfShares}
+                    `);
+                if (elements.length > 0) {
+                    elements.forEach(el => {
+                        el.classList.remove(VARS.cssHide);
+                        el.classList.remove(VARS.cssHideEl);
+                        el.classList.remove(VARS.cssHideStories);
                         el.classList.remove(VARS.cssHideNumberOfShares);
                         el.classList.remove(VARS.cssShow);
                     });
@@ -3093,7 +3020,9 @@
         if ((VARS.prevURL !== window.location.href) || forceUpdate) {
             // - remember current page's URL
             VARS.prevURL = window.location.href;
+            // -- pathname pattern: /marketplace...
             VARS.prevPathname = window.location.pathname;
+            // -- search pattern: ?query= ...
             VARS.prevQuery = window.location.search;
             // - reset feeds flags
             VARS.isNF = false;
@@ -3143,6 +3072,7 @@
             else if (VARS.prevPathname.indexOf('/marketplace') >= 0) {
                 // -- marketplace
                 VARS.isMF = true;
+                mp_stopTrackingDirtIntoMyHouse();
                 if (VARS.isMF && VARS.prevPathname.indexOf('/item/') >= 0) {
                     // - viewing an item
                     VARS.mpType = 'item';
@@ -3156,7 +3086,15 @@
                     VARS.mpType = 'category';
                 }
                 else {
-                    VARS.mpType = 'marketplace';
+                    // -- check again for category - may have a location in the pathName ...
+                    // -- pattern: :: https://www.facebook.com/marketplace/<location>/sports
+                    const urlBits = VARS.prevPathname.split('/');
+                    if (urlBits.length > 3) {
+                        VARS.mpType = 'category';
+                    }
+                    else {
+                        VARS.mpType = 'marketplace';
+                    }
                 }
             }
             else if (VARS.prevPathname.indexOf('/commerce/listing/') >= 0) {
@@ -3195,7 +3133,15 @@
         }
     }
 
-    function doLightDusting(post) {
+    function climbUpTheTree(element, numberOfBranches = 1) {
+        while (element && numberOfBranches > 0) {
+            element = element.parentNode;
+            numberOfBranches--;
+        }
+        return element || null;
+    }
+
+    function doLightDustingx(post) {
         // - remove 'dusty' elements that interfere with querySelectorAll, nth-of-type, :not() queries.
         // -- needs to run a few times to be effective.
         let scanCount = VARS.scanCountStart;
@@ -3212,6 +3158,15 @@
             }
             scanCount++;
             post[postPropDS] = scanCount;
+        }
+    }
+
+    function doLightDusting(post) {
+        // - remove 'dusty' elements that interfere with querySelectorAll, nth-of-type, :not() queries.
+        // -- needs to run a few times to be effective.
+        const dustySpots = post.querySelectorAll('[data-0="0"]');
+        for (const dustySpot of dustySpots) {
+            dustySpot.remove();
         }
     }
 
@@ -3274,7 +3229,7 @@
         return [...new Set(arrayTextValues)];
     }
 
-    function scanTreeForTextMP(theNode) {
+    function mp_scanTreeForText(theNode) {
         const arrayTextValues = [];
         let n;
         const walk = document.createTreeWalker(theNode, NodeFilter.SHOW_TEXT, null);
@@ -3363,36 +3318,37 @@
         return elMiniTab;
     }
 
-    function hideFeature(post, reason, isStories = false) {
+    function hideFeature(post, reason, isStories = false, needMiniTab = false) {
         // -- hide something - keep it out of the regular feed stuff.
         // -- no counter
-        if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
-            // -- add info tab
-            let echoEl = createInfoNote(reason);
-            let postFirstChild = post.querySelector(':scope > :first-child');
-            if (postFirstChild) {
-                postFirstChild.before(echoEl);
-            }
-            // else {
-            //     // -- post has been changed while being processed (very rare)
-            // }
-        }
+        // :: return <nothing>
 
         if (isStories === true) {
+            // -- (stories don't have info-tab/mini-tab)
             post.classList.add(VARS.cssHideStories);
             post.setAttribute(postAtt, reason);
         }
         else {
+            if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
+                // -- add info tab
+                let echoEl = createInfoNote(reason);
+                let postFirstChild = post.querySelector(':scope > :first-child');
+                if (postFirstChild) {
+                    postFirstChild.before(echoEl);
+                }
+            }
+
             post.classList.add(VARS.cssHide);
             post.setAttribute(postAtt, reason);
-        }
 
-        // - add mini-tab (indicates why post is hidden)
-        let elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
-        if (elTabSpot) {
-            elTabSpot.before(createMiniTab(reason));
+            // - add mini-tab (indicates why post is hidden)
+            if (needMiniTab) {
+                const elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
+                if (elTabSpot) {
+                    elTabSpot.before(createMiniTab(reason));
+                }
+            }
         }
-
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
             post.classList.add(VARS.cssShow);
@@ -3833,11 +3789,33 @@
     }
 
     function nf_isEventsYouMayLike(post) {
-        // -- events you may linke posts
-        // let query = ':scope > div:nth-of-type(2) > div > div >  h3 > span';
+        // -- events you may like posts
         const query = (':scope div > div:nth-of-type(2) > div > div >  h3 > span');
-        let events = querySelectorAllNoChildren(post, query, 0);
+        const events = querySelectorAllNoChildren(post, query, 0);
         return (events.length === 0) ? '' : KeyWords.NF_EVENTS_YOU_MAY_LIKE[VARS.language];
+    }
+
+    function findFirstMatch(longText, valuesToFind) {
+        for (const value of valuesToFind) {
+            if (longText.includes(value)) {
+                return value;
+            }
+        }
+        return '';
+    }
+
+    function findFirstMatchRE(longText, patterns) {
+        // -- using Regular Expressions
+        // -- user supplied the RE patterns
+        for (const pattern of patterns) {
+            // -- do not use 'g' - want to reset lastindex to 0 for each test.
+            // --'i' flag for case-insensitive matching;
+            const regex = new RegExp(pattern, 'i');
+            if (regex.test(longText)) {
+                return pattern;
+            }
+        }
+        return '';
     }
 
     function nf_isBlockedText(post) {
@@ -3849,22 +3827,12 @@
         let blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div';
         let blocks = post.querySelectorAll(blocksQuery);
         if (blocks.length <= 1) {
-            // try again .. (December 2022 change)
+            // -- try again .. (December 2022 change)
+            // -- no need to do another querySelectorAll(..) - extractTextContent will do this.
             blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div > div';
         }
-        let ptexts = extractTextContent(post, blocksQuery, 3);
-        // console.info(log+'nf_isBlockedText:', ptexts, post);
-        ptexts = ptexts.join(' ').toLowerCase();
-        let blockedText = '';
-        let btL = VARS.Filters.NF_BLOCKED_TEXT_LC.length;
-        for (let b = 0; b < btL; b++) {
-            if (ptexts.indexOf(VARS.Filters.NF_BLOCKED_TEXT_LC[b]) >= 0) {
-                // before breaking out, get the text that matched.
-                blockedText = VARS.Filters.NF_BLOCKED_TEXT[b];
-                break;
-            }
-        }
-        // if (blockedText.length > 0) console.info(log + 'isBlockedText():', blockedText, post, ptexts);
+        const postTexts = (extractTextContent(post, blocksQuery, 3)).join(' ').toLowerCase();
+        const blockedText = findFirstMatch(postTexts, VARS.Filters.NF_BLOCKED_TEXT_LC);
         return blockedText;
     }
 
@@ -3877,20 +3845,11 @@
         let blocks = post.querySelectorAll(blocksQuery);
         if (blocks.length <= 1) {
             // try again .. (Dec 2022 change)
+            // -- no need to do another querySelectorAll(..) - extractTextContent will do this.
             blocksQuery = 'div[aria-posinset] > div > div > div > div > div > div > div > div > div, div[aria-describedby] > div > div > div > div > div > div > div > div > div';
         }
-        let ptexts = extractTextContent(post, blocksQuery, 3);
-        // console.info(log+'gf_isBlockedText:', ptexts, post);
-        ptexts = ptexts.join(' ').toLowerCase();
-        let blockedText = '';
-        let btL = VARS.Filters.GF_BLOCKED_TEXT_LC.length;
-        for (let b = 0; b < btL; b++) {
-            if (ptexts.indexOf(VARS.Filters.GF_BLOCKED_TEXT_LC[b]) >= 0) {
-                // before breaking out, get the text that matched.
-                blockedText = VARS.Filters.GF_BLOCKED_TEXT[b];
-                break;
-            }
-        }
+        const postTexts = (extractTextContent(post, blocksQuery, 3)).join(' ').toLowerCase();
+        const blockedText = findFirstMatch(postTexts, VARS.Filters.GF_BLOCKED_TEXT_LC);
         return blockedText;
     }
 
@@ -3898,65 +3857,68 @@
         // - check for blocked text - partial text match
         // -- regular videos feed post's blocks (have 1-3 blocks)
         // -- scan 1st block only
-        let ptexts = extractTextContent(post, queryBlocks, 1);
-        // console.info(log+'vf_isBlockedText:', ptexts, post);
-        ptexts = ptexts.join(' ').toLowerCase();
-        let blockedText = '';
-        let btL = VARS.Filters.VF_BLOCKED_TEXT_LC.length;
-        for (let b = 0; b < btL; b++) {
-            if (ptexts.indexOf(VARS.Filters.VF_BLOCKED_TEXT_LC[b]) >= 0) {
-                // before breaking out, get the text that matched.
-                blockedText = VARS.Filters.VF_BLOCKED_TEXT[b];
-                break;
-            }
-        }
-        // if (blockedText.length > 0) console.info(log + 'vf_isBlockedText():', blockedText, post, ptexts);
+        const postTexts = (extractTextContent(post, queryBlocks, 1)).join(' ').toLowerCase();
+        const blockedText = findFirstMatch(postTexts, VARS.Filters.VF_BLOCKED_TEXT_LC);
         return blockedText;
     }
 
-    function mp_isBlockedText() {
-        let query = `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`;
-        let items = document.querySelectorAll(query);
-        items.forEach(item => {
-            let queryTextBlock = ':scope > div > div:nth-of-type(2) > div'
-            // a[href*="/marketplace/item"] > div > div:nth-of-type(2) > div > div > span > span > span
-            let blocksOfText = item.querySelectorAll(queryTextBlock);
-            if (blocksOfText.length > 0) {
-                let blockedText = '';
-                // - first block, has prices and sometimes old price. we ignore 2nd price (old one).
-                // - compare as exact match
-                let itemPrices = scanTreeForTextMP(blocksOfText[0]);
-                let itemPrice = itemPrices[0].toLowerCase();
-                let idx = VARS.Filters.MP_BLOCKED_TEXT_LC.indexOf(itemPrice);
-                if (idx >= 0) {
-                    blockedText = VARS.Filters.MP_BLOCKED_TEXT[idx];
-                }
-                else {
-                    // - second + subsequent blocks of text ...
-                    //  - compare as partial match (description/location of item)
-                    for (let i = 1; i < blocksOfText.length; i++) {
-                        let ptexts = scanTreeForTextMP(blocksOfText[i]);
-                        if (ptexts.length > 0) {
-                            let ptext = ptexts.join(' ').toLowerCase();
-                            let btL = VARS.Filters.MP_BLOCKED_TEXT_LC.length;
-                            for (let b = 0; b < btL; b++) {
-                                if (ptext.indexOf(VARS.Filters.MP_BLOCKED_TEXT_LC[b]) >= 0) {
-                                    // -- before breaking out, get the text that matched.
-                                    blockedText = VARS.Filters.MP_BLOCKED_TEXT[b];
-                                    break;
-                                }
-                            }
-                        }
-                        if (blockedText.length > 0) {
-                            break;
-                        }
-                    }
-                }
-                let box = item.closest('div[style]');
-                //console.info(log + 'isBlockedText():', blockedText, ptexts, box);
+    function mp_getBlockedPrices(elBlockOfText) {
+        // -- scan the first price listed in itemPrices for a match.
+        // -- (second price is the old one (with strike-through))
+        // -- needs to be an extact match.
+        // :: return : blocked text or ''.
+        if (VARS.Filters.MP_BLOCKED_TEXT.length > 0) {
+            const itemPrices = mp_scanTreeForText(elBlockOfText);
+            const idx = VARS.Filters.MP_BLOCKED_TEXT_LC.indexOf(itemPrices[0].toLowerCase());
+            return (idx >= 0) ? VARS.Filters.MP_BLOCKED_TEXT[idx] : '';
+        }
+        return '';
+    }
+
+    function mp_getBlockedTextDescription(collectionBlocksOfText, skipFirstBlock = true) {
+        // -- scan the various blocks of text for blocked text.
+        // -- partial match.
+        // :: return : blocked text or ''.
+        if (VARS.Filters.MP_BLOCKED_TEXT_DESCRIPTION.length > 0) {
+            const startIndex = skipFirstBlock ? 1 : 0;
+            for (let i = startIndex; i < collectionBlocksOfText.length; i++) {
+                const descriptionTextList = mp_scanTreeForText(collectionBlocksOfText[i]);
+                const descriptionText = descriptionTextList.join(' ').toLowerCase();
+                const blockedText = findFirstMatch(descriptionText, VARS.Filters.MP_BLOCKED_TEXT_DESCRIPTION_LC);
                 if (blockedText.length > 0) {
+                    return blockedText
+                }
+            }
+        }
+        return '';
+    }
+
+    function mp_doBlockingByBlockedText() {
+        // -- scan the marketplace for items
+        // -- hide an item if the price is listed in the list of blocked text
+        // -- hide an item if the descriptinis listed in the list of blocked description text
+        // :: return <nothing>
+        const query = `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`;
+        const items = document.querySelectorAll(query);
+        items.forEach(item => {
+            // - item's container
+            const box = item.closest('div[style]');
+            // - blocks of text to scan
+            const queryTextBlock = ':scope > div > div:nth-of-type(2) > div'
+            const blocksOfText = item.querySelectorAll(queryTextBlock);
+            if (blocksOfText.length > 0) {
+                // -- price(s) is in first block
+                const blockedTextPrices = mp_getBlockedPrices(blocksOfText[0]);
+                // -- description is in other blocks
+                const blockedTextDescription = mp_getBlockedTextDescription(blocksOfText, true);
+
+                if (blockedTextPrices.length > 0) {
                     // -- hide the item
-                    mp_hideBox(box, blockedText);
+                    mp_hideBox(box, blockedTextPrices);
+                }
+                else if (blockedTextDescription.length > 0) {
+                    // -- hide the item
+                    mp_hideBox(box, blockedTextDescription);
                 }
                 else {
                     // -- flag the item not to be scanned again
@@ -3969,11 +3931,12 @@
     function vf_scrubSponsoredBlock(post) {
         // - some videos have a sponsored block beneath the video block/section
         // - includes "watch more ___ videos by ___"
-        let query = `:scope > div > div > div > div > div:nth-of-type(2) > div`;
-        let blocks = post.querySelectorAll(query);
+        // :: return <nothing>
+        const query = `:scope > div > div > div > div > div:nth-of-type(2) > div`;
+        const blocks = post.querySelectorAll(query);
         if (blocks.length > 3) {
-            let block = blocks[2]; // -- 3rd block
-            let isJunk = block.querySelector(`:scope > div > div > div > div > div > div > span > a:not([${postAtt}])`);
+            const block = blocks[2]; // -- 3rd block
+            const isJunk = block.querySelector(`:scope > div > div > div > div > div > div > span > a:not([${postAtt}])`);
             if (isJunk !== null) {
                 hideBlock(block, isJunk, KeyWords.SPONSORED[VARS.language]);
             }
@@ -3982,77 +3945,76 @@
 
     function swatTheMosquitos(post) {
         // - scan the post for any gifs that is animating (pausing them once)
-        let query = `div[role="button"][aria-label*="GIF"]:not([${postAtt}]) > i:not([data-visualcompletion])`;
-        let agifs = Array.from(post.querySelectorAll(query));
-        // console.info('pausing, agifs::', agifs);
-        if (agifs.length > 0) {
-            agifs.forEach(gif => {
-                // mimic user clicking on animating gif
-                // - which will trigger fb's click event.
-                // - grab the A tag that is displayed when paused (uses Opacity)
-                let gpar = gif.parentElement.parentElement.parentElement;
-                let sib = gpar.querySelector(':scope > a');
-                if (sib) {
-                    let sibCS = window.getComputedStyle(sib);
-                    if (sibCS.opacity === '0') {
-                        // 0 = animating; 1 = paused;
-                        gif.parentElement.click();
-                        // console.info(log + 'swatTheMosquitos() - paused', gif);
-                    }
-                    gif.parentElement.setAttribute(postAtt, '1');
+        // :: return <nothing>
+        const query = `div[role="button"][aria-label*="GIF"]:not([${postAtt}]) > i:not([data-visualcompletion])`;
+        const animatedGIFs = post.querySelectorAll(query);
+        // console.info('pausing, animatedGIFs::', animatedGIFs);
+        for (const gif of animatedGIFs) {
+            // mimic user clicking on animating gif
+            // - which will trigger fb's click event.
+            // - grab the A tag that is displayed when paused (uses Opacity)
+            const gpar = climbUpTheTree(gif, 3);
+            const sib = gpar.querySelector(':scope > a');
+            if (sib) {
+                const sibCS = window.getComputedStyle(sib);
+                if (sibCS.opacity === '0') {
+                    // 0 = animating; 1 = paused;
+                    gif.parentElement.click();
+                    // console.info(log + 'swatTheMosquitos() - paused', gif);
                 }
-            });
-        }
-    }
-
-    function nf_scrubTheTabbies() {
-        // - tablist : stories | reels | rooms
-        // -- appears at top of NF
-        let query = `div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]:not([${postAtt}])`;
-        let tabLists = Array.from(document.querySelectorAll(query));
-        if (tabLists.length > 0) {
-            for (let tabList of tabLists) {
-                // - parent is 4 levels up.
-                let par = tabList.parentElement.parentElement.parentElement.parentElement;
-                tabList.setAttribute(postAtt, 'tab list');
-                hideFeature(par, KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]);
+                gif.parentElement.setAttribute(postAtt, '1');
             }
         }
     }
 
-    function nf_scrubTheStories() {
-        // - stories only
+    function nf_scrubTheTabbies() {
+        // -- either tablist or stories is shown (not both at the same time)
+        // - tablist : stories | reels | rooms
+        // - stories : standalone component - shares same space as tablist (but only show stories)
         // -- appears at top of NF
-        //let query = `span[id="ssrb_stories_start"] ~ div > div:not([${postAtt}]) a[href*="/stories/create"]`;
-        let query = `span[id="ssrb_stories_start"] ~ div:not([${postAtt}]) a[href*="/stories/create"]`;
-        let stories = document.querySelector(query);
-        if (stories !== null) {
-            // - parent is a few levels up.
-            //let par = stories.closest('span[id] ~ div > div');
-            let par = stories.closest('span[id] ~ div');
-            hideFeature(par, KeyWords.NF_STORIES[VARS.language], true);
+        // :: return <nothing>
+        const queryTabList = `div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]`;
+        const elTabList = document.querySelector(queryTabList);
+        // console.info(log + 'nf_scrubTheTabbies(); elTabList:', queryTabList, elTabList);
+        if (elTabList) {
+            if (elTabList.hasAttribute(postAttChildFlag)) {
+                return;
+            }
+            // -- parent is 4 levels up.
+            const elParent = climbUpTheTree(elTabList, 4);
+            hideFeature(elParent, (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]).replaceAll('"', ''), false, false);
+            elTabList.setAttribute(postAttChildFlag, 'tablist');
         }
-    }
-
-    function nf_scrubTheRoom() {
-        // - Create Room
-        // -- appears below "What's on your mind, <name>?" box at top of News Feed
-        let query = `div${postAtt} > div > div:not([${postAtt}]) > div[data-visualcompletion="ignore-dynamic"] div > i[data-visualcompletion="css-img"]`
-        let createRoom = document.querySelector(query);
-        if (createRoom !== null) {
-            let par = createRoom.closest('div > div > div > div[data-visualcompletion="ignore-dynamic"]');
-            par = par.parentElement.parentElement;
-            hideFeature(par, KeyWords.NF_CREATE_ROOM[VARS.language]);
+        else {
+            // -- stories standalone component
+            const postAttStoriesValue = (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language] + ' (stories)').replaceAll('"', '');
+            const queryStoriesContainer = `div[${postAtt}="${postAttStoriesValue}"]`;
+            const elStoriesContainer = document.querySelector(queryStoriesContainer);
+            if (elStoriesContainer === null) {
+                const queryStories = `a[href*="/stories/create/"]:not([${postAttChildFlag}])`;
+                const elStories = document.querySelector(queryStories);
+                if (elStories) {
+                    if (document.querySelector('div[id="S:1"]') === null) {
+                        // -- the proper stories's container is now available ... (sometimes, we're a tad bit too quick ...)
+                        // -- parent is up a few levels ..
+                        let elParent = elStories.closest('div[aria-label][role][style]');
+                        if (elParent) {
+                            elParent = climbUpTheTree(elParent, 2);
+                            hideFeature(elParent, postAttStoriesValue, true, false);
+                            elStories.setAttribute(postAttChildFlag, postAttStoriesValue);
+                        }
+                    }
+                }
+            }
         }
     }
 
     function nf_cleanTheConsoleTable(item = 'Sponsored') {
         // -- mopping up the news feed aside panel. item values: Sponosored | Suggestions
-        // let query = `div[role="complementary"] > div > div > div > span ~ div:first-of-type > div:not([data-visualcompletion])`; // pre Nov 2022
-        // let query = 'div[role="complementary"] > div > div > div > div > div > div:not([data-visualcompletion])';
-        let query = 'div[role="complementary"] > div > div > div > div > div:not([data-visualcompletion])';
-        let asideBoxes = Array.from(document.querySelectorAll(query));
-        // console.info(log + 'aside:', asideBoxes);
+        // :: return <nothing>
+        const query = 'div[role="complementary"] > div > div > div > div > div:not([data-visualcompletion])';
+        const asideBoxes = Array.from(document.querySelectorAll(query));
+
         if (asideBoxes.length > 0) {
             // -- only interested in the first container.
             if (asideBoxes[0].childElementCount > 0) {
@@ -4068,10 +4030,10 @@
                     elItem = asideBoxes[0].querySelector(`:scope > div:not([${postAtt}])`);
                     if (elItem && elItem.innerHTML.length > 0) {
                         // -- check for birthdays
-                        let birthdays = Array.from(elItem.querySelectorAll('a[href="/events/birthdays/"]')).length > 0;
+                        const birthdays = Array.from(elItem.querySelectorAll('a[href="/events/birthdays/"]')).length > 0;
                         // -- check for "your pages and profiles"
                         // -- suggested groups only have 1 i[..] attribute
-                        let pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 1;
+                        const pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 1;
 
                         if (birthdays === false && pagesAndProfiles === false) {
                             reason = KeyWords.NF_SUGGESTIONS[VARS.language];
@@ -4086,18 +4048,15 @@
     }
 
     function gf_cleanTheConsoleTable(item = 'Suggestions') {
-        // mopping up the groups feed aside panel - suggested
+        // -- mopping up the groups feed aside panel - suggested
+        // :: return <nothing>
         if (item === 'Suggestions') {
-            let query = `a[href*="/groups/discover"]:not([${postAtt}]) > span > span`;
-            let asideBoxes = querySelectorAllNoChildren(document, query, 1);
-            // console.info(log + 'aside:', asideBoxes);
+            const query = `a[href*="/groups/discover"]:not([${postAtt}]) > span > span`;
+            const asideBoxes = querySelectorAllNoChildren(document, query, 1);
             if (asideBoxes.length > 0) {
                 for (let asideBox of asideBoxes) {
                     // parent is 21 levels up ...
-                    let par = asideBox;
-                    for (let i = 0; i < 21; i++) {
-                        par = par.parentElement;
-                    }
+                    const par = climbUpTheTree(asideBox, 21);
                     asideBox.closest('a').setAttribute(postAtt, KeyWords.GF_SUGGESTIONS[VARS.language]);
                     hideFeature(par, KeyWords.GF_SUGGESTIONS[VARS.language]);
                 }
@@ -4106,96 +4065,120 @@
     }
 
     function gf_setPostLinkToOpenInNewTab(post) {
-        // -- open a group post in a new window from the groups feed
-        // -- overcomes the fb bug in not listing the comments properly
+        // -- from the groups feed, open a group post in a new window
+        // -- add an icon next to the other icons at the top of the group post.
         // -- (there's no equivalent function for news feed posts - no quick way of getting the post's URL)
+        // :: return <nothing>
 
         try {
-            // - parts of the post's link can be found in the first link
-            let postLink = Array.from(post.querySelectorAll('div > div > a[href*="/groups/"][role="link"]'))[0];
-            if (postLink) {
-
-                // -- get the container for the lower part of the header block.
-                let header = postLink.parentElement.parentElement.parentElement.parentElement;
-                let blockOfIcons = header.querySelector(':scope > div:nth-of-type(2) > div > div:nth-of-type(2) > span > span');
-
-                if (blockOfIcons && blockOfIcons.querySelector('.cmf-link-new') === null) {
-                    // -- need to create the group post's link
-                    // -- nb: last post may not be a post - it could be the "You've completely caught up. Check again later for more updates" post.
-                    // --     it doesn't have a set of icons ...
-
-                    let newLink;
-                    if (postLink.href.split('multi_permalinks').length > 1) {
-                        // -- sample link: https://www.facebook.com/groups/424532172574012/?hoisted_section_header_type=recently_seen&multi_permalinks=720886619605231&__cft__[0]=AZV1vpwA0h21cVRZoS_GM3Q7H_Ul77iObEbYu2EA4oL7XyM-C78sQp5KIEpPooBCQZ2dmAMTvpCi1qYt5VxSTiCQCBkTmv8_Ra77OyacW2l685TVbttwb4qwKUm6AVr0zIapBxKODmLHgnNcYaSkXeCEOMEMdxQajQX8NTcniWYUA7OuVNY5C4F-ETSuab37Azw&__tn__=%3C%3C%2CP-R
-                        // -- .. converted to: https://www.facebook.com/groups/424532172574012/posts/720886619605231/
-                        // -- post link structure: https://www.facebook.com/groups/<group id>/posts/<post id>/
-                        let postID = new URLSearchParams(postLink.href).get('multi_permalinks');
-                        newLink = postLink.href.split('?')[0] + 'posts/' + postID + '/'
-                    }
-                    else {
-                        // -- hmm, we don't have the info to reconstruct a group post link.
-                        return;
-                    }
-
-                    // -- put in fb's spacer between icons.
-                    let spacerWdot = '<span><span style="position:absolute;width:1px;height:1px;">&nbsp;</span><span aria-hidden="true"> · </span></span>'
-                    let spanSpacer = document.createElement('span');
-                    spanSpacer.innerHTML = spacerWdot;
-                    blockOfIcons.appendChild(spanSpacer);
-
-                    let container = document.createElement('span');
-                    container.className = 'link-new';
-                    let span2 = document.createElement('span');
-                    let linkNew = document.createElement('a');
-                    linkNew.setAttribute('href', newLink);
-                    linkNew.innerHTML = VARS.iconNewWindow;
-                    linkNew.setAttribute('target', '_blank');
-                    span2.appendChild(linkNew);
-                    container.appendChild(span2);
-
-                    blockOfIcons.appendChild(container);
-                }
+            if (post.hasAttribute('class')) {
+                // -- not a group post.
+                return;
             }
+            // -- have we already added the "open post in new tab" elements?
+            const elLinkNew = post.querySelector('.link-new');
+            if (elLinkNew) {
+                return;
+            }
+
+            // -- find an element with the group post's meta block (author, time, globe)
+            const elPersonGroupLink = post.querySelector('span > span > span > a[href*="/groups/"][role="link"]');
+            if (elPersonGroupLink === null) {
+                return;
+            }
+            // -- need to add the "open post in a new tab" elements
+            // -- is there a group post link to use?
+            const groupPostLink = findGroupPostLink(post);
+            if (groupPostLink === '') {
+                return;
+            }
+            // -- get the group post's meta block container
+            const elContainer = climbUpTheTree(elPersonGroupLink, 4);
+            // -- add fb's spacer between the icons.
+            const elSpacerSpan = gf_createSpacerSpan();
+            // -- create new window link elements.
+            const elOpenInNewWindow = gf_createOpenInNewWindow(groupPostLink);
+            // -- add the spacer + open new window icon/link.
+            elContainer.appendChild(elSpacerSpan);
+            elContainer.appendChild(elOpenInNewWindow);
         }
         catch (error) {
             console.error(log + 'gf_setPostLinkToOpenInNewTab(); Error:', post, error);
         }
     }
 
+    function findGroupPostLink(post) {
+        // -- sample link: https://www.facebook.com/groups/424532172574012/?hoisted_section_header_type=recently_seen&multi_permalinks=720886619605231&__cft__[0]=AZV1vpwA0h21cVRZoS_GM3Q7H_Ul77iObEbYu2EA4oL7XyM-C78sQp5KIEpPooBCQZ2dmAMTvpCi1qYt5VxSTiCQCBkTmv8_Ra77OyacW2l685TVbttwb4qwKUm6AVr0zIapBxKODmLHgnNcYaSkXeCEOMEMdxQajQX8NTcniWYUA7OuVNY5C4F-ETSuab37Azw&__tn__=%3C%3C%2CP-R
+        // -- .. converted to: https://www.facebook.com/groups/424532172574012/posts/720886619605231/
+        // -- post link structure: https://www.facebook.com/groups/<group id>/posts/<post id>/
+        // :: return : group post's link.
+        const queryGroupLinks = 'a[href*="/groups/"][role="link"]';
+        const collectionOfGroupLinks = post.querySelectorAll(queryGroupLinks);
+        for (const elLink of collectionOfGroupLinks) {
+            const postId = new URLSearchParams(elLink.href).get('multi_permalinks');
+            if (postId !== null) {
+
+                return elLink.href.split('?')[0] + 'posts/' + postId + '/';
+            }
+        }
+        return '';
+    }
+
+    function gf_createSpacerSpan() {
+        // -- add fb's spacer between the icons.
+        const spacerWdot = '<span><span style="position:absolute;width:1px;height:1px;">&nbsp;</span><span aria-hidden="true"> · </span></span>'
+        const elSpacerSpan = document.createElement('span');
+        elSpacerSpan.innerHTML = spacerWdot;
+        return elSpacerSpan;
+    }
+    function gf_createOpenInNewWindow(newGroupPostLink) {
+        const elContainer = document.createElement('span');
+        elContainer.className = 'link-new';
+        const elSpan = document.createElement('span');
+        const elLinkOpenNewWindow = document.createElement('a');
+        elLinkOpenNewWindow.setAttribute('href', newGroupPostLink);
+        elLinkOpenNewWindow.innerHTML = VARS.iconNewWindow;
+        elLinkOpenNewWindow.setAttribute('target', '_blank');
+        elSpan.appendChild(elLinkOpenNewWindow);
+        elContainer.appendChild(elSpan);
+        return elContainer;
+    }
+
+
     function scrubInfoBoxes(post) {
         // hide the "truth" info boxes that appear in posts having a certain topic.
-
-        // - previous version of this code looked for "blocks"
-        // - however, structure has change
-        // - now using a more "heavy handed" approach
+        // :: return <nothing>
 
         let hiding = false;
 
         if (VARS.Options.OTHER_INFO_BOX_CLIMATE_SCIENCE) {
-            let link = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE.pathMatch}"]:not([${postAtt}])`);
+            const query = `a[href*="${KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE.pathMatch}"]:not([${postAtt}])`;
+            const link = post.querySelector(query);
             if (link !== null) {
                 // - block @ 5 levels up.
-                let block = link.parentElement.parentElement.parentElement.parentElement.parentElement;
+                const block = climbUpTheTree(link, 5);
                 hideBlock(block, link, KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE[VARS.language]);
                 hiding = true;
             }
         }
         //console.info(log+'scrubInfoBoxes():', hiding, VARS.Options.OTHER_INFO_BOX_CORONAVIRUS, KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch, post);
         if (!hiding && VARS.Options.OTHER_INFO_BOX_CORONAVIRUS) {
-            let link = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch}"]:not([${postAtt}])`);
+            const query = `a[href*="${KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch}"]:not([${postAtt}])`;
+            const link = post.querySelector(query);
             link = post.querySelector(`a[href*="/coronavirus_info/"]`);
             if (link !== null) {
                 // - block @ 5 levels up.
-                let block = link.parentElement.parentElement.parentElement.parentElement.parentElement;
+                const block = climbUpTheTree(link, 5);
                 hideBlock(block, link, KeyWords.OTHER_INFO_BOX_CORONAVIRUS[VARS.language]);
                 hiding = true;
             }
         }
         if (!hiding && VARS.Options.OTHER_INFO_BOX_SUBSCRIBE) {
-            let link = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_SUBSCRIBE.pathMatch}"]:not([${postAtt}])`);
+            const query = `a[href*="${KeyWords.OTHER_INFO_BOX_SUBSCRIBE.pathMatch}"]:not([${postAtt}])`;
+            const link = post.querySelector(query);
             if (link !== null) {
                 // - block @ 5 levels up.
-                let block = link.parentElement.parentElement.parentElement.parentElement.parentElement;
+                const block = climbUpTheTree(link, 5);
                 hideBlock(block, link, KeyWords.OTHER_INFO_BOX_SUBSCRIBE[VARS.language]);
                 hiding = true;
             }
@@ -4203,33 +4186,44 @@
     }
 
     function nf_hideNumberOfShares(post) {
-        let query = `div[data-visualcompletion="ignore-dynamic"] > div:not([class]) > div:not([class]) > div:not([class]) > div[class] > div:nth-of-type(1) > div > div > span > div:not([id]) > span[dir]:not(${postAtt})`;
-        let shares = Array.from(post.querySelectorAll(query));
-        if (shares.length > 0) {
-            for (let share of shares) {
-                share.classList.add(VARS.cssHideNumberOfShares);
-                if (VARS.Options.VERBOSITY_DEBUG) {
-                    share.classList.add(VARS.cssShow);
-                }
-                share.setAttribute(postAtt, 'Shares');
+        // -- hide the number of shares component
+        // :: return <nothing>
+        const query = `div[data-visualcompletion="ignore-dynamic"] > div:not([class]) > div:not([class]) > div:not([class]) > div[class] > div:nth-of-type(1) > div > div > span > div:not([id]) > span[dir]:not(${postAtt})`;
+        const shares = post.querySelectorAll(query);
+        for (const share of shares) {
+            share.classList.add(VARS.cssHideNumberOfShares);
+            if (VARS.Options.VERBOSITY_DEBUG) {
+                share.classList.add(VARS.cssShow);
             }
+            share.setAttribute(postAtt, 'Shares');
         }
     }
+
     function gf_hideNumberOfShares(post) {
         // -- groups feed posts have same '# shares' html structure as news feed posts.
         // -- .. hence calling nf_hideNumberOfShares(...)
+        // :: return <nothing>
         nf_hideNumberOfShares(post);
     }
 
     function nf_getCollectionOfPosts() {
+        // -- get a collection of posts
+        // -- fb serves a mixture of html structures
+        // -- so, we have a set of queries to try until we have found something...
+        // :: return : collection of posts.
+
         let posts = [];
         // -- various news feed queries
         const queries = [
-           // -- July 2023 - fb tweaked the structure - random div levels.
+            // -- August 2023 - rolling back to non-random div levels rule
+            'h3[dir="auto"] + div > div[class] > div > div',
+            // -- feeds > pages
+            'h2[dir="auto"] + div > div[class] > div > div',
+            // -- July 2023 - fb tweaked the structure - random div levels.
             // -- - home news feed
-            'h3[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
+            // 'h3[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
             // -- - "recent" feed
-            'h2[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
+            // 'h2[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
 
             // -- December 2022 - try the [data-pagelet] attribute
             'span[id="ssrb_feed_start"] ~ div > div div[data-pagelet]',
@@ -4255,7 +4249,7 @@
     }
 
     function mopUpTheNewsFeed() {
-        // mopping up the news feed page
+        // -- mopping up the news feed page
 
         // -- aside's sponsored
         nf_cleanTheConsoleTable('Sponsored');
@@ -4266,33 +4260,24 @@
         }
 
         // -- tab list - not part of the general news feed stream
+        // -- (includes stories)
         if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS) {
             nf_scrubTheTabbies();
         }
 
-        // -- stories - not part of the general news feed stream
-        if (VARS.Options.NF_STORIES) {
-            nf_scrubTheStories();
-        }
-
-        // -- create room - not part of the general news feed stream
-        if (VARS.Options.NF_CREATE_ROOM) {
-            nf_scrubTheRoom();
-        }
-
-        let posts = nf_getCollectionOfPosts();
+        const posts = nf_getCollectionOfPosts();
 
         // console.info(log + 'mopUpTheNewsFeed(); posts:', posts);
 
         if (posts.length > 0) {
             // console.info(log+'---> mopUpTheNewsFeed()');
             // -- fb clears out "older" posts as the user scrolls ... so, only process the last X posts.
-            let count = posts.length;
-            let start = (count < 50) ? 0 : (count - 50);
+            const count = posts.length;
+            const start = (count < 50) ? 0 : (count - 50);
 
             // for (let post of posts) {
             for (let i = start; i < count; i++) {
-                let post = posts[i];
+                const post = posts[i];
 
                 if (post.innerHTML.length > 0) {
 
@@ -4395,11 +4380,11 @@
             }
 
             // -- groups feed stream ...
-            let query = 'div[role="feed"] > div';
-            let posts = Array.from(document.querySelectorAll(query));
+            const query = 'div[role="feed"] > div';
+            const posts = Array.from(document.querySelectorAll(query));
             if (posts.length) {
                 // console.info(log+'---> mopUpTheGroupsFeed() - multiple groups');
-                for (let post of posts) {
+                for (const post of posts) {
 
                     if (post.innerHTML.length > 0) {
 
@@ -4472,11 +4457,11 @@
         }
         else {
             // - single group ...
-            let query = 'div[role="feed"] > div';
-            let posts = Array.from(document.querySelectorAll(query));
+            const query = 'div[role="feed"] > div';
+            const posts = Array.from(document.querySelectorAll(query));
             if (posts.length) {
                 // console.info(log+'---> mopUpTheGroupsFeed() - single group');
-                for (let post of posts) {
+                for (const post of posts) {
 
                     if (post.innerHTML.length > 0) {
 
@@ -4551,7 +4536,7 @@
         }
         else if (VARS.vfType === 'item') {
             // -- videos --> search --> item (videos being listed below the video of interest)
-            // -- vidoe - via link
+            // -- video - via link
             query = 'div[id="watch_feed"] > div > div:nth-of-type(2) > div > div > div > div:nth-of-type(2) > div > div > div';
             queryBlocks = ':scope > div > div > div > div > div:nth-of-type(2) > div';
         }
@@ -4560,71 +4545,9 @@
         }
 
         if (VARS.vfType !== 'search') {
-            let posts = Array.from(document.querySelectorAll(query));
-            if (posts.length) {
-                // console.info(log+'---> mopUpTheWatchVideosFeed()');
-                for (let post of posts) {
-
-                    if (post.innerHTML.length > 0) {
-
-                        let hideReason = '';
-
-                        if (post.hasAttribute(postAtt)) {
-                            // -- already hidden
-                            hideReason = 'hidden';
-                        }
-                        else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
-                            // -- skip these - already been scanned a few times
-                        }
-                        else {
-                            doLightDusting(post);
-
-                            if (isSponsored(post)) {
-                                hideReason = KeyWords.SPONSORED[VARS.language];
-                            }
-                            if (hideReason === '' && VARS.Options.VF_BLOCKED_ENABLED) {
-                                hideReason = vf_isBlockedText(post, queryBlocks);
-                            }
-                            // console.info(log + 'mopUpTheWatchVideosFeed(); ::: hideReason:', hideReason, post, queryBlocks);
-                        }
-
-                        if (hideReason.length > 0) {
-                            // -- increment hidden count
-                            VARS.echoCount++;
-                            if (hideReason !== 'hidden') {
-                                // -- post not yet hidden, hide it.
-                                hidePost(post, hideReason)
-                            }
-                        }
-                        else {
-                            // -- not a hidden post
-                            // -- reset hidden count
-                            VARS.echoCount = 0;
-                            // -- run pause animation (useful to hide those animated comments)
-                            if (VARS.Options.VF_ANIMATED_GIFS) {
-                                // console.info(log + 'pausing animations ...');
-                                swatTheMosquitos(post);
-                            }
-                            // -- hide info boxes
-                            if (VARS.hideAnInfoBox) {
-                                scrubInfoBoxes(post);
-                            }
-                            // -- hide sponsored blocks (appears between video & comments)
-                            vf_scrubSponsoredBlock(post);
-                        }
-                    }
-                }
-                // console.info(log+'<--- mopUpTheWatchVideosFeed()');
-            }
-        }
-        else {
-            // -- search videos
-            // -- structure is different from regular video feed
-            // -- thumbnail on left, text on right
-            let posts = Array.from(document.querySelectorAll(query));
-            if (posts.length) {
-                // console.info(log+'---> mopUpTheWatchVideosFeed()');
-                for (let post of posts) {
+            const posts = document.querySelectorAll(query);
+            for (const post of posts) {
+                if (post.innerHTML.length > 0) {
 
                     let hideReason = '';
 
@@ -4632,10 +4555,19 @@
                         // -- already hidden
                         hideReason = 'hidden';
                     }
+                    else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
+                        // -- skip these - already been scanned a few times
+                    }
                     else {
-                        if (VARS.Options.VF_BLOCKED_ENABLED) {
+                        doLightDusting(post);
+
+                        if (isSponsored(post)) {
+                            hideReason = KeyWords.SPONSORED[VARS.language];
+                        }
+                        if (hideReason === '' && VARS.Options.VF_BLOCKED_ENABLED) {
                             hideReason = vf_isBlockedText(post, queryBlocks);
                         }
+                        // console.info(log + 'mopUpTheWatchVideosFeed(); ::: hideReason:', hideReason, post, queryBlocks);
                     }
 
                     if (hideReason.length > 0) {
@@ -4650,10 +4582,57 @@
                         // -- not a hidden post
                         // -- reset hidden count
                         VARS.echoCount = 0;
+                        // -- run pause animation (useful to hide those animated comments)
+                        if (VARS.Options.VF_ANIMATED_GIFS) {
+                            // console.info(log + 'pausing animations ...');
+                            swatTheMosquitos(post);
+                        }
+                        // -- hide info boxes
+                        if (VARS.hideAnInfoBox) {
+                            scrubInfoBoxes(post);
+                        }
+                        // -- hide sponsored blocks (appears between video & comments)
+                        vf_scrubSponsoredBlock(post);
                     }
                 }
-                // console.info(log+'<--- mopUpTheWatchVideosFeed()');
             }
+            // console.info(log+'<--- mopUpTheWatchVideosFeed()');
+        }
+        else {
+            // -- search videos
+            // -- structure is different from regular video feed
+            // -- thumbnail on left, text on right
+            const posts = document.querySelectorAll(query);
+            // console.info(log+'---> mopUpTheWatchVideosFeed()');
+            for (let post of posts) {
+
+                let hideReason = '';
+
+                if (post.hasAttribute(postAtt)) {
+                    // -- already hidden
+                    hideReason = 'hidden';
+                }
+                else {
+                    if (VARS.Options.VF_BLOCKED_ENABLED) {
+                        hideReason = vf_isBlockedText(post, queryBlocks);
+                    }
+                }
+
+                if (hideReason.length > 0) {
+                    // -- increment hidden count
+                    VARS.echoCount++;
+                    if (hideReason !== 'hidden') {
+                        // -- post not yet hidden, hide it.
+                        hidePost(post, hideReason)
+                    }
+                }
+                else {
+                    // -- not a hidden post
+                    // -- reset hidden count
+                    VARS.echoCount = 0;
+                }
+            }
+            // console.info(log+'<--- mopUpTheWatchVideosFeed()');
         }
     }
 
@@ -4665,50 +4644,59 @@
         }
     }
 
+    function mp_stopTrackingDirtIntoMyHouse() {
+        // -- remove tracking bits
+        const collectionOfLinks = document.querySelectorAll('a[href*="/?ref="]');
+        for (const trackingLink of collectionOfLinks) {
+            trackingLink.href = trackingLink.href.split('/?ref')[0];
+        };
+    }
+
     function mopUpTheMarketplaceFeed() {
-        // mopping up parts of the Marketplace ...
+        // -- mopping up parts of the Marketplace ...
+        // console.info(log + 'mopUpTheMarketplaceFeed(); mpType:', VARS.mpType);
+
+        mp_stopTrackingDirtIntoMyHouse();
 
         if (VARS.mpType === 'marketplace' || VARS.mpType === 'item') {
             // - standard marketplace page
             // - on the item page, there's listing of items to sell ... (similar structure to standard marketplace page)
             // -- "sponsored" is _not_ obfuscated;
             // -- nb: adguard base filter hides the label, but not the item/product ...
-            let queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
-            let queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
-            let headings = document.querySelectorAll(queryHeadings);
-            let items = document.querySelectorAll(queryItems);
+            const queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
+            const queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
+            const headings = document.querySelectorAll(queryHeadings);
+            const items = document.querySelectorAll(queryItems);
             if ((headings.length > 0) && (items.length > 0)) {
-                for (let heading of headings) {
+                for (const heading of headings) {
                     // heading = heading.parentElement;
                     mp_hideBox(heading.parentElement, KeyWords.SPONSORED[VARS.language]);
                 }
-                for (let item of items) {
-                    let parItem = item.parentElement.parentElement.parentElement;
+                for (const item of items) {
+                    const parItem = climbUpTheTree(item, 3);
                     mp_hideBox(parItem, KeyWords.SPONSORED[VARS.language]);
                 }
             }
             if (VARS.Options.MP_BLOCKED_ENABLED) {
-                mp_isBlockedText();
+                mp_doBlockingByBlockedText();
             }
         }
         if (VARS.mpType === 'item') {
             // -- viewing a marketplace item - a small sponsored box often shows up on the right.
-            let query = `a[href*="/ads/"]:not([${postAtt}])`;
-            let elements = Array.from(document.querySelectorAll(query));
+            const query = `a[href*="/ads/"]:not([${postAtt}])`;
+            const elements = document.querySelectorAll(query);
             // console.info(`${log}MPItem() - elements:`, query, elements);
-            if (elements.length > 0) {
-                for (let element of elements) {
-                    if (element.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
-                        // -- found the sponsored box inside the mp item box.
-                        // -- mp item do not have a parent element having data-pagelet attribute.
-                        let spbox = element.parentElement.closest('h2');
-                        if (spbox) {
-                            spbox = spbox.closest('span');
-                            mp_hideBox(spbox, KeyWords.SPONSORED[VARS.language]);
-                            element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
-                            // (there's only one sponsored box - so break out)
-                            break;
-                        }
+            for (const element of elements) {
+                if (element.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
+                    // -- found the sponsored box inside the mp item box.
+                    // -- mp item do not have a parent element having data-pagelet attribute.
+                    let spbox = element.parentElement.closest('h2');
+                    if (spbox) {
+                        spbox = spbox.closest('span');
+                        mp_hideBox(spbox, KeyWords.SPONSORED[VARS.language]);
+                        element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                        // (there's only one sponsored box - so break out)
+                        break;
                     }
                 }
             }
@@ -4716,18 +4704,16 @@
         else if ((VARS.mpType === 'category') || (VARS.mpType === 'search')) {
             // - viewing a markplace category or marketplace search results
             // - (both have similar layout)
-            let query = `a[href*="/ads/"]:not([${postAtt}])`;
-            let elements = document.querySelectorAll(query);
-            if (elements.length > 0) {
-                for (let element of elements) {
-                    // console.info(log + 'mp-clean:', element);
-                    element.setAttribute(postAtt, element.innerHTML.length);
-                    let itemBox = element.parentElement.closest('a').parentElement.parentElement.parentElement;
-                    mp_hideBox(itemBox, KeyWords.SPONSORED[VARS.language]);
-                }
+            const query = `a[href*="/ads/"]:not([${postAtt}])`;
+            const elements = document.querySelectorAll(query);
+            for (const element of elements) {
+                // console.info(log + 'mp-clean:', element);
+                element.setAttribute(postAtt, element.innerHTML.length);
+                let itemBox = element.parentElement.closest('a').parentElement.parentElement.parentElement;
+                mp_hideBox(itemBox, KeyWords.SPONSORED[VARS.language]);
             }
             if (VARS.Options.MP_BLOCKED_ENABLED) {
-                mp_isBlockedText();
+                mp_doBlockingByBlockedText();
             }
         }
     }
@@ -4737,51 +4723,49 @@
         // -- (nb: has similar layout to news feed stream)
         // -- "borrow" news feed's text filter.
         if (VARS.Options.NF_BLOCKED_ENABLED) {
-            let query = 'div[role="feed"] > div';
-            let posts = Array.from(document.querySelectorAll(query));
-            if (posts.length) {
-                // console.info(log + '---> mopUpTheSearchFeed()');
-                for (let post of posts) {
+            const query = 'div[role="feed"] > div';
+            const posts = Array.from(document.querySelectorAll(query));
+            // console.info(log + '---> mopUpTheSearchFeed()');
+            for (const post of posts) {
 
-                    if (post.innerHTML.length > 0) {
+                if (post.innerHTML.length > 0) {
 
-                        let hideReason = '';
+                    let hideReason = '';
 
-                        if (post.hasAttribute(postAtt)) {
-                            hideReason = 'hidden';
+                    if (post.hasAttribute(postAtt)) {
+                        hideReason = 'hidden';
+                    }
+                    else {
+                        if (isSponsored(post)) {
+                            hideReason = KeyWords.SPONSORED[VARS.language];
                         }
                         else {
-                            if (isSponsored(post)) {
-                                hideReason = KeyWords.SPONSORED[VARS.language];
-                            }
-                            else {
-                                if (VARS.NF_BLOCKED_ENABLED) {
-                                    hideReason = nf_isBlockedText(post);
-                                }
+                            if (VARS.NF_BLOCKED_ENABLED) {
+                                hideReason = nf_isBlockedText(post);
                             }
                         }
+                    }
 
-                        if (hideReason.length > 0) {
-                            // -- increment hidden count
-                            VARS.echoCount++;
-                            if (hideReason != 'hidden') {
-                                // -- post not yet hidden, hide it.
-                                hidePost(post, hideReason);
-                            }
+                    if (hideReason.length > 0) {
+                        // -- increment hidden count
+                        VARS.echoCount++;
+                        if (hideReason != 'hidden') {
+                            // -- post not yet hidden, hide it.
+                            hidePost(post, hideReason);
                         }
-                        else {
-                            // -- not a hidden post
-                            // -- reset hidden count
-                            VARS.echoCount = 0;
-                            // -- run pause animation (useful to hide those animated comments)
-                            if (VARS.Options.NF_ANIMATED_GIFS) {
-                                // console.info(log + 'pausing animations ...');
-                                swatTheMosquitos(post);
-                            }
-                            // -- hide info boxes
-                            if (VARS.hideAnInfoBox) {
-                                scrubInfoBoxes(post);
-                            }
+                    }
+                    else {
+                        // -- not a hidden post
+                        // -- reset hidden count
+                        VARS.echoCount = 0;
+                        // -- run pause animation (useful to hide those animated comments)
+                        if (VARS.Options.NF_ANIMATED_GIFS) {
+                            // console.info(log + 'pausing animations ...');
+                            swatTheMosquitos(post);
+                        }
+                        // -- hide info boxes
+                        if (VARS.hideAnInfoBox) {
+                            scrubInfoBoxes(post);
                         }
                     }
                 }
@@ -4791,7 +4775,7 @@
 
     // ** Mutations processor
     function bodyMutating(mutations) {
-        for (let mutation of mutations) {
+        for (const mutation of mutations) {
             if ((mutation.type === 'childList') && (mutation.addedNodes.length > 0)) {
                 if (VARS.prevURL !== window.location.href) {
                     // - page url has changed ... refresh the bodyObserver.
@@ -4800,14 +4784,13 @@
                 else if (VARS.isAF) {
                     // -- isAF := any feed
                     // -- nb: don't bother with looping through mutation.addedNodes.length - 99.5% of the time there's only one ...
-                    let mnode = mutation.addedNodes[0]; // placed here for error trapping block
+                    const mnode = mutation.addedNodes[0]; // placed here for error trapping block
                     // try {
                     VARS.mutationsCount++;
                     // if (VARS.mutationsCount % 100 === 0) {
                     //     console.info(log+'bodyMutating(); mutationsCount:', VARS.mutationsCount);
                     // }
                     if (VARS.mutationsCount > VARS.mutationsInitSkip) {
-                        //if (['A', 'DIV', 'I', 'IMG', 'OBJECT', 'SPAN', 'svg', '#text'].indexOf(mnode.nodeName) > 0) {
                         if (['A', 'DIV', 'IMG', 'SPAN', '#text', 'svg'].indexOf(mnode.nodeName) > 0) {
                             if ((mnode.nodeType === Node.ELEMENT_NODE) && ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0))) {
                                 // - skip these ...
@@ -4829,12 +4812,6 @@
                             }
                         }
                     }
-                    // }
-                    // catch (error) {
-                    //     console.error(log + 'fn bodyMutating() :: Error! mnode:', mnode);
-                    //     console.error(log + 'fn bodyMutating() :: Error! message:', error.message);
-                    //     console.error(log + 'fn bodyMutating() :: Error! stack:', error.stack);
-                    // }
                 }
             }
         }
@@ -4846,8 +4823,8 @@
     let firstRun = true;
 
     function runMO() {
-        // run code soon as the elements HEAD, BDDY and variable Options are ready/available.
-        // or when page url has changed ...
+        // -- run code soon as the elements HEAD, BDDY and variable Options are ready/available.
+        // -- or when page url has changed ...
         if (document.head && document.body && VARS.optionsReady) {
             // console.info(log + 'runMO(); - ready ...');
             if (firstRun) {
@@ -4871,7 +4848,6 @@
         }
         else {
             // HEAD / BODY / Options not yet ready ...
-            // -- try again ...
             // console.info(log + 'runMO(); - not yet ready ...');
             setTimeout(runMO, 10);
         }
