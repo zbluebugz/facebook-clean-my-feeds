@@ -4583,6 +4583,7 @@
             }
 
             const videoAdWrapper = videoAd.closest('[data-instancekey*="id-vpuid"]');
+            let foundTextBox = false;
             if (videoAdWrapper) {
                 // -- hide the video ad block
                 videoAdWrapper.classList.add(VARS.cssVideoAdTail);
@@ -4596,6 +4597,7 @@
                 }
             }
             videoAd.setAttribute(postAttVAD, foundTextBox ? '1' : '0');
+            post.setAttribute(postAttVAD, foundTextBox ? '1' : '0');
         }
     }
 
