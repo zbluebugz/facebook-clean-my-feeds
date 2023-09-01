@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.23
+// @version      4.24
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://*.facebook.com/*
 // @noframes
@@ -14,6 +14,9 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.24 :: September 2023
+        Fixed issues with v4.23 (selection/detection rules)
+        Code tweaks
     v4.23 :: August 2023
         Fixed bug with showing Marketplace's hidden items
         Updated Marketplace detection rules
@@ -138,7 +141,7 @@
 
         // *** News Feed ::
 
-        // - "Stories | Reels | Rooms" tablist box
+        // - "Stories | Reels | Rooms" tablist box 
         // -- includes the standalone Stories component
         NF_TABLIST_STORIES_REELS_ROOMS: {
             'en': '"Stories | Reels | Rooms" tabs list box',
@@ -163,7 +166,6 @@
             'el': 'Λίστα καρτελών "Ιστορίες | Reels | Δωμάτια"',
             'defaultEnabled': false
         },
-
         // - People you may know:
         NF_PEOPLE_YOU_MAY_KNOW: {
             'en': 'People you may know',
@@ -1528,7 +1530,9 @@
     // - post property - # of light dusting duties done
     const postPropDS = 'cmfDusted';
     // - post's child element attribute - used for queries that original don't include the parent element.
-    const postAttChildFlag = 'cmfrcf';
+    const postAttChildFlag = 'cmfcf';
+    // - post's toggle state bar + post tab.
+    const postAttTab = 'cmftsb'
 
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
@@ -1589,7 +1593,6 @@
         cssHideEl: '',
         cssEcho: '',
         cssHideNumberOfShares: '',
-        cssHideStories: '',
         cssShow: 'show',
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl: null,
@@ -1624,11 +1627,13 @@
     function generateRandomString() {
         // - generate random text (first letter must be an alphabet)
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let randomString = chars.charAt(Math.floor(Math.random() * 52)); // First letter must be an alphabet
+        const strArray = [chars.charAt(Math.floor(Math.random() * 52))]; // First letter must be an alphabet
+
         for (let i = 0; i < 12; i++) {
-            randomString += chars.charAt(Math.floor(Math.random() * 62));
+            strArray.push(chars.charAt(Math.floor(Math.random() * 62)));
         }
-        return randomString;
+
+        return strArray.join('');
     }
 
     // -- stylesheet builder
@@ -1674,11 +1679,14 @@
             // - remember class names (for other functions to use)
             VARS.cssHide = generateRandomString(); // - the parent element - hides the nth level down element
             VARS.cssHideEl = generateRandomString(); // - the element to hide - where there's no child element
-            VARS.cssHideStories = generateRandomString(); // - stories have an odd setup for hide & show with border ...
             VARS.cssHideNumberOfShares = generateRandomString(); // - hide "# shares" on posts.
-            VARS.cssEcho = generateRandomString();
         }
         VARS.tempStyleSheetCode = ''; // reset temp CSS code.
+
+        // -- override random class names - for testing purposes only.
+        // VARS.cssHide = 'cmfr-hide';
+        // VARS.cssHideEl = 'cmfr-hide-element';
+        // VARS.cssHideNumberOfShares = 'cmfr-hide-shares';
 
         // - insert Styles (as classes)
         // - NF/GF/VF
@@ -1690,11 +1698,8 @@
         );
 
         // -- post wrapper (mainly for news, groups and video feeds posts)
-        //classes = `.${VARS.cssHide} > div:not([${postAtt}]) > div[class],`;
-        classes = `.${VARS.cssHide} > div:not([${postAtt}]) > div,`;
+        classes = `.${VARS.cssHide} > div:not([${postAttTab}]) > div,`;
         classes += `.${VARS.cssHide} > span,`;
-        // - stories, hide at upper level, border at few level down
-        classes += `.${VARS.cssHideStories}, `;
         // -- non n/f & g/f wrappers (mainly for marketplace posts + some aside boxes)
         classes += `.${VARS.cssHideEl}`;
         // -- which styles to apply?
@@ -1708,46 +1713,45 @@
             'display:none !important;'
         );
 
-        // - echo msg
+        // - toggle post state :: <toggle button> x posts hidden
         addToSS(
-            `.${VARS.cssHide} > div[${postAtt}]`,
+            `div[${postAttTab}]`,
             'display:flex; margin:1.5rem auto; padding:0.5rem 1rem 0.5rem 0; border-radius:0.55rem; width:85%; font-style:italic; cursor:pointer;' +
             ((VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `  color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `) +
             `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR};`
         );
         // - echo msg flex boxes
         addToSS(
-            `.${VARS.cssHide} > div[${postAtt}] > div`,
+            `div[${postAttTab}] > div`,
             'display:flex; align-items: center;'
         );
         // - echo msg's button
         addToSS(
-            `.${VARS.cssHide} > div[${postAtt}] > div.wbtn`,
+            `div[${postAttTab}] > div.wbtn`,
             'flex:0 0 3rem; justify-content: center;'
         );
         // - echo msg's text
         addToSS(
-            `.${VARS.cssHide} > div[${postAtt}] > div.wtxt`,
+            `div[${postAttTab}] > div.wtxt`,
             'flex:1;'
         );
         // - echo msg hover
         addToSS(
-            `.${VARS.cssHide} > div[${postAtt}]:hover`,
+            `div[${postAttTab}]:hover`,
             'text-decoration: underline; background-color:white; color:black;'
         );
         addToSS(
-            `.${VARS.cssHide} > div[${postAtt}] button:hover`,
+            `div[${postAttTab}] button:hover`,
             'cursor:pointer;'
         );
         // - echo msg's button's default state
         addToSS(
-            `.${VARS.cssHide} > div[${postAtt}] > div.wbtn > button`,
+            `div[${postAttTab}] > div.wbtn > button`,
             'transform: rotate(180deg);transition: transform 0.15s linear;'
         );
         // - flagged post's mini-tab
-        // `.${VARS.cssHide} > div:not([${postAtt}]) > div > div > h6[${postAtt}]`,
         addToSS(
-            `.${VARS.cssHide} > div:not([${postAtt}]) > div h6[${postAtt}] `,
+            `h6[${postAttTab}]`,
             'border-radius: 0.55rem 0.55rem 0 0; width:75%; margin:0 auto; padding: 0.45rem 0.25rem; font-style:italic; text-align:center; font-weight:normal;' +
             ((VARS.Options.VERBOSITY_MESSAGE_COLOUR === '') ? '' : `  color: ${VARS.Options.VERBOSITY_MESSAGE_COLOUR}; `) +
             `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `
@@ -1755,24 +1759,19 @@
 
         // - 'show' - reveal a hidden post
         addToSS(
-            `.${VARS.cssHideStories}.show`,
-            'display:block !important; '
-        );
-        addToSS(
-            `.${VARS.cssHide}.show > div:not([${postAtt}]) > div, ` +
-            `.${VARS.cssHideStories}.show > div > div > div, ` +
+            `.show > div:not([${postAttTab}]) > div, ` +
             `.${VARS.cssHideNumberOfShares}.show`,
             'display:block !important; ' +
             `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.2rem 0.1rem 0.1rem 0.1rem;` // 4px
         );
         // - echo msg show state
         addToSS(
-            `.${VARS.cssHide}.show > div[${postAtt}] `,
+            `.show > div[${postAttTab}]`,
             'margin-top:0.5rem; margin-bottom:0.5rem;'
         );
         // - echo msg's button show state
         addToSS(
-            `.${VARS.cssHide}.show > div[${postAtt}] > div.wbtn > button`,
+            `.show > div[${postAttTab}] > div.wbtn > button`,
             'transform: rotate(360deg);transition: transform 0.15s linear;'
         );
         // - non-standard post's show state
@@ -2886,44 +2885,39 @@
                 // -- "reset" scan counts
                 VARS.scanCountStart += 100;
                 VARS.scanCountMaxLoop += 100;
-                // -- "purge" notifications
-                let elements = document.querySelectorAll(`div[${postAtt}="0"]`);
-                for (const el of elements) {
-                    const elParent = el.parentElement;
-                    elParent.removeChild(el);
+                // -- "purge" toggle post state bar + post-tab
+                let elements = document.querySelectorAll(`[${postAttTab}]`);
+                for (const element of elements) {
+                    const elParent = element.parentElement;
+                    elParent.removeChild(element);
                 }
                 // -- remove attribute
                 elements = document.querySelectorAll(`[${postAtt}]`);
-                for (const el of elements) {
-                    if (el.tagName === "H6") {
-                        let elParent = el.parentElement;
-                        elParent.removeChild(el);
+                for (const element of elements) {
+                    element.removeAttribute(postAtt);
+                    element.classList.remove(VARS.cssHide);
+                    element.classList.remove(VARS.cssHideEl);
+                    element.classList.remove(VARS.cssHideNumberOfShares);
+                    element.classList.remove(VARS.cssShow);
+                }
+                // -- remove other attributes
+                elements = document.querySelectorAll(`[${postAttCPID}], [${postAttChildFlag}]`);
+                for (const element of elements) {
+                    if (element.hasAttribute(postAttCPID)) {
+                        element.removeAttribute(postAttCPID);
                     }
-                    else {
-                        el.removeAttribute(postAtt);
-                        el.classList.remove(VARS.cssHide);
-                        el.classList.remove(VARS.cssHideEl);
-                        el.classList.remove(VARS.cssHideStories);
-                        el.classList.remove(VARS.cssHideNumberOfShares);
-                        el.classList.remove(VARS.cssShow);
+                    if (element.hasAttribute(postAttChildFlag)) {
+                        element.removeAttribute(postAttChildFlag);
                     }
                 }
                 // -- remove classes
                 // -- (don't add .show to query, the button needs it ...)
-                elements = document.querySelectorAll(`
-                    .${VARS.cssHide},
-                    .${VARS.cssHideEl},
-                    .${VARS.cssHideStories},
-                    .${VARS.cssHideNumberOfShares}
-                    `);
-                if (elements.length > 0) {
-                    elements.forEach(el => {
-                        el.classList.remove(VARS.cssHide);
-                        el.classList.remove(VARS.cssHideEl);
-                        el.classList.remove(VARS.cssHideStories);
-                        el.classList.remove(VARS.cssHideNumberOfShares);
-                        el.classList.remove(VARS.cssShow);
-                    });
+                elements = document.querySelectorAll(`.${VARS.cssHide}, .${VARS.cssHideEl}, .${VARS.cssHideNumberOfShares}`);
+                for (const element of elements) {
+                    element.classList.remove(VARS.cssHide);
+                    element.classList.remove(VARS.cssHideEl);
+                    element.classList.remove(VARS.cssHideNumberOfShares);
+                    element.classList.remove(VARS.cssShow);
                 }
 
                 if (VARS.isNF) {
@@ -3141,7 +3135,7 @@
         return element || null;
     }
 
-    function doLightDustingx(post) {
+    function doLightDusting(post) {
         // - remove 'dusty' elements that interfere with querySelectorAll, nth-of-type, :not() queries.
         // -- needs to run a few times to be effective.
         let scanCount = VARS.scanCountStart;
@@ -3158,15 +3152,6 @@
             }
             scanCount++;
             post[postPropDS] = scanCount;
-        }
-    }
-
-    function doLightDusting(post) {
-        // - remove 'dusty' elements that interfere with querySelectorAll, nth-of-type, :not() queries.
-        // -- needs to run a few times to be effective.
-        const dustySpots = post.querySelectorAll('[data-0="0"]');
-        for (const dustySpot of dustySpots) {
-            dustySpot.remove();
         }
     }
 
@@ -3288,67 +3273,61 @@
         return arrayTextValues.filter(item => item !== '');
     }
 
-    function createInfoNote(reason) {
-        const echoEl = document.createElement('div');
-        echoEl.setAttribute(postAtt, '0');
+    function createTogglePostStateBar(reason) {
+        // :: <toggle button> <reason for hiding post(s)>
+        const elToggleBar = document.createElement('div');
+        elToggleBar.setAttribute(postAttTab, '0');
 
-        const echoBtnBox = document.createElement('div');
-        echoBtnBox.className = 'wbtn';
+        const elButtonBox = document.createElement('div');
+        elButtonBox.className = 'wbtn';
 
-        const echoBtn = document.createElement('button');
-        echoBtn.textContent = '___';
-        echoBtn.addEventListener('click', togglePost, false);
-        echoBtnBox.appendChild(echoBtn);
+        const elButton = document.createElement('button');
+        elButton.textContent = '___';
+        elButton.addEventListener('click', togglePost, false);
+        elButtonBox.appendChild(elButton);
 
-        const echoTxt = document.createElement('div');
-        echoTxt.className = 'wtxt';
-        echoTxt.textContent = KeyWords.VERBOSITY_MESSAGE[VARS.language][0] + reason;
+        const elTextReason = document.createElement('div');
+        elTextReason.className = 'wtxt';
+        elTextReason.textContent = KeyWords.VERBOSITY_MESSAGE[VARS.language][0] + reason;
 
-        echoEl.appendChild(echoBtnBox);
-        echoEl.appendChild(echoTxt);
+        elToggleBar.appendChild(elButtonBox);
+        elToggleBar.appendChild(elTextReason);
 
-        echoEl.addEventListener('click', togglePost, false);
-        return echoEl;
+        elToggleBar.addEventListener('click', togglePost, false);
+        return elToggleBar;
     }
 
-    function createMiniTab(reason) {
-        const elMiniTab = document.createElement('h6');
-        elMiniTab.setAttribute(postAtt, '0');
-        elMiniTab.textContent = reason;
-        return elMiniTab;
+    function createPostTab(reason) {
+        const elTab = document.createElement('h6');
+        elTab.setAttribute(postAttTab, '0');
+        elTab.textContent = reason;
+        return elTab;
     }
 
-    function hideFeature(post, reason, isStories = false, needMiniTab = false) {
+    function hideFeature(post, reason, addPostTab = false) {
         // -- hide something - keep it out of the regular feed stuff.
         // -- no counter
-        // :: return <nothing>
 
-        if (isStories === true) {
-            // -- (stories don't have info-tab/mini-tab)
-            post.classList.add(VARS.cssHideStories);
-            post.setAttribute(postAtt, reason);
-        }
-        else {
-            if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
-                // -- add info tab
-                let echoEl = createInfoNote(reason);
-                let postFirstChild = post.querySelector(':scope > :first-child');
-                if (postFirstChild) {
-                    postFirstChild.before(echoEl);
-                }
+        if ((parseInt(VARS.Options.VERBOSITY_LEVEL, 10) > 0) && (reason !== '')) {
+            // -- add info tab
+            const elPostToggleStateBar = createTogglePostStateBar(reason);
+            let postFirstChild = post.querySelector(':scope > :first-child');
+            if (postFirstChild) {
+                postFirstChild.before(elPostToggleStateBar);
             }
+        }
 
-            post.classList.add(VARS.cssHide);
-            post.setAttribute(postAtt, reason);
+        post.classList.add(VARS.cssHide);
+        post.setAttribute(postAtt, reason);
 
+        if (addPostTab === true) {
             // - add mini-tab (indicates why post is hidden)
-            if (needMiniTab) {
-                const elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
-                if (elTabSpot) {
-                    elTabSpot.before(createMiniTab(reason));
-                }
+            const elTabSpot = post.querySelector(`:scope > div:not([${postAttTab}]) > div > div > div:first-child`);
+            if (elTabSpot) {
+                elTabSpot.before(createPostTab(reason));
             }
         }
+
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
             post.classList.add(VARS.cssShow);
@@ -3356,119 +3335,49 @@
     }
 
     function toggleHiddenElements() {
-        // -- for debugging mode
+        const containers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
+        const blocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
+        const shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
+
+        const elements = [...containers, ...blocks, ...shares];
+
         if (VARS.Options.VERBOSITY_DEBUG) {
-            // -- show the hidden posts (if not already showing)
-            let flaggedContainers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
-            if (flaggedContainers.length > 0) {
-                for (let elContainer of flaggedContainers) {
-                    if (elContainer.classList.contains(VARS.cssShow) === false) {
-                        elContainer.classList.add(VARS.cssShow);
-                    }
-                    let elNote = elContainer.querySelector(`:scope > div[${postAtt}]`);
-                    if (elNote) {
-                        elNote.classList.add(VARS.cssShow);
-                    }
-                }
-            }
-            // -- show the hidden stories
-            let storiesBlock = Array.from(document.querySelectorAll('.' + VARS.cssHideStories));
-            if (storiesBlock.length > 0) {
-                for (let elStory of storiesBlock) {
-                    if (elStory.classList.contains(VARS.cssShow) === false) {
-                        elStory.classList.add(VARS.cssShow);
-                    }
-                }
-            }
-            // -- show the hidden blocks
-            let flaggedBlocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
-            if (flaggedBlocks.length > 0) {
-                for (let elBlock of flaggedBlocks) {
-                    if (elBlock.classList.contains(VARS.cssShow) === false) {
-                        elBlock.classList.add(VARS.cssShow);
-                    }
-                }
-            }
-            // -- show the hidden shares
-            let shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
-            if (shares.length > 0) {
-                for (let elShare of shares) {
-                    if (elShare.classList.contains(VARS.cssShow) === false) {
-                        elShare.classList.add(VARS.cssShow);
-                    }
-                }
+            for (const element of elements) {
+                element.classList.add(VARS.cssShow);
             }
         }
         else {
-            // -- remove the .show class ...
-            // -- hide the posts
-            let flaggedContainers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
-            if (flaggedContainers.length > 0) {
-                for (let elContainer of flaggedContainers) {
-                    if (elContainer.classList.contains(VARS.cssShow)) {
-                        elContainer.classList.remove(VARS.cssShow);
-                    }
-                    let elNote = elContainer.querySelector(`:scope > div[${postAtt}]`);
-                    if (elNote) {
-                        elNote.classList.remove(VARS.cssShow);
-                    }
-                }
-            }
-            // -- hide the hidden stories
-            let storiesBlock = Array.from(document.querySelectorAll('.' + VARS.cssHideStories));
-            if (storiesBlock.length > 0) {
-                for (let elStory of storiesBlock) {
-                    if (elStory.classList.contains(VARS.cssShow)) {
-                        elStory.classList.remove(VARS.cssShow);
-                    }
-                }
-            }
-            // -- hide the hidden blocks
-            let flaggedBlocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
-            if (flaggedBlocks.length > 0) {
-                for (let elBlock of flaggedBlocks) {
-                    if (elBlock.classList.contains(VARS.cssShow)) {
-                        elBlock.classList.remove(VARS.cssShow);
-                    }
-                }
-            }
-            // -- hide the hidden shares
-            let shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
-            if (shares.length > 0) {
-                for (let elShare of shares) {
-                    if (elShare.classList.contains(VARS.cssShow)) {
-                        elShare.classList.remove(VARS.cssShow);
-                    }
-                }
+            for (const element of elements) {
+                element.classList.remove(VARS.cssShow);
             }
         }
     }
 
     function togglePost(ev) {
         ev.stopPropagation();
-        // -- grab the note container
-        const elInfoNote = ev.target.closest(`div[${postAtt}]`);
-        // -- grab the note's parent (post)
-        const elPost = elInfoNote.parentElement;
+        // -- grab the toggle post state bar container
+        const elToggleBarContainer = ev.target.closest(`div[${postAttTab}]`);
+        // -- grab the post
+        const elPost = elToggleBarContainer.parentElement;
         // -- then toggle the VARS.cssShow class on the post.
-        if (!elInfoNote.hasAttribute(postAttCPID)) {
+        if (!elToggleBarContainer.hasAttribute(postAttCPID)) {
             // -- single post being hidden
             elPost.classList.toggle(VARS.cssShow);
         }
         else {
             // -- multiple consecutive posts being hidden
-            const cpid = elInfoNote.getAttribute(postAttCPID);
-            const flaggedPosts = document.querySelectorAll(`[${postAttCPID}=${cpid}]`);
+            const cpid = elToggleBarContainer.getAttribute(postAttCPID);
+            const flaggedPosts = document.querySelectorAll(`[${postAtt}][${postAttCPID}=${cpid}]`);
             if (flaggedPosts.length > 0) {
                 // -- cannot use classList.toggle() while posts are still being loaded ...
                 if (elPost.classList.contains(VARS.cssShow)) {
-                    for (let fPost of flaggedPosts) {
-                        fPost.classList.remove(VARS.cssShow);
+                    for (const flaggedPost of flaggedPosts) {
+                        flaggedPost.classList.remove(VARS.cssShow);
                     }
                 }
                 else {
-                    for (let fPost of flaggedPosts) {
-                        fPost.classList.add(VARS.cssShow);
+                    for (const flaggedPost of flaggedPosts) {
+                        flaggedPost.classList.add(VARS.cssShow);
                     }
                 }
             }
@@ -3496,9 +3405,9 @@
             if (VARS.echoCount < 2) {
                 // - 1 post to be hidden (includes first of consecutive group)
 
-                VARS.echoEl = createInfoNote(reason);
+                VARS.echoEl = createTogglePostStateBar(reason);
 
-                let postFirstChildEl = post.querySelector(':scope > :first-child');
+                const postFirstChildEl = post.querySelector(':scope > :first-child');
                 if (postFirstChildEl) {
                     postFirstChildEl.before(VARS.echoEl);
                 }
@@ -3523,10 +3432,10 @@
                 // - consecutive posts level - flag it as part of a consecutive group
                 post.setAttribute(postAttCPID, VARS.echoCPID);
 
-                // - add mini-tab (indicates why post is hidden)
-                let elTabSpot = post.querySelector(`:scope > div:not([${postAtt}]) > div > div > div:first-child`);
+                // - add a tab (indicates why post is hidden)
+                const elTabSpot = post.querySelector(`:scope > div:not([${postAttTab}]) > div > div > div:first-child`);
                 if (elTabSpot) {
-                    elTabSpot.before(createMiniTab(reason));
+                    elTabSpot.before(createPostTab(reason));
                 }
             }
         }
@@ -3549,6 +3458,8 @@
         post.classList.remove(VARS.cssHide);
         post.classList.remove(VARS.cssHideEl);
         post.classList.remove(VARS.cssShow);
+        // -- other attribute(s)
+        if (post.hasAttribute(postAttCPID)) post.removeAttribute(postAttCPID);
         // -- remove the notification tab.
         if (post.querySelectorAll('div, h6').length > 0) {
             post.removeChild(post.firstElementChild);
@@ -3748,44 +3659,44 @@
     }
 
     function nf_isPeopleYouMayKnow(post) {
-        let query = 'a[href*="/friends/suggestions/"][role="link"]';
-        let pymk = post.querySelectorAll(query);
-        return (pymk.length === 0) ? '' : KeyWords.NF_PEOPLE_YOU_MAY_KNOW[VARS.language];
+        const queryPYMK = 'a[href*="/friends/suggestions/"][role="link"]';
+        const linksPYMK = post.querySelectorAll(queryPYMK);
+        return (linksPYMK.length === 0) ? '' : KeyWords.NF_PEOPLE_YOU_MAY_KNOW[VARS.language];
     }
 
     function nf_isPaidPartnership(post) {
-        let query = 'span[dir] > span[id] a[href^="/business/help/"]';
-        let paidPartnership = post.querySelector(query);
-        return (paidPartnership === null) ? '' : KeyWords.NF_PAID_PARTNERSHIP[VARS.language];
+        const queryPP = 'span[dir] > span[id] a[href^="/business/help/"]';
+        const elPaidPartnership = post.querySelector(queryPP);
+        return (elPaidPartnership === null) ? '' : KeyWords.NF_PAID_PARTNERSHIP[VARS.language];
     }
 
     function nf_isSponsoredPaidBy(post) {
-        let query = 'div:nth-child(2) > div > div:nth-child(2) > span[class] > span[id] > div:nth-child(2)';
-        let sponsoredPaidBy = querySelectorAllNoChildren(post, query, 1);
+        const querySPB = 'div:nth-child(2) > div > div:nth-child(2) > span[class] > span[id] > div:nth-child(2)';
+        const sponsoredPaidBy = querySelectorAllNoChildren(post, querySPB, 1);
         return (sponsoredPaidBy.length === 0) ? '' : KeyWords.NF_SPONSORED_PAID[VARS.language];
     }
 
     function nf_isReelsAndShortVideos(post) {
         // -- reels and short videos (multiple)
-        let query = 'div a[href="/reel/?s=ifu_see_more"]';
-        let rasv = post.querySelector(query);
-        return (rasv === null) ? '' : KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
+        const queryRaSV = 'a[href="/reel/?s=ifu_see_more"]';
+        const elRaSV = post.querySelector(queryRaSV);
+        return (elRaSV === null) ? '' : KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
     }
 
     function nf_isShortReelVideo(post) {
         // -- reel/short video post (single)
         // -- post must have only one reel link
-        let query = 'a[href*="/reel/"]';
-        let rsv = Array.from(post.querySelectorAll(query));
-        return (rsv.length !== 1) ? '' : KeyWords.NF_SHORT_REEL_VIDEO[VARS.language];
+        const querySRV = 'a[href*="/reel/"]';
+        const elementsSRV = Array.from(post.querySelectorAll(querySRV));
+        return (elementsSRV.length !== 1) ? '' : KeyWords.NF_SHORT_REEL_VIDEO[VARS.language];
     }
 
     function gf_isShortReelVideo(post) {
         // -- reel/short video post (single)
         // -- post must have only one reel link
-        let query = 'a[href*="/reel/"]';
-        let rsv = Array.from(post.querySelectorAll(query));
-        return (rsv.length !== 1) ? '' : KeyWords.NF_SHORT_REEL_VIDEO[VARS.language];
+        const querySRV = 'a[href*="/reel/"]';
+        const elementsSRV = Array.from(post.querySelectorAll(querySRV));
+        return (elementsSRV.length !== 1) ? '' : KeyWords.GF_SHORT_REEL_VIDEO[VARS.language];
     }
 
     function nf_isEventsYouMayLike(post) {
@@ -3953,11 +3864,11 @@
             // mimic user clicking on animating gif
             // - which will trigger fb's click event.
             // - grab the A tag that is displayed when paused (uses Opacity)
-            const gpar = climbUpTheTree(gif, 3);
-            const sib = gpar.querySelector(':scope > a');
-            if (sib) {
-                const sibCS = window.getComputedStyle(sib);
-                if (sibCS.opacity === '0') {
+            const parent = climbUpTheTree(gif, 3);
+            const sibling = parent.querySelector(':scope > a');
+            if (sibling) {
+                const sibingCS = window.getComputedStyle(sibling);
+                if (sibingCS.opacity === '0') {
                     // 0 = animating; 1 = paused;
                     gif.parentElement.click();
                     // console.info(log + 'swatTheMosquitos() - paused', gif);
@@ -3968,99 +3879,109 @@
     }
 
     function nf_scrubTheTabbies() {
-        // -- either tablist or stories is shown (not both at the same time)
-        // - tablist : stories | reels | rooms
-        // - stories : standalone component - shares same space as tablist (but only show stories)
-        // -- appears at top of NF
-        // :: return <nothing>
+        // -- Tablist : stories | reels | rooms
+        // -- Stories
+        // -- both appear at top of NF
         const queryTabList = `div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]`;
         const elTabList = document.querySelector(queryTabList);
-        // console.info(log + 'nf_scrubTheTabbies(); elTabList:', queryTabList, elTabList);
         if (elTabList) {
             if (elTabList.hasAttribute(postAttChildFlag)) {
                 return;
             }
             // -- parent is 4 levels up.
             const elParent = climbUpTheTree(elTabList, 4);
-            hideFeature(elParent, (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]).replaceAll('"', ''), false, false);
-            elTabList.setAttribute(postAttChildFlag, 'tablist');
+            if (elParent) {
+                hideFeature(elParent, (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]).replaceAll('"', ''), false);
+                elTabList.setAttribute(postAttChildFlag, 'tablist');
+                return;
+            }
         }
         else {
-            // -- stories standalone component
-            const postAttStoriesValue = (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language] + ' (stories)').replaceAll('"', '');
-            const queryStoriesContainer = `div[${postAtt}="${postAttStoriesValue}"]`;
-            const elStoriesContainer = document.querySelector(queryStoriesContainer);
-            if (elStoriesContainer === null) {
-                const queryStories = `a[href*="/stories/create/"]:not([${postAttChildFlag}])`;
-                const elStories = document.querySelector(queryStories);
-                if (elStories) {
-                    if (document.querySelector('div[id="S:1"]') === null) {
-                        // -- the proper stories's container is now available ... (sometimes, we're a tad bit too quick ...)
-                        // -- parent is up a few levels ..
-                        let elParent = elStories.closest('div[aria-label][role][style]');
-                        if (elParent) {
-                            elParent = climbUpTheTree(elParent, 2);
-                            hideFeature(elParent, postAttStoriesValue, true, false);
-                            elStories.setAttribute(postAttChildFlag, postAttStoriesValue);
-                        }
-                    }
+            // - Stories only
+            // -- two patterns
+            // -- - one with listing of stories
+            // -- - one with no listing of stories
+            const queryForCreateStory = 'a[href*="/stories/create"]';
+            const elCreateStory = document.querySelector(queryForCreateStory);
+            if (elCreateStory && !elCreateStory.hasAttribute(postAttChildFlag)) {
+                const elAFewBranchesUp = climbUpTheTree(elCreateStory, 4);
+                const moreStories = elAFewBranchesUp.querySelectorAll('a[href*="/stories/"]');
+                let elParent = null;
+                if (moreStories.length > 1) {
+                    // -- query results has create and at least 1 story link
+                    elParent = climbUpTheTree(elCreateStory.closest('div[aria-label][role="region"]'), 4);
+                }
+                else {
+                    // -- query results has one link - create story
+                    elParent = climbUpTheTree(elCreateStory, 7);
+                }
+                if (elParent !== null) {
+                    hideFeature(elParent, KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language], false);
+                    elCreateStory.setAttribute(postAttChildFlag, '1');                    
                 }
             }
         }
     }
 
-    function nf_cleanTheConsoleTable(item = 'Sponsored') {
-        // -- mopping up the news feed aside panel. item values: Sponosored | Suggestions
+    function nf_cleanTheConsoleTable(findItem = 'Sponsored') {
+        // -- mopping up the news feed aside panel. findItem values: Sponosored | Suggestions
         // :: return <nothing>
         const query = 'div[role="complementary"] > div > div > div > div > div:not([data-visualcompletion])';
-        const asideBoxes = Array.from(document.querySelectorAll(query));
+        const asideBoxes = document.querySelectorAll(query);
+        if (asideBoxes.length === 0) {
+            return;
+        }
+        // -- only interested in the first container.
+        const asideContainer = asideBoxes[0];
+        if (asideContainer.childElementCount === 0) {
+            return;
+        }
 
-        if (asideBoxes.length > 0) {
-            // -- only interested in the first container.
-            if (asideBoxes[0].childElementCount > 0) {
-                let elItem = null;
-                let reason = '';
-                if (item === 'Sponsored') {
-                    elItem = asideBoxes[0].querySelector(`:scope > span:not([${postAtt}])`);
-                    if (elItem && elItem.innerHTML.length > 0) {
-                        reason = KeyWords.SPONSORED[VARS.language];
-                    }
-                }
-                else if (item === 'Suggestions') {
-                    elItem = asideBoxes[0].querySelector(`:scope > div:not([${postAtt}])`);
-                    if (elItem && elItem.innerHTML.length > 0) {
-                        // -- check for birthdays
-                        const birthdays = Array.from(elItem.querySelectorAll('a[href="/events/birthdays/"]')).length > 0;
-                        // -- check for "your pages and profiles"
-                        // -- suggested groups only have 1 i[..] attribute
-                        const pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 1;
+        let elItem = null;
+        let reason = '';
+        if (findItem === 'Sponsored') {
+            elItem = asideContainer.querySelector(`:scope > span:not([${postAtt}])`);
+            if (elItem && elItem.innerHTML.length > 0) {
+                reason = KeyWords.SPONSORED[VARS.language];
+            }
+        }
+        else if (findItem === 'Suggestions') {
+            elItem = asideContainer.querySelector(`:scope > div:not([${postAtt}])`);
+            if (elItem && elItem.innerHTML.length > 0) {
+                // -- check for birthdays
+                const birthdays = Array.from(elItem.querySelectorAll('a[href="/events/birthdays/"]')).length > 0;
+                // -- check for "your pages and profiles"
+                // -- suggested groups only have 1 i[..] attribute
+                const pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 1;
 
-                        if (birthdays === false && pagesAndProfiles === false) {
-                            reason = KeyWords.NF_SUGGESTIONS[VARS.language];
-                        }
-                    }
-                }
-                if (reason.length > 0) {
-                    hideFeature(elItem, reason);
+                if (birthdays === false && pagesAndProfiles === false) {
+                    reason = KeyWords.NF_SUGGESTIONS[VARS.language];
                 }
             }
         }
+        if (reason.length > 0) {
+            hideFeature(elItem, reason, true);
+        }
     }
 
-    function gf_cleanTheConsoleTable(item = 'Suggestions') {
+    function gf_cleanTheConsoleTable(findItem = 'Suggestions') {
         // -- mopping up the groups feed aside panel - suggested
         // :: return <nothing>
-        if (item === 'Suggestions') {
-            const query = `a[href*="/groups/discover"]:not([${postAtt}]) > span > span`;
-            const asideBoxes = querySelectorAllNoChildren(document, query, 1);
-            if (asideBoxes.length > 0) {
-                for (let asideBox of asideBoxes) {
-                    // parent is 21 levels up ...
-                    const par = climbUpTheTree(asideBox, 21);
-                    asideBox.closest('a').setAttribute(postAtt, KeyWords.GF_SUGGESTIONS[VARS.language]);
-                    hideFeature(par, KeyWords.GF_SUGGESTIONS[VARS.language]);
-                }
-            }
+        if (findItem !== 'Suggestions') {
+            return;
+        }
+
+        const query = `a[href*="/groups/discover"]:not([${postAtt}]) > span > span`;
+        const asideBoxes = querySelectorAllNoChildren(document, query, 1);
+        if (asideBoxes.length === 0) {
+            return;
+        }
+
+        for (const asideBox of asideBoxes) {
+            // parent is 21 levels up ...
+            const elParent = climbUpTheTree(asideBox, 21);
+            asideBox.closest('a').setAttribute(postAtt, KeyWords.GF_SUGGESTIONS[VARS.language]);
+            hideFeature(elParent, KeyWords.GF_SUGGESTIONS[VARS.language], true);
         }
     }
 
@@ -4075,111 +3996,88 @@
                 // -- not a group post.
                 return;
             }
-            // -- have we already added the "open post in new tab" elements?
-            const elLinkNew = post.querySelector('.link-new');
-            if (elLinkNew) {
-                return;
-            }
+            // - parts of the post's link can be found in the first link
+            const postLinks = post.querySelectorAll('div > div > a[href*="/groups/"][role="link"]');
+            if (postLinks.length > 0) {
+                const postLink = postLinks[0];
+                // -- get the container for the lower part of the header block.
+                const elHeader = climbUpTheTree(postLink, 4);
+                const blockOfIcons = elHeader.querySelector(':scope > div:nth-of-type(2) > div > div:nth-of-type(2) > span > span');
+                let newLink = '';
 
-            // -- find an element with the group post's meta block (author, time, globe)
-            const elPersonGroupLink = post.querySelector('span > span > span > a[href*="/groups/"][role="link"]');
-            if (elPersonGroupLink === null) {
-                return;
+                if (blockOfIcons && blockOfIcons.querySelector('.cmf-link-new') === null) {
+                    // -- need to create the group post's link
+                    // -- nb: last post may not be a post - it could be the "You've completely caught up. Check again later for more updates" post.
+                    // --     it doesn't have a set of icons ...
+                    const postId = new URLSearchParams(postLink.href).get('multi_permalinks');
+                    if (postId !== null) {
+                        // -- sample link: https://www.facebook.com/groups/424532172574012/?hoisted_section_header_type=recently_seen&multi_permalinks=720886619605231&__cft__[0]=AZV1vpwA0h21cVRZoS_GM3Q7H_Ul77iObEbYu2EA4oL7XyM-C78sQp5KIEpPooBCQZ2dmAMTvpCi1qYt5VxSTiCQCBkTmv8_Ra77OyacW2l685TVbttwb4qwKUm6AVr0zIapBxKODmLHgnNcYaSkXeCEOMEMdxQajQX8NTcniWYUA7OuVNY5C4F-ETSuab37Azw&__tn__=%3C%3C%2CP-R
+                        // -- .. converted to: https://www.facebook.com/groups/424532172574012/posts/720886619605231/
+                        // -- post link structure: https://www.facebook.com/groups/<group id>/posts/<post id>/
+                        newLink = postLink.href.split('?')[0] + 'posts/' + postId + '/';
+                    }
+                    else {
+                        return;
+                    }
+                }
+                else {
+                    // -- hmm, we don't have the info to reconstruct a group post link.
+                    return;
+                }
+
+                // -- put in fb's spacer between icons.
+                const spanSpacer = document.createElement('span');
+                spanSpacer.innerHTML = '<span><span style="position:absolute;width:1px;height:1px;">&nbsp;</span><span aria-hidden="true"> · </span></span>'
+                blockOfIcons.appendChild(spanSpacer);
+
+                const container = document.createElement('span');
+                container.className = 'link-new';
+                const span2 = document.createElement('span');
+                const linkNew = document.createElement('a');
+                linkNew.setAttribute('href', newLink);
+                linkNew.innerHTML = VARS.iconNewWindow;
+                linkNew.setAttribute('target', '_blank');
+                span2.appendChild(linkNew);
+                container.appendChild(span2);
+
+                blockOfIcons.appendChild(container);
             }
-            // -- need to add the "open post in a new tab" elements
-            // -- is there a group post link to use?
-            const groupPostLink = findGroupPostLink(post);
-            if (groupPostLink === '') {
-                return;
-            }
-            // -- get the group post's meta block container
-            const elContainer = climbUpTheTree(elPersonGroupLink, 4);
-            // -- add fb's spacer between the icons.
-            const elSpacerSpan = gf_createSpacerSpan();
-            // -- create new window link elements.
-            const elOpenInNewWindow = gf_createOpenInNewWindow(groupPostLink);
-            // -- add the spacer + open new window icon/link.
-            elContainer.appendChild(elSpacerSpan);
-            elContainer.appendChild(elOpenInNewWindow);
         }
         catch (error) {
             console.error(log + 'gf_setPostLinkToOpenInNewTab(); Error:', post, error);
         }
     }
 
-    function findGroupPostLink(post) {
-        // -- sample link: https://www.facebook.com/groups/424532172574012/?hoisted_section_header_type=recently_seen&multi_permalinks=720886619605231&__cft__[0]=AZV1vpwA0h21cVRZoS_GM3Q7H_Ul77iObEbYu2EA4oL7XyM-C78sQp5KIEpPooBCQZ2dmAMTvpCi1qYt5VxSTiCQCBkTmv8_Ra77OyacW2l685TVbttwb4qwKUm6AVr0zIapBxKODmLHgnNcYaSkXeCEOMEMdxQajQX8NTcniWYUA7OuVNY5C4F-ETSuab37Azw&__tn__=%3C%3C%2CP-R
-        // -- .. converted to: https://www.facebook.com/groups/424532172574012/posts/720886619605231/
-        // -- post link structure: https://www.facebook.com/groups/<group id>/posts/<post id>/
-        // :: return : group post's link.
-        const queryGroupLinks = 'a[href*="/groups/"][role="link"]';
-        const collectionOfGroupLinks = post.querySelectorAll(queryGroupLinks);
-        for (const elLink of collectionOfGroupLinks) {
-            const postId = new URLSearchParams(elLink.href).get('multi_permalinks');
-            if (postId !== null) {
-
-                return elLink.href.split('?')[0] + 'posts/' + postId + '/';
-            }
-        }
-        return '';
-    }
-
-    function gf_createSpacerSpan() {
-        // -- add fb's spacer between the icons.
-        const spacerWdot = '<span><span style="position:absolute;width:1px;height:1px;">&nbsp;</span><span aria-hidden="true"> · </span></span>'
-        const elSpacerSpan = document.createElement('span');
-        elSpacerSpan.innerHTML = spacerWdot;
-        return elSpacerSpan;
-    }
-    function gf_createOpenInNewWindow(newGroupPostLink) {
-        const elContainer = document.createElement('span');
-        elContainer.className = 'link-new';
-        const elSpan = document.createElement('span');
-        const elLinkOpenNewWindow = document.createElement('a');
-        elLinkOpenNewWindow.setAttribute('href', newGroupPostLink);
-        elLinkOpenNewWindow.innerHTML = VARS.iconNewWindow;
-        elLinkOpenNewWindow.setAttribute('target', '_blank');
-        elSpan.appendChild(elLinkOpenNewWindow);
-        elContainer.appendChild(elSpan);
-        return elContainer;
-    }
-
-
     function scrubInfoBoxes(post) {
-        // hide the "truth" info boxes that appear in posts having a certain topic.
+        // -- hide the "truth" info boxes that appear in posts having a certain topic.
         // :: return <nothing>
-
         let hiding = false;
 
         if (VARS.Options.OTHER_INFO_BOX_CLIMATE_SCIENCE) {
-            const query = `a[href*="${KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE.pathMatch}"]:not([${postAtt}])`;
-            const link = post.querySelector(query);
-            if (link !== null) {
+            const elLink = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE.pathMatch}"]:not([${postAtt}])`);
+            if (elLink !== null) {
                 // - block @ 5 levels up.
-                const block = climbUpTheTree(link, 5);
-                hideBlock(block, link, KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE[VARS.language]);
+                let block = climbUpTheTree(elLink, 5);
+                hideBlock(block, elLink, KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE[VARS.language]);
                 hiding = true;
             }
         }
         //console.info(log+'scrubInfoBoxes():', hiding, VARS.Options.OTHER_INFO_BOX_CORONAVIRUS, KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch, post);
         if (!hiding && VARS.Options.OTHER_INFO_BOX_CORONAVIRUS) {
-            const query = `a[href*="${KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch}"]:not([${postAtt}])`;
-            const link = post.querySelector(query);
-            link = post.querySelector(`a[href*="/coronavirus_info/"]`);
-            if (link !== null) {
+            const elLink = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CORONAVIRUS.pathMatch}"]:not([${postAtt}])`);
+            if (elLink !== null) {
                 // - block @ 5 levels up.
-                const block = climbUpTheTree(link, 5);
-                hideBlock(block, link, KeyWords.OTHER_INFO_BOX_CORONAVIRUS[VARS.language]);
+                const block = climbUpTheTree(elLink, 5);
+                hideBlock(block, elLink, KeyWords.OTHER_INFO_BOX_CORONAVIRUS[VARS.language]);
                 hiding = true;
             }
         }
         if (!hiding && VARS.Options.OTHER_INFO_BOX_SUBSCRIBE) {
-            const query = `a[href*="${KeyWords.OTHER_INFO_BOX_SUBSCRIBE.pathMatch}"]:not([${postAtt}])`;
-            const link = post.querySelector(query);
-            if (link !== null) {
+            const elLink = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_SUBSCRIBE.pathMatch}"]:not([${postAtt}])`);
+            if (elLink !== null) {
                 // - block @ 5 levels up.
-                const block = climbUpTheTree(link, 5);
-                hideBlock(block, link, KeyWords.OTHER_INFO_BOX_SUBSCRIBE[VARS.language]);
+                const block = climbUpTheTree(elLink, 5);
+                hideBlock(block, elLink, KeyWords.OTHER_INFO_BOX_SUBSCRIBE[VARS.language]);
                 hiding = true;
             }
         }
@@ -4215,31 +4113,24 @@
         let posts = [];
         // -- various news feed queries
         const queries = [
-            // -- August 2023 - rolling back to non-random div levels rule
-            'h3[dir="auto"] + div > div[class] > div > div',
-            // -- feeds > pages
-            'h2[dir="auto"] + div > div[class] > div > div',
+            // -- February 2023 (promoted above Sept/August due to no hard-coded class names.
+            'h3[dir="auto"] ~ div:not([class]) > div[class]',
+            'h2[dir="auto"] ~ div:not([class]) > div[class]',
+            // -- September 2023 
+            // -- - home news feed
+            'h3[dir="auto"] + div > div.x1lliihq',
+            // -- - recent news feed
+            'h2[dir="auto"] + div > div.x1lliihq',
             // -- July 2023 - fb tweaked the structure - random div levels.
             // -- - home news feed
-            // 'h3[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
-            // -- - "recent" feed
-            // 'h2[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
-
-            // -- December 2022 - try the [data-pagelet] attribute
-            'span[id="ssrb_feed_start"] ~ div > div div[data-pagelet]',
-            // -- May 2023 - fb tweaked the structure
-            'h2[dir="auto"] ~ div:not([class]) > div[class]',
-            // -- February 2023 - fb tweaked the structure
-            'h3[dir="auto"] ~ div:not([class]) > div[class]',
-            // -- older ...
-            'span[id="ssrb_feed_start"] ~ div > h3 ~ div',
-            // -- 31/10/2022 - fb tweaked the structure
-            'h3[dir="auto"] ~ div:not([class]) > div[class] > div'
+            'h3[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
+            // -- - recent news feed
+            'h2[dir="auto"] ~ div > div > div div.x1yztbdb:not([role])',
         ]
 
         for (const query of queries) {
             const nodeList = document.querySelectorAll(query);
-            if (nodeList.length > 1) {
+            if (nodeList.length > 0) {
                 posts = Array.from(nodeList);
                 break;
             }
@@ -4251,18 +4142,18 @@
     function mopUpTheNewsFeed() {
         // -- mopping up the news feed page
 
+        // -- Tablist - not part of the general news feed stream
+        // -- Includes Stories (standalone tab)
+        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS) {
+            nf_scrubTheTabbies();
+        }
+
         // -- aside's sponsored
         nf_cleanTheConsoleTable('Sponsored');
 
         // -- aside's suggestions
         if (VARS.Options.NF_SUGGESTIONS) {
             nf_cleanTheConsoleTable('Suggestions');
-        }
-
-        // -- tab list - not part of the general news feed stream
-        // -- (includes stories)
-        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS) {
-            nf_scrubTheTabbies();
         }
 
         const posts = nf_getCollectionOfPosts();
@@ -4279,7 +4170,13 @@
             for (let i = start; i < count; i++) {
                 const post = posts[i];
 
-                if (post.innerHTML.length > 0) {
+                if (post.innerHTML.length === 0) {
+                    if (post.hasAttribute(postAtt)) {
+                        // -- fb is clearing out the posts as the user scrolls ...
+                        nf_dropTags(post);
+                    }
+                }
+                else {
 
                     let hideReason = '';
 
@@ -4287,7 +4184,7 @@
                         // -- already flagged ...
                         hideReason = 'hidden';
                         // -- however, fb is clearing out the posts as the user scrolls ...
-                        if (post.querySelectorAll(':scope a').length === 0) {
+                        if (post.querySelectorAll('a').length === 0) {
                             nf_dropTags(post);
                         }
                     }
@@ -4353,20 +4250,13 @@
                         }
                     }
                 }
-                else {
-                    // -- post.innerHTML.length === 0
-                    if (post.hasAttribute(postAtt)) {
-                        // -- fb is clearing out the posts as the user scrolls ...
-                        nf_dropTags(post);
-                    }
-                }
             }
             // console.info(log+'<--- mopUpTheNewsFeed()');
         }
     }
 
     function mopUpTheGroupsFeed() {
-        // mopping up the groups feed page
+        // -- mopping up the groups feed page
 
         // console.info(log+'mopUpTheGroupsFeed(), gfType:', VARS.gfType, '; hide an info box:', VARS.hideAnInfoBox);
 
@@ -4385,69 +4275,70 @@
             if (posts.length) {
                 // console.info(log+'---> mopUpTheGroupsFeed() - multiple groups');
                 for (const post of posts) {
+                    if (post.innerHTML.length === 0) {
+                        continue;
+                    }
 
-                    if (post.innerHTML.length > 0) {
 
-                        let hideReason = '';
+                    let hideReason = '';
 
-                        // -- add the open post in new tab link+icon.
-                        if ((VARS.gfType === 'groups') && (post[postPropDS] === undefined)) {
-                            gf_setPostLinkToOpenInNewTab(post);
+                    // -- add the open post in new tab link+icon.
+                    if ((VARS.gfType === 'groups') && (post[postPropDS] === undefined)) {
+                        gf_setPostLinkToOpenInNewTab(post);
+                    }
+
+                    if (post.hasAttribute(postAtt)) {
+                        // -- already flagged
+                        hideReason = 'hidden';
+                    }
+                    else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
+                        // -- skip these - already been scanned a few times
+                    }
+                    else {
+
+                        doLightDusting(post);
+
+                        if (hideReason === '' && isSponsored(post)) {
+                            hideReason = KeyWords.SPONSORED[VARS.language];
                         }
-
-                        if (post.hasAttribute(postAtt)) {
-                            // -- already flagged
-                            hideReason = 'hidden';
+                        if (hideReason === '' && VARS.Options.GF_SUGGESTIONS) {
+                            hideReason = gf_isSuggested(post);
                         }
-                        else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
-                            // -- skip these - already been scanned a few times
+                        // if (hideReason === '' && VARS.Options.GF_PAID_PARTNERSHIP) {
+                        //     //console.info(log + 'mopUpTheGroupsFeed(), ---- Paid partnership - needs code ----')
+                        // }
+                        if (hideReason === '' && VARS.Options.GF_SHORT_REEL_VIDEO) {
+                            hideReason = gf_isShortReelVideo(post);
                         }
-                        else {
-
-                            doLightDusting(post);
-
-                            if (hideReason === '' && isSponsored(post)) {
-                                hideReason = KeyWords.SPONSORED[VARS.language];
-                            }
-                            if (hideReason === '' && VARS.Options.GF_SUGGESTIONS) {
-                                hideReason = gf_isSuggested(post);
-                            }
-                            // if (hideReason === '' && VARS.Options.GF_PAID_PARTNERSHIP) {
-                            //     //console.info(log + 'mopUpTheGroupsFeed(), ---- Paid partnership - needs code ----')
-                            // }
-                            if (hideReason === '' && VARS.Options.GF_SHORT_REEL_VIDEO) {
-                                hideReason = gf_isShortReelVideo(post);
-                            }
-                            if (hideReason === '' && VARS.Options.GF_BLOCKED_ENABLED) {
-                                hideReason = gf_isBlockedText(post);
-                            }
+                        if (hideReason === '' && VARS.Options.GF_BLOCKED_ENABLED) {
+                            hideReason = gf_isBlockedText(post);
                         }
+                    }
 
-                        if (hideReason.length > 0) {
-                            // -- increment hidden count
-                            VARS.echoCount++;
-                            if (hideReason !== 'hidden') {
-                                // -- post not yet hidden, hide it.
-                                hidePost(post, hideReason)
-                            }
+                    if (hideReason.length > 0) {
+                        // -- increment hidden count
+                        VARS.echoCount++;
+                        if (hideReason !== 'hidden') {
+                            // -- post not yet hidden, hide it.
+                            hidePost(post, hideReason)
                         }
-                        else {
-                            // -- not a hidden post
-                            // -- reset hidden count
-                            VARS.echoCount = 0;
-                            // -- run pause animation (useful to hide those animated comments)
-                            if (VARS.Options.GF_ANIMATED_GIFS) {
-                                // console.info(log + 'pausing animations ...');
-                                swatTheMosquitos(post);
-                            }
-                            // -- hide info boxes
-                            if (VARS.hideAnInfoBox) {
-                                scrubInfoBoxes(post);
-                            }
-                            // -- hide number of shares box
-                            if (VARS.Options.GF_SHARES) {
-                                gf_hideNumberOfShares(post);
-                            }
+                    }
+                    else {
+                        // -- not a hidden post
+                        // -- reset hidden count
+                        VARS.echoCount = 0;
+                        // -- run pause animation (useful to hide those animated comments)
+                        if (VARS.Options.GF_ANIMATED_GIFS) {
+                            // console.info(log + 'pausing animations ...');
+                            swatTheMosquitos(post);
+                        }
+                        // -- hide info boxes
+                        if (VARS.hideAnInfoBox) {
+                            scrubInfoBoxes(post);
+                        }
+                        // -- hide number of shares box
+                        if (VARS.Options.GF_SHARES) {
+                            gf_hideNumberOfShares(post);
                         }
                     }
                     // console.info(log+'mopUpTheGroupsFeed:', hideReason, VARS.echoCount, post);
@@ -4463,53 +4354,55 @@
                 // console.info(log+'---> mopUpTheGroupsFeed() - single group');
                 for (const post of posts) {
 
-                    if (post.innerHTML.length > 0) {
+                    if (post.innerHTML.length === 0) {
+                        continue;
+                    }
 
-                        let hideReason = '';
 
-                        if (post.hasAttribute(postAtt)) {
-                            // -- already flagged
-                            hideReason = 'hidden';
-                        }
-                        else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
-                            // -- skip these - already scanned a few times
-                        }
-                        else {
-                            doLightDusting(post);
+                    let hideReason = '';
 
-                            if (hideReason === '' && VARS.Options.GF_SHORT_REEL_VIDEO) {
-                                hideReason = gf_isShortReelVideo(post);
-                            }
-                            if (hideReason === '' && VARS.Options.GF_BLOCKED_ENABLED) {
-                                hideReason = gf_isBlockedText(post);
-                            }
-                        }
+                    if (post.hasAttribute(postAtt)) {
+                        // -- already flagged
+                        hideReason = 'hidden';
+                    }
+                    else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
+                        // -- skip these - already scanned a few times
+                    }
+                    else {
+                        doLightDusting(post);
 
-                        if (hideReason.length > 0) {
-                            // -- increment hidden counter
-                            VARS.echoCount++;
-                            if (hideReason !== 'hidden') {
-                                // -- post not yet hidden, hide it.
-                                hidePost(post, hideReason)
-                            }
+                        if (hideReason === '' && VARS.Options.GF_SHORT_REEL_VIDEO) {
+                            hideReason = gf_isShortReelVideo(post);
                         }
-                        else {
-                            // -- not a hidden post
-                            // -- reset hidden count
-                            VARS.echoCount = 0;
-                            // -- run pause animation (useful to hide those animated comments)
-                            if (VARS.Options.GF_ANIMATED_GIFS) {
-                                // console.info(log + 'pausing animations ...');
-                                swatTheMosquitos(post);
-                            }
-                            // -- hide info boxes
-                            if (VARS.hideAnInfoBox) {
-                                scrubInfoBoxes(post);
-                            }
-                            // -- hide number of shares box
-                            if (VARS.Options.GF_SHARES) {
-                                gf_hideNumberOfShares(post);
-                            }
+                        if (hideReason === '' && VARS.Options.GF_BLOCKED_ENABLED) {
+                            hideReason = gf_isBlockedText(post);
+                        }
+                    }
+
+                    if (hideReason.length > 0) {
+                        // -- increment hidden counter
+                        VARS.echoCount++;
+                        if (hideReason !== 'hidden') {
+                            // -- post not yet hidden, hide it.
+                            hidePost(post, hideReason)
+                        }
+                    }
+                    else {
+                        // -- not a hidden post
+                        // -- reset hidden count
+                        VARS.echoCount = 0;
+                        // -- run pause animation (useful to hide those animated comments)
+                        if (VARS.Options.GF_ANIMATED_GIFS) {
+                            // console.info(log + 'pausing animations ...');
+                            swatTheMosquitos(post);
+                        }
+                        // -- hide info boxes
+                        if (VARS.hideAnInfoBox) {
+                            scrubInfoBoxes(post);
+                        }
+                        // -- hide number of shares box
+                        if (VARS.Options.GF_SHARES) {
+                            gf_hideNumberOfShares(post);
                         }
                     }
                 }
@@ -4519,7 +4412,7 @@
     }
 
     function mopUpTheWatchVideosFeed() {
-        // mopping up the watch videos feed page
+        // -- mopping up the watch videos feed page
 
         let query;
         let queryBlocks;
@@ -4547,64 +4440,63 @@
         if (VARS.vfType !== 'search') {
             const posts = document.querySelectorAll(query);
             for (const post of posts) {
-                if (post.innerHTML.length > 0) {
+                if (post.innerHTML.length === 0) {
+                    continue;
+                }
 
-                    let hideReason = '';
+                let hideReason = '';
 
-                    if (post.hasAttribute(postAtt)) {
-                        // -- already hidden
-                        hideReason = 'hidden';
-                    }
-                    else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
-                        // -- skip these - already been scanned a few times
-                    }
-                    else {
-                        doLightDusting(post);
+                if (post.hasAttribute(postAtt)) {
+                    // -- already hidden
+                    hideReason = 'hidden';
+                }
+                else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
+                    // -- skip these - already been scanned a few times
+                }
+                else {
+                    doLightDusting(post);
 
-                        if (isSponsored(post)) {
-                            hideReason = KeyWords.SPONSORED[VARS.language];
-                        }
-                        if (hideReason === '' && VARS.Options.VF_BLOCKED_ENABLED) {
-                            hideReason = vf_isBlockedText(post, queryBlocks);
-                        }
-                        // console.info(log + 'mopUpTheWatchVideosFeed(); ::: hideReason:', hideReason, post, queryBlocks);
+                    if (isSponsored(post)) {
+                        hideReason = KeyWords.SPONSORED[VARS.language];
                     }
+                    if (hideReason === '' && VARS.Options.VF_BLOCKED_ENABLED) {
+                        hideReason = vf_isBlockedText(post, queryBlocks);
+                    }
+                    // console.info(log + 'mopUpTheWatchVideosFeed(); ::: hideReason:', hideReason, post, queryBlocks);
+                }
 
-                    if (hideReason.length > 0) {
-                        // -- increment hidden count
-                        VARS.echoCount++;
-                        if (hideReason !== 'hidden') {
-                            // -- post not yet hidden, hide it.
-                            hidePost(post, hideReason)
-                        }
-                    }
-                    else {
-                        // -- not a hidden post
-                        // -- reset hidden count
-                        VARS.echoCount = 0;
-                        // -- run pause animation (useful to hide those animated comments)
-                        if (VARS.Options.VF_ANIMATED_GIFS) {
-                            // console.info(log + 'pausing animations ...');
-                            swatTheMosquitos(post);
-                        }
-                        // -- hide info boxes
-                        if (VARS.hideAnInfoBox) {
-                            scrubInfoBoxes(post);
-                        }
-                        // -- hide sponsored blocks (appears between video & comments)
-                        vf_scrubSponsoredBlock(post);
+                if (hideReason.length > 0) {
+                    // -- increment hidden count
+                    VARS.echoCount++;
+                    if (hideReason !== 'hidden') {
+                        // -- post not yet hidden, hide it.
+                        hidePost(post, hideReason)
                     }
                 }
+                else {
+                    // -- not a hidden post
+                    // -- reset hidden count
+                    VARS.echoCount = 0;
+                    // -- run pause animation (useful to hide those animated comments)
+                    if (VARS.Options.VF_ANIMATED_GIFS) {
+                        // console.info(log + 'pausing animations ...');
+                        swatTheMosquitos(post);
+                    }
+                    // -- hide info boxes
+                    if (VARS.hideAnInfoBox) {
+                        scrubInfoBoxes(post);
+                    }
+                    // -- hide sponsored blocks (appears between video & comments)
+                    vf_scrubSponsoredBlock(post);
+                }
             }
-            // console.info(log+'<--- mopUpTheWatchVideosFeed()');
         }
         else {
             // -- search videos
             // -- structure is different from regular video feed
             // -- thumbnail on left, text on right
             const posts = document.querySelectorAll(query);
-            // console.info(log+'---> mopUpTheWatchVideosFeed()');
-            for (let post of posts) {
+            for (const post of posts) {
 
                 let hideReason = '';
 
@@ -4632,7 +4524,6 @@
                     VARS.echoCount = 0;
                 }
             }
-            // console.info(log+'<--- mopUpTheWatchVideosFeed()');
         }
     }
 
@@ -4654,7 +4545,6 @@
 
     function mopUpTheMarketplaceFeed() {
         // -- mopping up parts of the Marketplace ...
-        // console.info(log + 'mopUpTheMarketplaceFeed(); mpType:', VARS.mpType);
 
         mp_stopTrackingDirtIntoMyHouse();
 
@@ -4683,20 +4573,55 @@
         }
         if (VARS.mpType === 'item') {
             // -- viewing a marketplace item - a small sponsored box often shows up on the right.
-            const query = `a[href*="/ads/"]:not([${postAtt}])`;
-            const elements = document.querySelectorAll(query);
-            // console.info(`${log}MPItem() - elements:`, query, elements);
-            for (const element of elements) {
-                if (element.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
+            const elDialog = document.querySelector('div[role="dialog"]');
+            if (elDialog) {
+                // -- viewing a mp item via mp feed (no new tab or reloaded page)
+                const queryPattern1 = 'a[href*="/ads/"]';
+                const element = elDialog.querySelector(queryPattern1);
+                if (element) {
+                    if (element.hasAttribute(postAtt)) {
+                        return;
+                    }
+                    // console.info(`${log}MPItem() - element:`, queryPattern1, element);
+                    if (element.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
+                        // -- found the sponsored box inside the mp item box.
+                        // -- mp item do not have a parent element having data-pagelet attribute.
+                        let elParent = element.parentElement.closest('h2');
+                        if (elParent) {
+                            elParent = elParent.closest('span');
+                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                            element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                        }
+                    }
+                }
+                else {
+                    const queryPattern2 = 'a[href*="//l.facebook.com/l.php?u="]';
+                    const element = elDialog.querySelector(queryPattern2);
+                    if (element) {
+                        if (element.hasAttribute(postAtt)) {
+                            return;
+                        }
+                        if (element.href.length > 500) {
+                            const elParent = climbUpTheTree(element, 3);
+                            if (elParent.nodeName === 'SPAN') {
+                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                                element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                // -- viewing a mp item in a new tab / reloaded page.
+                const queryPattern1 = 'a[href*="/ads/"]';
+                const element = document.querySelector(queryPattern1);
+                if (element && !element.hasAttribute(postAtt)) {
                     // -- found the sponsored box inside the mp item box.
-                    // -- mp item do not have a parent element having data-pagelet attribute.
-                    let spbox = element.parentElement.closest('h2');
-                    if (spbox) {
-                        spbox = spbox.closest('span');
-                        mp_hideBox(spbox, KeyWords.SPONSORED[VARS.language]);
+                    let elParent = element.parentElement.closest('h2');
+                    if (elParent) {
+                        elParent = elParent.closest('span');
+                        mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
                         element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
-                        // (there's only one sponsored box - so break out)
-                        break;
                     }
                 }
             }
@@ -4725,53 +4650,55 @@
         if (VARS.Options.NF_BLOCKED_ENABLED) {
             const query = 'div[role="feed"] > div';
             const posts = Array.from(document.querySelectorAll(query));
-            // console.info(log + '---> mopUpTheSearchFeed()');
+
             for (const post of posts) {
 
-                if (post.innerHTML.length > 0) {
+                if (post.innerHTML.length === 0) {
+                    continue;
+                }
 
-                    let hideReason = '';
+                let hideReason = '';
 
-                    if (post.hasAttribute(postAtt)) {
-                        hideReason = 'hidden';
+                if (post.hasAttribute(postAtt)) {
+                    hideReason = 'hidden';
+                }
+                else {
+                    if (isSponsored(post)) {
+                        hideReason = KeyWords.SPONSORED[VARS.language];
                     }
                     else {
-                        if (isSponsored(post)) {
-                            hideReason = KeyWords.SPONSORED[VARS.language];
-                        }
-                        else {
-                            if (VARS.NF_BLOCKED_ENABLED) {
-                                hideReason = nf_isBlockedText(post);
-                            }
+                        if (VARS.NF_BLOCKED_ENABLED) {
+                            hideReason = nf_isBlockedText(post);
                         }
                     }
+                }
 
-                    if (hideReason.length > 0) {
-                        // -- increment hidden count
-                        VARS.echoCount++;
-                        if (hideReason != 'hidden') {
-                            // -- post not yet hidden, hide it.
-                            hidePost(post, hideReason);
-                        }
+                if (hideReason.length > 0) {
+                    // -- increment hidden count
+                    VARS.echoCount++;
+                    if (hideReason != 'hidden') {
+                        // -- post not yet hidden, hide it.
+                        hidePost(post, hideReason);
                     }
-                    else {
-                        // -- not a hidden post
-                        // -- reset hidden count
-                        VARS.echoCount = 0;
-                        // -- run pause animation (useful to hide those animated comments)
-                        if (VARS.Options.NF_ANIMATED_GIFS) {
-                            // console.info(log + 'pausing animations ...');
-                            swatTheMosquitos(post);
-                        }
-                        // -- hide info boxes
-                        if (VARS.hideAnInfoBox) {
-                            scrubInfoBoxes(post);
-                        }
+                }
+                else {
+                    // -- not a hidden post
+                    // -- reset hidden count
+                    VARS.echoCount = 0;
+                    // -- run pause animation (useful to hide those animated comments)
+                    if (VARS.Options.NF_ANIMATED_GIFS) {
+                        // console.info(log + 'pausing animations ...');
+                        swatTheMosquitos(post);
+                    }
+                    // -- hide info boxes
+                    if (VARS.hideAnInfoBox) {
+                        scrubInfoBoxes(post);
                     }
                 }
             }
         }
     }
+
 
     // ** Mutations processor
     function bodyMutating(mutations) {
