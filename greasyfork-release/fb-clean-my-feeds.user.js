@@ -16,6 +16,12 @@
 // @run-at       document-start
 // ==/UserScript==
 /*
+    :: Tip ::
+        This userscript does not block video ads (begin-roll, mid-roll, end-roll), however there's a work-around:
+        1) Install uBlock Origin (uBO) in your browser(s)
+        2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
+        Note: I have not tested this in other content/ad-blockers.
+
     v4.25 :: November 2023
         Added extra filter rule for nf_isSuggested() (for "Suggested for you" posts) - fix supplied by opello (via github)
         Added News Feed's Stories post detection rule.
