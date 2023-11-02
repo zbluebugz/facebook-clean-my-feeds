@@ -39,3 +39,10 @@ Versions 3.12+ & 4.xx:
 
 
 Currently, mobile devices, Safari and Internet Explorer are not supported.
+
+## Tip
+fb-cmf userscript does _not_ block video ads (begin-roll, mid-roll, end-roll), however there's a work-around.
+1) Install [uBlock Origin](https://github.com/gorhill/uBlock) in your browser(s)
+2) In uBO, goto "My filters" tab and paste in the following rule: `facebook.com##+js(set, Object.prototype.scrubber, undefined)`
+
+Note: I have not tested other content/ad-blockers - the custom rule may/may not work in other content/ad-blockers.
