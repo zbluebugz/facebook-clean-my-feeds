@@ -3,17 +3,26 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.24
+// @version      4.25
 // @author       zbluebugz (https://github.com/zbluebugz/)
-// @match        https://*.facebook.com/*
+// @match        https://www.facebook.com/*
+// @match        https://facebook.com/*
 // @noframes
 // @grant        GM.registerMenuCommand
+// @grant        GM.info
 // @license      MIT; https://opensource.org/licenses/MIT
 // @icon         data:image/png;base64,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
 // @icon64       data:image/png;base64,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
 // @run-at       document-start
 // ==/UserScript==
 /*
+    v4.25 :: November 2023
+        Added extra filter rule for nf_isSuggested() (for "Suggested for you" posts) - fix supplied by opello (via github)
+        Added News Feed's Stories post detection rule.
+        Revised function scanTreeForText() to include other elements for scanning
+        Fixed bug with Marketplace prices' filter
+        Reduce possible conflicts with uBlock Origin / other adblockers
+        Code tweaks
     v4.24 :: September 2023
         Fixed issues with v4.23 (selection/detection rules)
         Code tweaks
@@ -141,7 +150,7 @@
 
         // *** News Feed ::
 
-        // - "Stories | Reels | Rooms" tablist box 
+        // - "Stories | Reels | Rooms" tablist box
         // -- includes the standalone Stories component
         NF_TABLIST_STORIES_REELS_ROOMS: {
             'en': '"Stories | Reels | Rooms" tabs list box',
@@ -164,6 +173,30 @@
             'fi': '"Tarinat | Reels | Rooms" -välilehtien luetteloruutu',
             'tr': '"Hikayeler | Makaralar | Odalar" sekmeleri liste kutusu',
             'el': 'Λίστα καρτελών "Ιστορίες | Reels | Δωμάτια"',
+            'defaultEnabled': false
+        },
+        // - "Stories" posts (separate from tablist, in News Feed stream)
+        NF_STORIES: {
+            'en': 'Stories',
+            'pt': 'Stories',
+            'de': 'Stories',
+            'fr': 'Stories',
+            'es': 'Historias',
+            'cs': 'Stories',
+            'vi': 'Tin',
+            'it': 'Storie"',
+            'lv': 'Stāsti',
+            'pl': 'Relacje',
+            'nl': 'Verhalen',
+            'he': 'סטוריז ',
+            'ar': 'القصص',
+            'id': 'Cerita',
+            'zh-Hans': '故事',
+            'zh-Hant': '故事',
+            'ja': 'Stories',
+            'fi': 'Tarinat',
+            'tr': 'Hikayeler',
+            'el': 'Ιστορίες',
             'defaultEnabled': false
         },
         // - People you may know:
@@ -1533,17 +1566,22 @@
     const postAttChildFlag = 'cmfcf';
     // - post's toggle state bar + post tab.
     const postAttTab = 'cmftsb'
+    // - marketplace post - indicate already scanned
+    const postAttMPSkip = 'cmfsmp';
 
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
     const VARS = {
+        // -- userscript version (for cmf's dialog)
+        // VARS.fbcmfVersion: (GM.info.script.version) ? (GM.info.script.version) : '',
+
         // - mutations counter
         mutationsCount: 0,
         // - how many mutations to ignore @ start (usually non-feed elements)
         mutationsInitSkip: 75,
         // - how many times to scan a post
         scanCountStart: 0,
-        scanCountMaxLoop: 12,
+        scanCountMaxLoop: 15, // Nov 2023; changed from 12 to 15, need to make code a tad bit more aggressive.
 
         // - langauge (default to EN)
         language: '',
@@ -1593,7 +1631,7 @@
         cssHideEl: '',
         cssEcho: '',
         cssHideNumberOfShares: '',
-        cssShow: 'show',
+        cssShow: '',
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl: null,
         // - script's logo
@@ -1621,11 +1659,11 @@
         }
     }
 
-    // -- generate a string of random charcters
-    // -- used for css classes
-    // -- used for postAttCPID
     function generateRandomString() {
         // - generate random text (first letter must be an alphabet)
+        // -- used for css classes
+        // -- used for postAttCPID
+        // -- used for tagging items
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         const strArray = [chars.charAt(Math.floor(Math.random() * 52))]; // First letter must be an alphabet
 
@@ -1676,10 +1714,11 @@
             head = document.getElementsByTagName('head')[0];
             head.appendChild(styleEl);
 
-            // - remember class names (for other functions to use)
+            // - remember <element> attribute names (for other functions to use)
             VARS.cssHide = generateRandomString(); // - the parent element - hides the nth level down element
             VARS.cssHideEl = generateRandomString(); // - the element to hide - where there's no child element
             VARS.cssHideNumberOfShares = generateRandomString(); // - hide "# shares" on posts.
+            VARS.cssShow = generateRandomString(); // - for revealing hidden elements.
         }
         VARS.tempStyleSheetCode = ''; // reset temp CSS code.
 
@@ -1692,16 +1731,16 @@
         // - NF/GF/VF
         // -- remove margins
         addToSS(
-            `.${VARS.cssHide},` +
-            `.${VARS.cssHideEl}`,
+            `[${VARS.cssHide}],` +
+            `[${VARS.cssHideEl}]`,
             'margin:0 !important;'
         );
 
         // -- post wrapper (mainly for news, groups and video feeds posts)
-        classes = `.${VARS.cssHide} > div:not([${postAttTab}]) > div,`;
-        classes += `.${VARS.cssHide} > span,`;
+        classes = `[${VARS.cssHide}] > div:not([${postAttTab}]) > div,`;
+        classes += `[${VARS.cssHide}] > span,`;
         // -- non n/f & g/f wrappers (mainly for marketplace posts + some aside boxes)
-        classes += `.${VARS.cssHideEl}`;
+        classes += `[${VARS.cssHideEl}]`;
         // -- which styles to apply?
         // --- (display:block is for those span tags being a nth-of-child element.)
         styles = 'display:none !important;';
@@ -1709,7 +1748,7 @@
 
         // -- # shares
         addToSS(
-            `.${VARS.cssHideNumberOfShares}`,
+            `[${VARS.cssHideNumberOfShares}]`,
             'display:none !important;'
         );
 
@@ -1757,26 +1796,26 @@
             `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `
         );
 
-        // - 'show' - reveal a hidden post
+        // - 'show' - reveal a hidden post (except for mp)
         addToSS(
-            `.show > div:not([${postAttTab}]) > div, ` +
-            `.${VARS.cssHideNumberOfShares}.show`,
+            `[${VARS.cssShow}]:not([${VARS.cssHideEl}]) > div:not([${postAttTab}]) > div, ` +
+            `[${VARS.cssHideNumberOfShares}][${VARS.cssShow}]`,
             'display:block !important; ' +
             `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.2rem 0.1rem 0.1rem 0.1rem;` // 4px
         );
         // - echo msg show state
         addToSS(
-            `.show > div[${postAttTab}]`,
+            `[${VARS.cssShow}] > div[${postAttTab}]`,
             'margin-top:0.5rem; margin-bottom:0.5rem;'
         );
         // - echo msg's button show state
         addToSS(
-            `.show > div[${postAttTab}] > div.wbtn > button`,
+            `[${VARS.cssShow}] > div[${postAttTab}] > div.wbtn > button`,
             'transform: rotate(360deg);transition: transform 0.15s linear;'
         );
-        // - non-standard post's show state
+        // - non-standard post's show state (mp)
         addToSS(
-            `.${VARS.cssHideEl}.show `,
+            `[${VARS.cssHideEl}][${VARS.cssShow}] `,
             `display: block !important; border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.1rem;` // 4px
         );
         // - dailog box CSS
@@ -1894,7 +1933,7 @@
         );
         // -- show dialog box (default is not to show)
         addToSS(
-            '.fb-cmf.show',
+            `.fb-cmf[${VARS.cssShow}]`,
             'opacity:1; transform:scale(1); visibility:visible;'
         );
         // -- new window icon
@@ -1975,7 +2014,7 @@
             addToSS('.fb-cmf-toggle svg', 'height:32px; width:32px;');
             addToSS('.fb-cmf-toggle:hover', 'cursor:pointer;');
             // - dialog box's display
-            addToSS('.fb-cmf-toggle.show', 'display:block;');
+            addToSS(`.fb-cmf-toggle[${VARS.cssShow}]`, 'display:block;');
         }
         // - dialog box's left/right + animated open/close behaviour
         if (cmfDlgLocation === '1') {
@@ -2895,10 +2934,10 @@
                 elements = document.querySelectorAll(`[${postAtt}]`);
                 for (const element of elements) {
                     element.removeAttribute(postAtt);
-                    element.classList.remove(VARS.cssHide);
-                    element.classList.remove(VARS.cssHideEl);
-                    element.classList.remove(VARS.cssHideNumberOfShares);
-                    element.classList.remove(VARS.cssShow);
+                    element.removeAttribute(VARS.cssHide);
+                    element.removeAttribute(VARS.cssHideEl);
+                    element.removeAttribute(VARS.cssHideNumberOfShares);
+                    element.removeAttribute(VARS.cssShow);
                 }
                 // -- remove other attributes
                 elements = document.querySelectorAll(`[${postAttCPID}], [${postAttChildFlag}]`);
@@ -2910,14 +2949,14 @@
                         element.removeAttribute(postAttChildFlag);
                     }
                 }
-                // -- remove classes
-                // -- (don't add .show to query, the button needs it ...)
-                elements = document.querySelectorAll(`.${VARS.cssHide}, .${VARS.cssHideEl}, .${VARS.cssHideNumberOfShares}`);
+                // -- remove some more attributes
+                // -- (don't add cssShow to query, the button needs it ...)
+                elements = document.querySelectorAll(`[${VARS.cssHide}], [${VARS.cssHideEl}], [${VARS.cssHideNumberOfShares}]`);
                 for (const element of elements) {
-                    element.classList.remove(VARS.cssHide);
-                    element.classList.remove(VARS.cssHideEl);
-                    element.classList.remove(VARS.cssHideNumberOfShares);
-                    element.classList.remove(VARS.cssShow);
+                    element.removeAttribute(VARS.cssHide);
+                    element.removeAttribute(VARS.cssHideEl);
+                    element.removeAttribute(VARS.cssHideNumberOfShares);
+                    element.removeAttribute(VARS.cssShow);
                 }
 
                 if (VARS.isNF) {
@@ -3005,8 +3044,13 @@
 
     // -- toggleDialog() function placed here to allow a GM.registerMenuCommand(...) to call it.
     function toggleDialog() {
-        let dlg = document.getElementById('fbcmf');
-        dlg.classList.toggle(VARS.cssShow);
+        const elDialog = document.getElementById('fbcmf');
+        if (elDialog.hasAttribute(VARS.cssShow)) {
+            elDialog.removeAttribute(VARS.cssShow);
+        }
+        else {
+            elDialog.setAttribute(VARS.cssShow, '');
+        }
     }
 
     // adjust some settings - if URL has changed.
@@ -3107,12 +3151,12 @@
             // when to display the cmf button
             if (VARS.isAF) {
                 if (VARS.btnToggleEl) {
-                    VARS.btnToggleEl.classList.add(VARS.cssShow);
+                    VARS.btnToggleEl.setAttribute(VARS.cssShow, '');
                 }
             }
             else {
                 if (VARS.btnToggleEl) {
-                    VARS.btnToggleEl.classList.remove(VARS.cssShow);
+                    VARS.btnToggleEl.removeAttribute(VARS.cssShow);
                 }
             }
 
@@ -3157,43 +3201,39 @@
 
     function scanTreeForText(theNode) {
         const arrayTextValues = [];
-        const divs = theNode.querySelectorAll(':scope > div');
+        const elements = theNode.querySelectorAll(':scope > div, :scope > blockquote, :scope > span');
 
-        for (const theDiv of divs) {
-            if (theDiv.hasAttribute('aria-hidden') && theDiv.getAttribute('aria-hidden') === "false") {
+        for (const element of elements) {
+            if (element.hasAttribute('aria-hidden') && element.getAttribute('aria-hidden') === "false") {
                 // -- skip this branch (hidden)
                 continue;
             }
 
             // -- scan this branch
-            const walk = document.createTreeWalker(theDiv, NodeFilter.SHOW_TEXT, null);
-            let n;
-            while ((n = walk.nextNode())) {
-                const elParent = n.parentElement;
+            const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+            let currentNode;
+            while ((currentNode = walk.nextNode())) {
+                const elParent = currentNode.parentElement;
                 const elParentTN = elParent.tagName.toLowerCase();
-                const val = cleanText(n.textContent).trim();
+                const val = cleanText(currentNode.textContent).trim();
 
                 if (val === '' || val.toLowerCase() === 'facebook') {
                     // -- skip this node
-                    // console.info(log + 'scanTreeForText(); skipping (<empty/facebook>):', elParent);
                     continue;
                 }
 
                 if (elParent.hasAttribute('aria-hidden') && elParent.getAttribute('aria-hidden') === 'true') {
                     // -- skip this node
-                    // console.info(log + 'scanTreeForText(); skipping (aria-hidden=true):', elParent);
-                    continue;
-                }
-
-                if (elParentTN === 'title') {
-                    // -- skip this node
-                    // console.info(log + 'scanTreeForText(); skipping (<title>):', elParent);
                     continue;
                 }
 
                 if (elParentTN === 'div' && elParent.hasAttribute('role') && elParent.getAttribute('role') === 'button') {
                     // -- skip this node
-                    // console.info(log + 'scanTreeForText(); skipping (role=button):', elParent);
+                    continue;
+                }
+
+                if (elParentTN === 'title') {
+                    // -- skip this node
                     continue;
                 }
 
@@ -3204,7 +3244,6 @@
                 }
                 else {
                     // -- skip this node (hidden / meta info)
-                    // console.info(log + 'scanTreeForText(); skipping (<hidden/role=button>):', elParent);
                 }
             }
         }
@@ -3222,7 +3261,8 @@
             let val = cleanText(n.textContent).trim();
             if ((val !== '') && (val.length > 1) && (val.toLowerCase() !== 'facebook')) {
                 // - keep 2+ char strings.
-                arrayTextValues.push(val);
+                // arrayTextValues.push(val);
+                arrayTextValues.push(val.toLowerCase());
             }
         }
         return arrayTextValues;
@@ -3304,6 +3344,11 @@
         return elTab;
     }
 
+    function sanitizeReason(reason) {
+        // -- setting an attribute, so remove double quotes from reason's text.
+        return reason.replaceAll('"', '');
+    }
+
     function hideFeature(post, reason, addPostTab = false) {
         // -- hide something - keep it out of the regular feed stuff.
         // -- no counter
@@ -3317,11 +3362,11 @@
             }
         }
 
-        post.classList.add(VARS.cssHide);
-        post.setAttribute(postAtt, reason);
+        post.setAttribute(VARS.cssHide, '');
+        post.setAttribute(postAtt, sanitizeReason(reason));
 
         if (addPostTab === true) {
-            // - add mini-tab (indicates why post is hidden)
+            // - add mini-tab to indicate why post is hidden
             const elTabSpot = post.querySelector(`:scope > div:not([${postAttTab}]) > div > div > div:first-child`);
             if (elTabSpot) {
                 elTabSpot.before(createPostTab(reason));
@@ -3330,25 +3375,25 @@
 
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            post.classList.add(VARS.cssShow);
+            post.setAttribute(VARS.cssShow, '');
         }
     }
 
     function toggleHiddenElements() {
-        const containers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
-        const blocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
-        const shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
+        const containers = Array.from(document.querySelectorAll('[' + VARS.cssHide + ']'));
+        const blocks = Array.from(document.querySelectorAll('[' + VARS.cssHideEl + ']'));
+        const shares = Array.from(document.querySelectorAll('[' + VARS.cssHideNumberOfShares + ']'));
 
         const elements = [...containers, ...blocks, ...shares];
 
         if (VARS.Options.VERBOSITY_DEBUG) {
             for (const element of elements) {
-                element.classList.add(VARS.cssShow);
+                element.setAttribute(VARS.cssShow, '');
             }
         }
         else {
             for (const element of elements) {
-                element.classList.remove(VARS.cssShow);
+                element.removeAttribute(VARS.cssShow);
             }
         }
     }
@@ -3359,10 +3404,10 @@
         const elToggleBarContainer = ev.target.closest(`div[${postAttTab}]`);
         // -- grab the post
         const elPost = elToggleBarContainer.parentElement;
-        // -- then toggle the VARS.cssShow class on the post.
+        // -- then toggle the VARS.cssShow attribute on the post.
         if (!elToggleBarContainer.hasAttribute(postAttCPID)) {
             // -- single post being hidden
-            elPost.classList.toggle(VARS.cssShow);
+            elPost.hasAttribute(VARS.cssShow) ? elPost.removeAttribute(VARS.cssShow) : elPost.setAttribute(VARS.cssShow, '');
         }
         else {
             // -- multiple consecutive posts being hidden
@@ -3370,14 +3415,14 @@
             const flaggedPosts = document.querySelectorAll(`[${postAtt}][${postAttCPID}=${cpid}]`);
             if (flaggedPosts.length > 0) {
                 // -- cannot use classList.toggle() while posts are still being loaded ...
-                if (elPost.classList.contains(VARS.cssShow)) {
+                if (elPost.hasAttribute(VARS.cssShow)) {
                     for (const flaggedPost of flaggedPosts) {
-                        flaggedPost.classList.remove(VARS.cssShow);
+                        flaggedPost.removeAttribute(VARS.cssShow);
                     }
                 }
                 else {
                     for (const flaggedPost of flaggedPosts) {
-                        flaggedPost.classList.add(VARS.cssShow);
+                        flaggedPost.setAttribute(VARS.cssShow, '');
                     }
                 }
             }
@@ -3441,12 +3486,12 @@
         }
 
         // - flag & hide the post
-        post.setAttribute(postAtt, reason);
-        post.classList.add(VARS.cssHide);
+        post.setAttribute(VARS.cssHide, '');
+        post.setAttribute(postAtt, sanitizeReason(reason));
 
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            post.classList.add(VARS.cssShow);
+            post.setAttribute(VARS.cssShow, '');
         }
 
         //console.info(log+'hidePost():', VARS.echoElFirst);
@@ -3455,11 +3500,11 @@
     function nf_dropTags(post) {
         // -- remove cmf's attributes/classes from empty posts.
         post.removeAttribute(postAtt);
-        post.classList.remove(VARS.cssHide);
-        post.classList.remove(VARS.cssHideEl);
-        post.classList.remove(VARS.cssShow);
+        post.removeAttribute(VARS.cssHide);
+        post.removeAttribute(VARS.cssHideEl);
+        post.removeAttribute(VARS.cssShow);
         // -- other attribute(s)
-        if (post.hasAttribute(postAttCPID)) post.removeAttribute(postAttCPID);
+        post.removeAttribute(postAttCPID);
         // -- remove the notification tab.
         if (post.querySelectorAll('div, h6').length > 0) {
             post.removeChild(post.firstElementChild);
@@ -3468,11 +3513,11 @@
     }
 
     function hideBlock(block, link, reason) {
-        block.classList.add(VARS.cssHideEl);
-        link.setAttribute(postAtt, reason);
+        block.setAttribute(VARS.cssHideEl, '');
+        link.setAttribute(postAtt, sanitizeReason(reason));
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            block.classList.add(VARS.cssShow);
+            block.setAttribute(VARS.cssShow, '');
         }
     }
 
@@ -3593,6 +3638,11 @@
             // -- February 2023 (no need for light dusting ...)
             ':scope div[aria-posinset] > div > div > div > div > div > div:not([data-0]) > div > div > div:nth-of-type(1) > div > div > div > div > span',
             ':scope div[aria-describedby] > div > div > div > div > div > div:not([data-0]) > div > div > div:nth-of-type(1) > div > div > div > div > span',
+
+            // -- Oct/Nov 2023 (provisional - not tested by zbluebugz)
+            'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > span > span > span:nth-of-type(2)',
+            'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > span > span > span:nth-of-type(2)',
+
             // -- December 2022 - #2
             ':scope div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span',
             ':scope div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span',
@@ -3707,12 +3757,14 @@
     }
 
     function findFirstMatch(longText, valuesToFind) {
-        for (const value of valuesToFind) {
-            if (longText.includes(value)) {
-                return value;
-            }
-        }
-        return '';
+        // for (const value of valuesToFind) {
+        //     if (longText.includes(value)) {
+        //         return value;
+        //     }
+        // }
+        // return '';
+        const foundWord = valuesToFind.find(word => longText.includes(word));
+        return foundWord !== undefined ? foundWord : '';
     }
 
     function findFirstMatchRE(longText, patterns) {
@@ -3780,8 +3832,8 @@
         // :: return : blocked text or ''.
         if (VARS.Filters.MP_BLOCKED_TEXT.length > 0) {
             const itemPrices = mp_scanTreeForText(elBlockOfText);
-            const idx = VARS.Filters.MP_BLOCKED_TEXT_LC.indexOf(itemPrices[0].toLowerCase());
-            return (idx >= 0) ? VARS.Filters.MP_BLOCKED_TEXT[idx] : '';
+            const blockedPrices = findFirstMatch(itemPrices, VARS.Filters.MP_BLOCKED_TEXT_LC);
+            return blockedPrices;
         }
         return '';
     }
@@ -3811,9 +3863,14 @@
         // :: return <nothing>
         const query = `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`;
         const items = document.querySelectorAll(query);
-        items.forEach(item => {
+        for (const item of items ) {
             // - item's container
             const box = item.closest('div[style]');
+            if (box.hasAttribute(postAttMPSkip)) {
+                if (box.innerHTML.length == box.getAttribute(postAttMPSkip)) {
+                    continue;
+                }
+            }
             // - blocks of text to scan
             const queryTextBlock = ':scope > div > div:nth-of-type(2) > div'
             const blocksOfText = item.querySelectorAll(queryTextBlock);
@@ -3834,24 +3891,33 @@
                 else {
                     // -- flag the item not to be scanned again
                     box.setAttribute(postAtt, '');
+                    // box.setAttribute(postAttMPSkip, box.innerHTML.length);
                 }
             }
-        });
+        };
     }
 
     function vf_scrubSponsoredBlock(post) {
         // - some videos have a sponsored block beneath the video block/section
         // - includes "watch more ___ videos by ___"
         // :: return <nothing>
-        const query = `:scope > div > div > div > div > div:nth-of-type(2) > div`;
-        const blocks = post.querySelectorAll(query);
-        if (blocks.length > 3) {
-            const block = blocks[2]; // -- 3rd block
-            const isJunk = block.querySelector(`:scope > div > div > div > div > div > div > span > a:not([${postAtt}])`);
-            if (isJunk !== null) {
-                hideBlock(block, isJunk, KeyWords.SPONSORED[VARS.language]);
+        const queryForContainer = ':scope > div > div > div > div > div > div:nth-of-type(2)';
+        const blocksContainer = post.querySelector(queryForContainer);
+        if(blocksContainer && blocksContainer.childElementCount > 0) {
+            const adBlock = blocksContainer.querySelector(':scope > a');
+            if (adBlock && !adBlock.hasAttribute(postAtt)) {
+                hideBlock(adBlock, adBlock, KeyWords.SPONSORED[VARS.language]);
             }
         }
+        // const query = `:scope > div > div > div > div > div:nth-of-type(2) > div`;
+        // const blocks = post.querySelectorAll(query);
+        // if (blocks.length > 3) {
+        //     const block = blocks[2]; // -- 3rd block
+        //     const isJunk = block.querySelector(`:scope > div > div > div > div > div > div > span > a:not([${postAtt}])`);
+        //     if (isJunk !== null) {
+        //         hideBlock(block, isJunk, KeyWords.SPONSORED[VARS.language]);
+        //     }
+        // }
     }
 
     function swatTheMosquitos(post) {
@@ -3917,10 +3983,18 @@
                 }
                 if (elParent !== null) {
                     hideFeature(elParent, KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language], false);
-                    elCreateStory.setAttribute(postAttChildFlag, '1');                    
+                    elCreateStory.setAttribute(postAttChildFlag, '1');
                 }
             }
         }
+    }
+
+    function nf_isStoriesPost(post) {
+        // - Stories posts
+        // -- appears in News-Feed stream
+        const queryForStory = '[href^="/stories/"][href*="source=from_feed"]';
+        const elStory = post.querySelector(queryForStory);
+        return (elStory) ? KeyWords.NF_STORIES[VARS.language] : '';
     }
 
     function nf_cleanTheConsoleTable(findItem = 'Sponsored') {
@@ -3949,10 +4023,10 @@
             elItem = asideContainer.querySelector(`:scope > div:not([${postAtt}])`);
             if (elItem && elItem.innerHTML.length > 0) {
                 // -- check for birthdays
-                const birthdays = Array.from(elItem.querySelectorAll('a[href="/events/birthdays/"]')).length > 0;
+                const birthdays = elItem.querySelectorAll('a[href="/events/birthdays/"]').length > 0;
                 // -- check for "your pages and profiles"
                 // -- suggested groups only have 1 i[..] attribute
-                const pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 1;
+                const pagesAndProfiles = elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]').length > 1;
 
                 if (birthdays === false && pagesAndProfiles === false) {
                     reason = KeyWords.NF_SUGGESTIONS[VARS.language];
@@ -4057,7 +4131,7 @@
             const elLink = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE.pathMatch}"]:not([${postAtt}])`);
             if (elLink !== null) {
                 // - block @ 5 levels up.
-                let block = climbUpTheTree(elLink, 5);
+                const block = climbUpTheTree(elLink, 5);
                 hideBlock(block, elLink, KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE[VARS.language]);
                 hiding = true;
             }
@@ -4089,9 +4163,9 @@
         const query = `div[data-visualcompletion="ignore-dynamic"] > div:not([class]) > div:not([class]) > div:not([class]) > div[class] > div:nth-of-type(1) > div > div > span > div:not([id]) > span[dir]:not(${postAtt})`;
         const shares = post.querySelectorAll(query);
         for (const share of shares) {
-            share.classList.add(VARS.cssHideNumberOfShares);
+            share.setAttribute(VARS.cssHideNumberOfShares, '');
             if (VARS.Options.VERBOSITY_DEBUG) {
-                share.classList.add(VARS.cssShow);
+                share.setAttribute(VARS.cssShow, '');
             }
             share.setAttribute(postAtt, 'Shares');
         }
@@ -4116,7 +4190,7 @@
             // -- February 2023 (promoted above Sept/August due to no hard-coded class names.
             'h3[dir="auto"] ~ div:not([class]) > div[class]',
             'h2[dir="auto"] ~ div:not([class]) > div[class]',
-            // -- September 2023 
+            // -- September 2023
             // -- - home news feed
             'h3[dir="auto"] + div > div.x1lliihq',
             // -- - recent news feed
@@ -4156,6 +4230,7 @@
             nf_cleanTheConsoleTable('Suggestions');
         }
 
+        // -- news feed stream ...
         const posts = nf_getCollectionOfPosts();
 
         // console.info(log + 'mopUpTheNewsFeed(); posts:', posts);
@@ -4168,6 +4243,7 @@
 
             // for (let post of posts) {
             for (let i = start; i < count; i++) {
+
                 const post = posts[i];
 
                 if (post.innerHTML.length === 0) {
@@ -4217,6 +4293,9 @@
                         }
                         if (hideReason === '' && VARS.Options.NF_BLOCKED_ENABLED) {
                             hideReason = nf_isBlockedText(post);
+                        }
+                        if (hideReason === '' && VARS.Options.NF_STORIES) {
+                            hideReason = nf_isStoriesPost(post);
                         }
                         // -- placed here due to "overlaps" between this rule and at least 1 of the above rule.
                         if (hideReason === '' && isSponsored(post)) {
@@ -4452,11 +4531,12 @@
                 }
                 else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
                     // -- skip these - already been scanned a few times
+                    // console.info(log + 'video; skipping;', post[postPropDS], VARS.scanCountMaxLoop, post);
                 }
                 else {
                     doLightDusting(post);
 
-                    if (isSponsored(post)) {
+                    if (hideReason === '' && isSponsored(post)) {
                         hideReason = KeyWords.SPONSORED[VARS.language];
                     }
                     if (hideReason === '' && VARS.Options.VF_BLOCKED_ENABLED) {
@@ -4470,7 +4550,7 @@
                     VARS.echoCount++;
                     if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
-                        hidePost(post, hideReason)
+                        hidePost(post, hideReason);
                     }
                 }
                 else {
@@ -4515,7 +4595,7 @@
                     VARS.echoCount++;
                     if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
-                        hidePost(post, hideReason)
+                        hidePost(post, hideReason);
                     }
                 }
                 else {
@@ -4528,10 +4608,10 @@
     }
 
     function mp_hideBox(box, reason) {
-        box.classList.add(VARS.cssHideEl);
-        box.setAttribute(postAtt, reason);
+        box.setAttribute(VARS.cssHideEl, '');
+        box.setAttribute(postAtt, sanitizeReason(reason));
         if (VARS.Options.VERBOSITY_DEBUG) {
-            box.classList.add(VARS.cssShow);
+            box.setAttribute(VARS.cssShow, '');
         }
     }
 
@@ -4540,7 +4620,7 @@
         const collectionOfLinks = document.querySelectorAll('a[href*="/?ref="]');
         for (const trackingLink of collectionOfLinks) {
             trackingLink.href = trackingLink.href.split('/?ref')[0];
-        };
+        }
     }
 
     function mopUpTheMarketplaceFeed() {
@@ -4563,8 +4643,8 @@
                     mp_hideBox(heading.parentElement, KeyWords.SPONSORED[VARS.language]);
                 }
                 for (const item of items) {
-                    const parItem = climbUpTheTree(item, 3);
-                    mp_hideBox(parItem, KeyWords.SPONSORED[VARS.language]);
+                    const parentItem = climbUpTheTree(item, 3);
+                    mp_hideBox(parentItem, KeyWords.SPONSORED[VARS.language]);
                 }
             }
             if (VARS.Options.MP_BLOCKED_ENABLED) {
@@ -4634,7 +4714,7 @@
             for (const element of elements) {
                 // console.info(log + 'mp-clean:', element);
                 element.setAttribute(postAtt, element.innerHTML.length);
-                let itemBox = element.parentElement.closest('a').parentElement.parentElement.parentElement;
+                const itemBox = climbUpTheTree(element.parentElement.closest('a'), 3);
                 mp_hideBox(itemBox, KeyWords.SPONSORED[VARS.language]);
             }
             if (VARS.Options.MP_BLOCKED_ENABLED) {
@@ -4676,7 +4756,7 @@
                 if (hideReason.length > 0) {
                     // -- increment hidden count
                     VARS.echoCount++;
-                    if (hideReason != 'hidden') {
+                    if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
                         hidePost(post, hideReason);
                     }
@@ -4722,20 +4802,23 @@
                             if ((mnode.nodeType === Node.ELEMENT_NODE) && ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0))) {
                                 // - skip these ...
                             }
-                            else if (VARS.isNF) {
-                                mopUpTheNewsFeed();
-                            }
-                            else if (VARS.isGF) {
-                                mopUpTheGroupsFeed();
-                            }
-                            else if (VARS.isVF) {
-                                mopUpTheWatchVideosFeed();
-                            }
-                            else if (VARS.isMF) {
-                                mopUpTheMarketplaceFeed();
-                            }
-                            else if (VARS.isSF) {
-                                mopUpTheSearchFeed();
+                            else {
+                                // console.info(log + 'bodyMutating();', VARS.isNF, VARS.isGF, VARS.isVF, VARS.isMF, VARS.isSF);
+                                if (VARS.isNF) {
+                                    mopUpTheNewsFeed();
+                                }
+                                else if (VARS.isGF) {
+                                    mopUpTheGroupsFeed();
+                                }
+                                else if (VARS.isVF) {
+                                    mopUpTheWatchVideosFeed();
+                                }
+                                else if (VARS.isMF) {
+                                    mopUpTheMarketplaceFeed();
+                                }
+                                else if (VARS.isSF) {
+                                    mopUpTheSearchFeed();
+                                }
                             }
                         }
                     }
@@ -4760,6 +4843,7 @@
                 window.setTimeout(addExtraCSS, 150); // fb is sometimes laggy ...
                 buildMoppingDialog();
                 firstRun = false;
+                // VARS.fbcmfVersion = (GM.info.script.version) ? (GM.info.script.version) : '';
             }
             if (setFeedSettings()) {
                 // - clear out mutations not yet processed ...
