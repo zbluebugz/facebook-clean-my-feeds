@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.26
+// @version      4.27
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://www.facebook.com/*
 // @match        https://web.facebook.com/*
@@ -24,6 +24,8 @@
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
 
+    v4.27 :: December 2023
+        Added Russian (Русский) - supplied by github user Kenya-West
     v4.26 :: November 2023
         Added web.facebook.com to @match conditions
         Added Survey detection component (Home / News feed)
