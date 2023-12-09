@@ -136,6 +136,7 @@
             'fi', // Suomi - Finnish (Finland)
             'tr', // Türkçe (Turkey)
             'el', // Ελληνικά (Greek)
+            'ru', // Русский (Russian)
         ],
 
         // - Sponsored
@@ -160,6 +161,7 @@
             'fi': 'Sponsoroitu',
             'tr': 'Sponsorlu',
             'el': 'Χορηγούμενη',
+            'ru': 'Реклама',
         },
 
         // *** News Feed ::
@@ -187,6 +189,7 @@
             'fi': '"Tarinat | Reels | Rooms" -välilehtien luetteloruutu',
             'tr': '"Hikayeler | Makaralar | Odalar" sekmeleri liste kutusu',
             'el': 'Λίστα καρτελών "Ιστορίες | Reels | Δωμάτια"',
+            'ru': 'Список вкладок "Истории | Reels | Комнаты"',
             'defaultEnabled': false
         },
         // - "Stories" posts (separate from tablist, in News Feed stream)
@@ -211,6 +214,7 @@
             'fi': 'Tarinat',
             'tr': 'Hikayeler',
             'el': 'Ιστορίες',
+            'ru': 'Истории',
             'defaultEnabled': false
         },
         // - fb's survey
@@ -237,6 +241,7 @@
             'fi': 'Kysely',
             'tr': 'Anket',
             'el': 'Τοπογράφηση',
+            'ru': 'Опрос',
             'defaultEnabled': false
         },
 
@@ -262,6 +267,7 @@
             'fi': 'Ihmiset, jotka saatat tuntea',
             'tr': 'Tanıyor olabileceğin kişiler',
             'el': 'Άτομα που ίσως γνωρίζετε',
+            'ru': 'Люди, которых вы можете знать',
             'defaultEnabled': false
         },
 
@@ -288,6 +294,7 @@
             'fi': 'Maksettu kumppanuus',
             'tr': 'ücretli ortaklık',
             'el': 'Πληρωμένη συνεργασία',
+            'ru': 'Платное партнерство',
             'defaultEnabled': true
         },
 
@@ -314,6 +321,7 @@
             'fi': 'Sponsoroitu · Maksaja ______',
             'tr': 'Sponsorlu · ______ tarafından ödendi',
             'el': 'Χορηγούμενο · Πληρωμένο από ______',
+            'ru': 'Реклама · Оплачено ______',
             'defaultEnabled': true
         },
 
@@ -339,6 +347,7 @@
             'fi': 'Ehdotuksia / Suosituksia',
             'tr': 'Öneriler',
             'el': 'Προτάσεις / Συστάσεις',
+            'ru': 'Предложения / Рекомендации',
             'defaultEnabled': false
         },
 
@@ -364,6 +373,7 @@
             'fi': 'Seuraa',
             'tr': 'Takip Et',
             'el': 'Ακολούθησε',
+            'ru': 'Подписаться',
             'defaultEnabled': false
         },
 
@@ -389,6 +399,7 @@
             'fi': 'Osallistua',
             'tr': 'Katılmak',
             'el': 'Συμμετέχω',
+            'ru': 'Участвовать',
             'defaultEnabled': false
         },
 
@@ -414,6 +425,7 @@
             'fi': 'Keloja ja lyhyitä videoita',
             'tr': 'Makaralar ve kısa videolar',
             'el': 'Reel και σύντομα βίντεο',
+            'ru': 'Reels и короткие видео',
             'defaultEnabled': false
         },
 
@@ -439,6 +451,7 @@
             'fi': 'Kela/lyhyt video',
             'tr': 'makara/kısa video',
             'el': 'Ριλς/μικρό βίντεο',
+            'ru': 'Reels/короткое видео',
             'defaultEnabled': false
         },
 
@@ -464,6 +477,7 @@
             'fi': 'Kela/lyhyt video',
             'tr': 'makara/kısa video',
             'el': 'Εκδηλώσεις που μπορεί να σας αρέσουν',
+            'ru': 'Мероприятия, которые вам могут понравиться',
             'defaultEnabled': false,
         },
 
@@ -489,6 +503,7 @@
             'fi': 'Keskeytä animoidut GIF-kuvat',
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
+            'ru': 'Приостановить анимированные GIF',
             'defaultEnabled': false
         },
 
@@ -514,6 +529,7 @@
             'fi': '# jakoa',
             'tr': '# Paylaşım',
             'el': '# μερίδια',
+            'ru': '# поделились',
             'defaultEnabled': false
         },
 
@@ -542,6 +558,7 @@
             'fi': 'Maksettu kumppanuus',
             'tr': 'ücretli ortaklık',
             'el': 'Πληρωμένη συνεργασία',
+            'ru': 'Платное партнерство',
             'defaultEnabled': true
         },
 
@@ -567,6 +584,7 @@
             'fi': 'Ehdotuksia / Suosituksia',
             'tr': 'Öneriler',
             'el': 'Προτάσεις / Συστάσεις',
+            'ru': 'Предложения / Рекомендации',
             'defaultEnabled': false
         },
 
@@ -592,6 +610,7 @@
             'fi': 'Keloja ja lyhyitä videoita',
             'tr': 'makara/kısa video',
             'el': 'Ριλς/μικρό βίντεο',
+            'ru': 'Reel/короткое видео',
             'defaultEnabled': false
         },
 
@@ -617,6 +636,7 @@
             'fi': 'Kela/lyhyt video',
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
+            'ru': 'Приостановить анимированные GIF',
             'defaultEnabled': false,
         },
         // - # shares
@@ -641,6 +661,7 @@
             'fi': '# jakoa',
             'tr': '# Paylaşım',
             'el': '# μερίδια',
+            'ru': '# поделились',
             'defaultEnabled': false
         },
 
@@ -668,6 +689,7 @@
             'fi': 'Keskeytä animoidut GIF-kuvat',
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
+            'ru': 'Приостановить анимированные GIF',
             'defaultEnabled': false,
         },
 
@@ -695,6 +717,7 @@
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
+            'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
             'defaultEnabled': ['1', '0', '0'],
         },
         // - text filter for Groups Feed:
@@ -719,6 +742,7 @@
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
+            'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
             'defaultEnabled': ['0', '1', '0'],
         },
         // - text filter for Vidoes Feed:
@@ -743,6 +767,7 @@
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
+            'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
             'defaultEnabled': ['0', '0', '1'],
         },
         // - text filter for Marketplace feed:
@@ -767,6 +792,7 @@
             'fi': ['Marketplace-syöte'],
             'tr': ['Pazar Yeri Feed\'i'],
             'el': ['Ροή Marketplace'],
+            'ru': ['Лента Marketplace'],
             'defaultEnabled': ['1', '0', '0'],
         },
 
@@ -795,6 +821,7 @@
             'fi': 'Koronavirus (tietolaatikko)',
             'tr': 'Koronavirüs (bilgi kutusu)',
             'el': 'Κορονοϊός (πλαίσιο πληροφοριών)',
+            'ru': 'Коронавирус (информационное окно)',
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/',
         },
@@ -821,6 +848,7 @@
             'fi': 'Ilmastotiede (tietolaatikko)',
             'tr': 'İklim Bilimi (bilgi kutusu)',
             'el': 'Επιστήμη του κλίματος (πλαίσιο πληροφοριών)',
+            'ru': 'Наука о климате (информационное окно)',
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
         },
@@ -847,6 +875,7 @@
             'fi': 'Rekisteröidy (tietolaatikko)',
             'tr': 'Abone ol (bilgi kutusu)',
             'el': 'Εγγραφή (πλαίσιο πληροφοριών)',
+            'ru': 'Подписаться (информационное окно)',
             'defaultEnabled': false,
             'pathMatch': '/support/',
         },
@@ -875,6 +904,7 @@
             'fi': 'Puhdista syötteeni',
             'tr': 'Feed\'lerimi temizle',
             'el': 'Καθαρισμός των ροών μου',
+            'ru': 'Очистить мои новостные ленты',
         },
 
         // - label for News Feed:
@@ -899,6 +929,7 @@
             'fi': 'Uutisvirta',
             'tr': 'Haber akışı',
             'el': 'Ροή ειδήσεων',
+            'ru': 'Лента новостей',
         },
 
         // - label for Groups Feed:
@@ -923,6 +954,7 @@
             'fi': 'Ryhmäsyöte',
             'tr': 'Gruplar Feed\'i',
             'el': 'Ροή ομάδων',
+            'ru': 'Лента групп',
         },
 
         // - label for Videos Feed:
@@ -947,6 +979,7 @@
             'fi': 'Videosyöte',
             'tr': 'Video Beslemelerini İzle',
             'el': 'Ροή βίντεο',
+            'ru': 'Лента видео',
         },
 
         // - label for Marketplace Feed:
@@ -971,6 +1004,7 @@
             'fi': 'Marketplace-syöte',
             'tr': 'Pazar Yeri Feed\'i',
             'el': 'Ροή Marketplace',
+            'ru': 'Лента Marketplace',
         },
 
         // - label for Miscellaneous/Other items:
@@ -995,6 +1029,7 @@
             'fi': 'Sekalaiset tavarat',
             'tr': 'Diğer öğeler',
             'el': 'Διάφορα αντικείμενα',
+            'ru': 'Разное',
         },
 
         // - text filter label (title)
@@ -1019,6 +1054,7 @@
             'fi': 'Tekstisuodatin',
             'tr': 'Metin filtresi',
             'el': 'Φίλτρο κειμένου',
+            'ru': 'Текстовый фильтр',
         },
 
         // - text filter - separate keywords with new line:
@@ -1043,6 +1079,7 @@
             'fi': '(erottele sanat tai lauseet rivinvaihdolla)',
             'tr': '(sözcükleri veya tümcecikleri satır sonu ile ayırın)',
             'el': '(διαχωρίστε λέξεις ή φράσεις με αλλαγή γραμμής)',
+            'ru': '(разделяйте слова или фразы с помощью переноса строки)',
         },
 
         NF_BLOCKED_ENABLED: {
@@ -1066,6 +1103,7 @@
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
+            'ru': 'Включено',
             'defaultEnabled': false,
         },
 
@@ -1090,6 +1128,7 @@
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
+            'ru': 'Включено',
             'defaultEnabled': false,
         },
 
@@ -1114,6 +1153,7 @@
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
+            'ru': 'Включено',
             'defaultEnabled': false,
         },
 
@@ -1138,6 +1178,7 @@
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
+            'ru': 'Включено',
             'defaultEnabled': false,
         },
 
@@ -1163,6 +1204,7 @@
             'fi': 'Monisanaisuus',
             'tr': 'Ayrıntı',
             'el': 'Πολυλογία',
+            'ru': 'Сообщения',
             'defaultValue': '1',
         },
 
@@ -1188,6 +1230,7 @@
             'fi': 'Näytä viesti, jos postaus on piilotettu',
             'tr': 'Bir gönderi gizlenmişse bir mesaj göster',
             'el': 'Εμφάνιση μηνύματος αν ένας δημοσίευση είναι κρυμμένη',
+            'ru': 'Показывать сообщение, если пост скрыт',
         },
 
         // - Verbosity - say nothing:
@@ -1212,6 +1255,7 @@
             'fi': 'ei viestiä',
             'tr': 'esaj yok',
             'el': 'Κανένα μήνυμα',
+            'ru': 'сообщение отсутствует',
         },
 
         // - notification
@@ -1235,7 +1279,8 @@
             'ja': ['1 件の投稿が非表示になっています。 ルール： ', ' 件の投稿が非表示'],
             'fi': ['1 viesti piilotettu. Sääntö: ', ' viestiä piilotettu'],
             'tr': ['1 gönderi gizlendi. Kural: ', ' gönderi gizlendi'],
-            'el': ['1 δημοσίευση κρυμμένη. Κανόνας: ', ' δημοσιεύσεις κρυμμένες']
+            'el': ['1 δημοσίευση κρυμμένη. Κανόνας: ', ' δημοσιεύσεις κρυμμένες'],
+            'ru': ['1 пост скрыт. Правило: ', ' постов скрыто'],
         },
 
         // - colour of the verbosity message:
@@ -1260,6 +1305,7 @@
             'fi': 'Tekstin väri',
             'tr': 'Metin rengi',
             'el': 'Χρώμα κειμένου',
+            'ru': 'Цвет текста',
         },
 
         // - background colour of the verbosity message:
@@ -1284,6 +1330,7 @@
             'fi': 'Taustaväri',
             'tr': 'Arka plan rengi',
             'el': 'Χρώμα φόντου',
+            'ru': 'Цвет фона',
             'defaultValue': 'LightGrey',
         },
 
@@ -1309,6 +1356,7 @@
             'fi': 'Korosta "piilotetut" postaus',
             'tr': '"Gizli" gönderileri vurgulayın',
             'el': 'Επισήμανση "κρυφών αναρτήσεων"',
+            'ru': 'Выделить «скрытые» посты',
             'defaultValue': false,
         },
 
@@ -1334,6 +1382,7 @@
             'fi': 'Räätälöinnit',
             'tr': 'özelleştirmeler',
             'el': 'Προσαρμογές',
+            'ru': 'Настройки',
         },
 
         // - label for location of button:
@@ -1358,6 +1407,7 @@
             'fi': 'Puhdista syötteeni -painikkeen sijainti',
             'tr': '"Feed\'lerimi temizle" için düğmenin konumu',
             'el': 'Τοποθεσία του κουμπιού "Καθαρισμός των ροών μου"',
+            'ru': 'Расположение кнопки «Очистить мои ленты»',
         },
 
         // - location of button:
@@ -1382,6 +1432,7 @@
             'fi': ['alhaalla vasemmalla', 'ylhäällä oikealle', 'pois käytöstä (käytä "Asetukset" User Script Commands -valikossa)'],
             'tr': ['sol alt', 'sağ üst', 'devre dışı (Kullanıcı Komut Dosyası Komutları menüsünde "Ayarlar"ı kullanın)'],
             'el': ['κάτω αριστερά', 'πάνω δεξιά', 'απενεργοποιημένο (χρησιμοποιήστε "Ρυθμίσεις" στο μενού "Εντολές σεναρίου χρήστη")'],
+            'ru': ['внизу слева', 'вверху справа', 'отключено (используйте «Настройки» в меню «Пользовательские команды скрипта»)'],
             'defaultValue': '0',
         },
         // - script manager's menu item "Settings"
@@ -1406,6 +1457,7 @@
             'fi': 'Asetukset',
             'tr': 'Ayarlar',
             'el': 'Ρυθμίσεις',
+            'ru': 'Настройки',
         },
 
         // - label for location of dialog:
@@ -1430,6 +1482,7 @@
             'fi': 'Puhdista syötteeni -valintaikkunan sijainti',
             'tr': '"Feed\'lerimi temizle" iletişim kutusunun konumu',
             'el': 'Τοποθεσία της διαλόγου "Καθαρισμός των ροών μου"',
+            'ru': 'Расположение диалогового окна «Очистить мои ленты»',
         },
 
         // - location of dialog:
@@ -1454,6 +1507,7 @@
             'fi': ['vasen puoli', 'oikea puoli'],
             'tr': ['sol yan', 'sağ yan'],
             'el': ['αριστερή πλευρά', 'δεξιά πλευρά'],
+            'ru': ['левая сторона', 'правая сторона'],
             'defaultValue': '0',
         },
 
@@ -1479,6 +1533,7 @@
             'fi': 'Tekstin väri',
             'tr': 'Metin rengi',
             'el': 'Χρώμα κειμένου',
+            'ru': 'Цвет текста',
             'defaultValue': '',
         },
 
@@ -1504,6 +1559,7 @@
             'fi': 'Taustaväri',
             'tr': 'Arka plan rengi',
             'el': 'Χρώμα φόντου',
+            'ru': 'Цвет фона',
             'defaultValue': '',
         },
 
@@ -1529,6 +1585,7 @@
             'fi': 'Reunuksen väri',
             'tr': 'Kenarlık rengi',
             'el': 'Χρώμα περιγράμματος',
+            'ru': 'Цвет границы',
             'defaultValue': 'OrangeRed',
         },
 
@@ -1554,6 +1611,7 @@
             'fi': 'Vinkkejä',
             'tr': 'Ipuçları',
             'el': 'Συμβουλές',
+            'ru': 'Советы',
         },
 
         // - tip's content:
@@ -1578,6 +1636,7 @@
             'fi': 'Selaimen välimuistin tyhjentäminen palauttaa asetuksesi oletusarvoihinsa.\n\nKäytä "Vie"- ja "Tuo"-painikkeita varmuuskopioidaksesi ja palauttaaksesi mukautetut asetukset.',
             'tr': 'Tarayıcınızın önbelleğini temizlemek, ayarlarınızı varsayılan değerlerine sıfırlayacaktır. \n\nÖzelleştirilmiş ayarlarınızı yedeklemek ve geri yüklemek için "Dışa Aktar" ve "İçe Aktar" düğmelerini kullanın.',
             'el': 'Η εκκαθάριση της μνήμης cache του προγράμματος περιήγησης θα επαναφέρει τις ρυθμίσεις σας στις προεπιλεγμένες τιμές τους.\n\nΧρησιμοποιήστε τα κουμπιά "Εξαγωγή" και "Εισαγωγή" για να δημιουργήσετε αντίγραφο ασφαλείας και να επαναφέρετε τις εξατομικευμένες ρυθμίσεις σας.',
+            'ru': 'Очистка кэша браузера сбросит ваши настройки на значения по умолчанию.\n\nИспользуйте кнопки «Экспорт» и «Импорт», чтобы создать резервную копию и восстановить ваши настройки.',
         },
 
         // - dailog's action buttons:
@@ -1602,6 +1661,7 @@
             'fi': ['Tallentaa', 'Sulkea', 'Vienti', 'Tuonti'],
             'tr': ['Kaydetmek', 'Kapat', 'İhracat', 'İçe aktarmak'],
             'el': ['Αποθήκευση', 'Κλείσιμο', 'Εξαγωγή', 'Εισαγωγή'],
+            'ru': ['Сохранить', 'Закрыть', 'Экспорт', 'Импорт'],
         },
 
         DLG_FB_COLOUR_HINT: {
@@ -1624,7 +1684,8 @@
             'ja': '空白のままにすると、FB の配色が使用されます',
             'fi': 'Jätä tyhjäksi käyttääksesi FB:n värimaailmaa',
             'tr': 'FB\'un renk düzenini kullanmak için boş bırakın',
-            'el': 'Αφήστε κενό για να χρησιμοποιήσετε το χρωματικό σχήμα του FB'
+            'el': 'Αφήστε κενό για να χρησιμοποιήσετε το χρωματικό σχήμα του FB',
+            'ru': 'Оставьте пустым, чтобы использовать цветовую схему FB',
         }
     };
 
