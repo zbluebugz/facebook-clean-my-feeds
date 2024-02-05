@@ -3368,6 +3368,18 @@
 
                 // -- grab the dialog box and get the various options.
                 md = document.getElementById('fbcmf');
+
+                // -- input validation for NF_LIKES_MAXIMUM_COUNT
+                const elLikesMaximum = md.querySelector('input[name="NF_LIKES_MAXIMUM"]');
+                if (elLikesMaximum.checked) {
+                    const elLikesMaximumCount = md.querySelector('input[name="NF_LIKES_MAXIMUM_COUNT"]');
+                    if (elLikesMaximumCount.value.length === 0) {
+                        alert(KeyWords.NF_LIKES_MAXIMUM[VARS.language] + '?');
+                        elLikesMaximumCount.focus();
+                        return;
+                    }
+                }
+
                 // -- checkboxes (toggle variations)
                 cbs = Array.from(md.querySelectorAll('input[type="checkbox"][cbtype="T"]'));
                 cbs.forEach(cb => {
