@@ -24,6 +24,10 @@ User-interface languages supported:
 - 日本 (Japan)
 - Sumoi (Finland)
 - Türkçe (Turkey)
+- Ελληνικά (Greece)
+- Русский (Russia)
+- Україна (Ukraine)
+- България (Bulgaria)
 
 JavaScript code to use with Tampermonkey, Greasemonkey, Violentmonkey, Firemonkey, etc to hide certain parts of FB.
 
