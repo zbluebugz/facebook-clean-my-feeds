@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.27
+// @version      4.28
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://www.facebook.com/*
 // @match        https://web.facebook.com/*
@@ -23,6 +23,23 @@
         1) Install uBlock Origin (uBO) in your browser(s)
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
+
+    v4.28 :: January 2024
+        Enabled option to toggle Sponsored post detection rule (for uBO compatibility)
+        Added Video's "Live" detection rule
+        Enabled Reels' video controls
+        Added Ukrainian (Україна)
+        Added Bulgarian (български)
+        Dialog box - reworded "Miscellaneous items" to "Supplementary / information section"
+        Dialog box - added "Reset" button to reset the options
+        Fixed bug with Survey detection component
+        Fixed bug with Importing settings from a file
+        Revised message/notification tab for News feed
+        Revised Create Stories detection rule
+        Add option to filter posts by number of Likes
+        Fixed bug with function scanTreeForText() - failing to detect "Anonymous participant"
+        Updated Groups Feed filter rules - new HTML structure via (Feeds > Groups)
+        Added display of script's version number to dialog box
 
     v4.27 :: December 2023
         Added Russian (Русский) - supplied by github user Kenya-West
@@ -107,6 +124,8 @@
 
     'use strict';
 
+    const SCRIPT_VERSION = 'v.4.28 beta 10'; // TM doesn't like spaces in version number ...
+   
     // Due to a GreaseMonkey bug with @require, we've copied an external script into here.
     // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
     function _typeof(n) { return (_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (n) { return typeof n } : function (n) { return n && "function" == typeof Symbol && n.constructor === Symbol && n !== Symbol.prototype ? "symbol" : typeof n })(n) } !function (n, t) { "object" === ("undefined" == typeof exports ? "undefined" : _typeof(exports)) && "undefined" != typeof module ? t(exports) : "function" == typeof define && define.amd ? define(["exports"], t) : t((n = "undefined" != typeof globalThis ? globalThis : n || self).idbKeyval = {}) }(this, (function (n) { "use strict"; function t(n) { return new Promise((function (t, e) { n.oncomplete = n.onsuccess = function () { return t(n.result) }, n.onabort = n.onerror = function () { return e(n.error) } })) } function e(n, e) { var r, o = (!navigator.userAgentData && /Safari\//.test(navigator.userAgent) && !/Chrom(e|ium)\//.test(navigator.userAgent) && indexedDB.databases ? new Promise((function (n) { var t = function () { return indexedDB.databases().finally(n) }; r = setInterval(t, 100), t() })).finally((function () { return clearInterval(r) })) : Promise.resolve()).then((function () { var r = indexedDB.open(n); return r.onupgradeneeded = function () { return r.result.createObjectStore(e) }, t(r) })); return function (n, t) { return o.then((function (r) { return t(r.transaction(e, n).objectStore(e)) })) } } var r; function o() { return r || (r = e("keyval-store", "keyval")), r } function u(n, e) { return n("readonly", (function (n) { return n.openCursor().onsuccess = function () { this.result && (e(this.result), this.result.continue()) }, t(n.transaction) })) } n.clear = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(); return n("readwrite", (function (n) { return n.clear(), t(n.transaction) })) }, n.createStore = e, n.del = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return e.delete(n), t(e.transaction) })) }, n.delMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return n.forEach((function (n) { return e.delete(n) })), t(e.transaction) })) }, n.entries = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push([n.key, n.value]) })).then((function () { return t })) }, n.get = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readonly", (function (e) { return t(e.get(n)) })) }, n.getMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readonly", (function (e) { return Promise.all(n.map((function (n) { return t(e.get(n)) }))) })) }, n.keys = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push(n.key) })).then((function () { return t })) }, n.promisifyRequest = t, n.set = function (n, e) { var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : o(); return r("readwrite", (function (r) { return r.put(e, n), t(r.transaction) })) }, n.setMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return n.forEach((function (n) { return e.put(n[1], n[0]) })), t(e.transaction) })) }, n.update = function (n, e) { var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : o(); return r("readwrite", (function (r) { return new Promise((function (o, u) { r.get(n).onsuccess = function () { try { r.put(e(this.result), n), o(t(r.transaction)) } catch (n) { u(n) } } })) })) }, n.values = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push(n.value) })).then((function () { return t })) }, Object.defineProperty(n, "__esModule", { value: !0 }) }));
@@ -137,9 +156,39 @@
             'ja', // Japanese (Japan)
             'fi', // Suomi - Finnish (Finland)
             'tr', // Türkçe (Turkey)
-            'el', // Ελληνικά (Greek)
-            'ru', // Русский (Russian)
+            'el', // Ελληνικά (Greece)
+            'ru', // Русский (Russia)
+            'uk', // Україна (Ukraine)
+            'bg', // България (Bulgaria)
         ],
+
+        // *** sample Object setup:
+        // _VARIABLE_NAME_: {
+        //     'en': '',
+        //     'pt': '',
+        //     'de': '',
+        //     'fr': '',
+        //     'es': '',
+        //     'cs': '',
+        //     'vi': '',
+        //     'it': '',
+        //     'lv': '',
+        //     'pl': '',
+        //     'nl': '',
+        //     'he': '',
+        //     'ar': '',
+        //     'id': '',
+        //     'zh-Hans': '',
+        //     'zh-Hant': '',
+        //     'ja': '',
+        //     'fi': '',
+        //     'tr': '',
+        //     'el': '',
+        //     'ru': '',
+        //     'uk': '',
+        //     'bg': '',
+        // },
+
 
         // - Sponsored
         SPONSORED: {
@@ -164,6 +213,9 @@
             'tr': 'Sponsorlu',
             'el': 'Χορηγούμενη',
             'ru': 'Реклама',
+            'uk': 'Спонсорована',
+            'bg': 'Спонсорирано',
+            'defaultEnabled': true
         },
 
         // *** News Feed ::
@@ -192,6 +244,8 @@
             'tr': '"Hikayeler | Makaralar | Odalar" sekmeleri liste kutusu',
             'el': 'Λίστα καρτελών "Ιστορίες | Reels | Δωμάτια"',
             'ru': 'Список вкладок "Истории | Reels | Комнаты"',
+            'uk': 'Поле списку вкладок «Історії | Reels | Кімнати»',
+            'bg': 'Списъчно поле на раздела „Истории | Макари | Стаи“',
             'defaultEnabled': false
         },
         // - "Stories" posts (separate from tablist, in News Feed stream)
@@ -217,6 +271,8 @@
             'tr': 'Hikayeler',
             'el': 'Ιστορίες',
             'ru': 'Истории',
+            'uk': 'Історії',
+            'bg': 'Истории',
             'defaultEnabled': false
         },
         // - fb's survey
@@ -244,6 +300,8 @@
             'tr': 'Anket',
             'el': 'Τοπογράφηση',
             'ru': 'Опрос',
+            'uk': 'Опитування',
+            'bg': 'Анкета',
             'defaultEnabled': false
         },
 
@@ -270,6 +328,8 @@
             'tr': 'Tanıyor olabileceğin kişiler',
             'el': 'Άτομα που ίσως γνωρίζετε',
             'ru': 'Люди, которых вы можете знать',
+            'uk': 'Люди, яких Ви можете знати',
+            'bg': 'Хора, които може би познавате',
             'defaultEnabled': false
         },
 
@@ -297,6 +357,8 @@
             'tr': 'ücretli ortaklık',
             'el': 'Πληρωμένη συνεργασία',
             'ru': 'Платное партнерство',
+            'uk': 'Оплачуване партнерство',
+            'bg': 'Платено партньорство',
             'defaultEnabled': true
         },
 
@@ -324,6 +386,8 @@
             'tr': 'Sponsorlu · ______ tarafından ödendi',
             'el': 'Χορηγούμενο · Πληρωμένο από ______',
             'ru': 'Реклама · Оплачено ______',
+            'uk': 'Спонсоровано · Оплачено ______',
+            'bg': 'Спонсорирано · Платено от ______',
             'defaultEnabled': true
         },
 
@@ -350,6 +414,8 @@
             'tr': 'Öneriler',
             'el': 'Προτάσεις / Συστάσεις',
             'ru': 'Предложения / Рекомендации',
+            'uk': 'Пропозиції / Рекомендації',
+            'bg': 'Предложения / Препоръки',
             'defaultEnabled': false
         },
 
@@ -376,6 +442,8 @@
             'tr': 'Takip Et',
             'el': 'Ακολούθησε',
             'ru': 'Подписаться',
+            'uk': 'Слідуйте',
+            'bg': 'Следвай',
             'defaultEnabled': false
         },
 
@@ -402,6 +470,8 @@
             'tr': 'Katılmak',
             'el': 'Συμμετέχω',
             'ru': 'Участвовать',
+            'uk': 'Беріть участь',
+            'bg': 'Участвай',
             'defaultEnabled': false
         },
 
@@ -428,6 +498,8 @@
             'tr': 'Makaralar ve kısa videolar',
             'el': 'Reel και σύντομα βίντεο',
             'ru': 'Reels и короткие видео',
+            'uk': 'Відео Reels і короткі відео',
+            'bg': 'Ленти и кратки видеоклипове',
             'defaultEnabled': false
         },
 
@@ -454,6 +526,8 @@
             'tr': 'makara/kısa video',
             'el': 'Ριλς/μικρό βίντεο',
             'ru': 'Reels/короткое видео',
+            'uk': 'Reel/коротке відео',
+            'bg': 'Рил/късо видео',
             'defaultEnabled': false
         },
 
@@ -480,6 +554,8 @@
             'tr': 'makara/kısa video',
             'el': 'Εκδηλώσεις που μπορεί να σας αρέσουν',
             'ru': 'Мероприятия, которые вам могут понравиться',
+            'uk': 'Події, які можуть вам сподобатися',
+            'bg': 'Събития, които може да ви харесат',
             'defaultEnabled': false,
         },
 
@@ -506,6 +582,8 @@
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
             'ru': 'Приостановить анимированные GIF',
+            'uk': 'Призупинити анімовані GIF-файли',
+            'bg': 'Пауза на анимирани GIF файлове',
             'defaultEnabled': false
         },
 
@@ -532,6 +610,38 @@
             'tr': '# Paylaşım',
             'el': '# μερίδια',
             'ru': '# поделились',
+            'uk': '# Поширити',
+            'bg': '# споделяния',
+            'defaultEnabled': false
+        },
+
+        // -- Maximum Likes
+        // -- hide posts having excessive Likes
+        // -- user's input count value is stored in NF_LIKES_MAXIMUM_COUNT
+        NF_LIKES_MAXIMUM: {
+            'en': 'Maximum number of Likes',
+            'pt': 'Número máximo de curtidas',
+            'de': 'Maximale Anzahl an Likes',
+            'fr': 'Nombre maximum de J\'aime',
+            'es': 'Número máximo de Me gusta',
+            'cs': 'Maximální počet hodnocení Líbí se mi',
+            'vi': 'Số lượt thích tối đa',
+            'it': 'Numero massimo di Mi piace',
+            'lv': 'Maksimālais atzīmju Patīk skaits',
+            'pl': 'Maksymalna ilość "Lubię to!"',
+            'nl': 'Maximaal aantal likes',
+            'he': 'מספר לייקים מקסימלי',
+            'ar': 'الحد الأقصى لعدد الإعجابات',
+            'id': 'Jumlah maksimum Suka',
+            'zh-Hans': '最大点赞数',
+            'zh-Hant': '最大按讚數',
+            'ja': '「いいね！」の最大数',
+            'fi': 'Maksimimäärä tykkäyksiä',
+            'tr': 'Maksimum Beğeni sayısı',
+            'el': 'Μέγιστα "Μου αρέσει"',
+            'ru': 'Максимальное количество «Нравится»',
+            'uk': 'Максимальна кількість «Подобається».',
+            'bg': 'Максимален брой Харесвания',
             'defaultEnabled': false
         },
 
@@ -561,6 +671,8 @@
             'tr': 'ücretli ortaklık',
             'el': 'Πληρωμένη συνεργασία',
             'ru': 'Платное партнерство',
+            'uk': 'Оплачуване партнерство',
+            'bg': 'Платено партньорство',
             'defaultEnabled': true
         },
 
@@ -587,6 +699,8 @@
             'tr': 'Öneriler',
             'el': 'Προτάσεις / Συστάσεις',
             'ru': 'Предложения / Рекомендации',
+            'uk': 'Пропозиції / Рекомендації',
+            'bg': 'Предложения / Препоръки',
             'defaultEnabled': false
         },
 
@@ -613,6 +727,8 @@
             'tr': 'makara/kısa video',
             'el': 'Ριλς/μικρό βίντεο',
             'ru': 'Reel/короткое видео',
+            'uk': 'Reel/коротке відео',
+            'bg': 'Рил/късо видео',
             'defaultEnabled': false
         },
 
@@ -639,6 +755,8 @@
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
             'ru': 'Приостановить анимированные GIF',
+            'uk': 'Призупинити анімовані GIF-файли',
+            'bg': 'Пауза на анимирани GIF файлове',
             'defaultEnabled': false,
         },
         // - # shares
@@ -664,10 +782,40 @@
             'tr': '# Paylaşım',
             'el': '# μερίδια',
             'ru': '# поделились',
+            'uk': '# Поширити',
+            'bg': '# споделяния',
             'defaultEnabled': false
         },
 
         // *** Watch Videos Feed ::
+
+        // - LIVE videos:
+        VF_LIVE: {
+            'en': 'LIVE',
+            'pt': 'DIRETO',
+            'de': 'LIVE',
+            'fr': 'EN DIRECT',
+            'es': 'ESTRENO',
+            'cs': 'ŽIVĚ',
+            'vi': 'TRỰC TIẾP',
+            'it': 'IN DIRETTA',
+            'lv': 'TIEŠRAIDE',
+            'pl': 'NA ŻYWO',
+            'nl': 'LIVE',
+            'he': 'שידור חי',
+            'ar': 'مباشر',
+            'id': 'LANGSUNG',
+            'zh-Hans': '现场直播',
+            'zh-Hant': '現場直播',
+            'ja': 'ライブ',
+            'fi': 'LIVE',
+            'tr': 'CANLI',
+            'el': 'ΖΩΝΤΑΝΑ',
+            'ru': 'В ЭФИРЕ',
+            'uk': 'ЕФІР',
+            'bg': 'НА ЖИВО',
+            'defaultEnabled': false,
+        },
 
         // - pause animated GIFs:
         VF_ANIMATED_GIFS: {
@@ -692,8 +840,12 @@
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
             'ru': 'Приостановить анимированные GIF',
+            'uk': 'Призупинити анімовані GIF-файли',
+            'bg': 'Пауза на анимирани GIF файлове',
             'defaultEnabled': false,
         },
+        // (videos do not have # shares count)
+
 
         // *** block text - feeds
 
@@ -720,6 +872,8 @@
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
             'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
+            'uk': ['Стрічка новин', 'Стрічка Групи', 'Стрічка відео'],
+            'bg': ['Новинарски поток', 'Поток с групи', 'Поток с видеа'],
             'defaultEnabled': ['1', '0', '0'],
         },
         // - text filter for Groups Feed:
@@ -745,6 +899,8 @@
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
             'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
+            'uk': ['Стрічка новин', 'Стрічка Групи', 'Стрічка відео'],
+            'bg': ['Новинарски поток', 'Поток с групи', 'Поток с видеа'],
             'defaultEnabled': ['0', '1', '0'],
         },
         // - text filter for Vidoes Feed:
@@ -770,6 +926,8 @@
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
             'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
+            'uk': ['Стрічка новин', 'Стрічка Групи', 'Стрічка відео'],
+            'bg': ['Новинарски поток', 'Поток с групи', 'Поток с видеа'],
             'defaultEnabled': ['0', '0', '1'],
         },
         // - text filter for Marketplace feed:
@@ -795,11 +953,13 @@
             'tr': ['Pazar Yeri Feed\'i'],
             'el': ['Ροή Marketplace'],
             'ru': ['Лента Marketplace'],
+            'uk': ['Стрічка Marketplace'],
+            'bg': ['Поток с Marketplace'],
             'defaultEnabled': ['1', '0', '0'],
         },
 
 
-        // *** Miscellaneous/Other items ::
+        // *** Miscellaneous/Supplementary/Other items ::
 
         // - Info box - coronavirus:
         OTHER_INFO_BOX_CORONAVIRUS: {
@@ -824,6 +984,8 @@
             'tr': 'Koronavirüs (bilgi kutusu)',
             'el': 'Κορονοϊός (πλαίσιο πληροφοριών)',
             'ru': 'Коронавирус (информационное окно)',
+            'uk': 'Коронавірус (інформаційне вікно)',
+            'bg': 'Коронавирус (информационна кутия)',
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/',
         },
@@ -851,6 +1013,8 @@
             'tr': 'İklim Bilimi (bilgi kutusu)',
             'el': 'Επιστήμη του κλίματος (πλαίσιο πληροφοριών)',
             'ru': 'Наука о климате (информационное окно)',
+            'uk': 'Наука про клімат (інформаційне вікно)',
+            'bg': 'Наука за климата (информационна кутия)',
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
         },
@@ -878,8 +1042,63 @@
             'tr': 'Abone ol (bilgi kutusu)',
             'el': 'Εγγραφή (πλαίσιο πληροφοριών)',
             'ru': 'Подписаться (информационное окно)',
+            'uk': 'Підписатися (інформаційне вікно)',
+            'bg': 'Абонирай се (информационна кутия)',
             'defaultEnabled': false,
             'pathMatch': '/support/',
+        },
+
+        REELS_TITLE: {
+            'en': 'Reels',
+            'pt': 'Reels',
+            'de': 'Reels',
+            'fr': 'Reels',
+            'es': 'Reels',
+            'cs': 'Reels',
+            'vi': 'Reels',
+            'it': 'Reels',
+            'lv': 'Reels',
+            'pl': 'Reels',
+            'nl': 'Reels',
+            'he': 'Reels', // -- FB's label
+            'ar': 'ريلز', // -- FB's label
+            'id': 'Reels',
+            'zh-Hans': 'Reels',
+            'zh-Hant': 'Reels',
+            'ja': 'リール動画',
+            'fi': 'Reels',
+            'tr': 'Reels',
+            'el': 'Reel',
+            'ru': 'Видео Reels',
+            'uk': 'Reels',
+            'bg': 'Ленти', // -- FB's label
+        },
+
+        REELS_CONTROLS: {
+            'en': 'Show video controls',
+            'pt': 'Mostrar controles do vídeo',
+            'de': 'Video-Steuerung anzeigen',
+            'fr': 'Afficher les contrôles vidéo',
+            'es': 'Mostrar controles de video',
+            'cs': 'Zobrazit ovládání videa',
+            'vi': 'Hiển thị điều khiển video',
+            'it': 'Mostra controlli video',
+            'lv': 'Rādīt video vadīklus',
+            'pl': 'Pokaż sterowanie wideo',
+            'nl': 'Toon video bedieningselementen',
+            'he': 'הצג אפשרויות בקרת וידאו',
+            'ar': 'عرض أدوات التحكم في الفيديو',
+            'id': 'Tampilkan kontrol video',
+            'zh-Hans': '显示视频控制',
+            'zh-Hant': '顯示影片控制',
+            'ja': 'ビデオコントロールを表示',
+            'fi': 'Näytä videon hallintaelementit',
+            'tr': 'Video kontrollerini göster',
+            'el': 'Εμφάνιση χειριστηρίων βίντεο',
+            'ru': 'Показать элементы управления видео',
+            'uk': 'Відображення елементів керування відео',
+            'bg': 'Покажи контроли на видеото',
+            'defaultEnabled': true
         },
 
         // *** Dialog box ::
@@ -907,6 +1126,8 @@
             'tr': 'Feed\'lerimi temizle',
             'el': 'Καθαρισμός των ροών μου',
             'ru': 'Очистить мои новостные ленты',
+            'uk': 'Очистити мої стрічки',
+            'bg': 'Почисти моите емисии',
         },
 
         // - label for News Feed:
@@ -932,6 +1153,8 @@
             'tr': 'Haber akışı',
             'el': 'Ροή ειδήσεων',
             'ru': 'Лента новостей',
+            'uk': 'Стрічка новин',
+            'bg': 'Новинарски поток',
         },
 
         // - label for Groups Feed:
@@ -957,6 +1180,8 @@
             'tr': 'Gruplar Feed\'i',
             'el': 'Ροή ομάδων',
             'ru': 'Лента групп',
+            'uk': 'Стрічка Групи',
+            'bg': 'Поток с групи',
         },
 
         // - label for Videos Feed:
@@ -982,6 +1207,8 @@
             'tr': 'Video Beslemelerini İzle',
             'el': 'Ροή βίντεο',
             'ru': 'Лента видео',
+            'uk': 'Стрічка відео',
+            'bg': 'Поток с видеа',
         },
 
         // - label for Marketplace Feed:
@@ -1007,31 +1234,58 @@
             'tr': 'Pazar Yeri Feed\'i',
             'el': 'Ροή Marketplace',
             'ru': 'Лента Marketplace',
+            'uk': 'Стрічка Marketplace',
+            'bg': 'Поток с Marketplace',
         },
 
         // - label for Miscellaneous/Other items:
+        // DLG_OTHER: {
+        //     'en': 'Miscellaneous items',
+        //     'pt': 'Itens miscelâneos',
+        //     'de': 'Sonstige Gegenstände',
+        //     'fr': 'Articles divers',
+        //     'es': 'Artículos diversos',
+        //     'cs': 'Různé položky',
+        //     'vi': 'Những thứ linh tinh',
+        //     'it': 'Articoli vari',
+        //     'lv': 'Dažādas vienumus',
+        //     'pl': 'Różne pozycje',
+        //     'nl': 'Diversen',
+        //     'he': 'פריטים שונים',
+        //     'ar': 'عناصر متنوعة',
+        //     'id': 'Barang lain-lain',
+        //     'zh-Hans': '杂件',
+        //     'zh-Hant': '雜項',
+        //     'ja': 'その他のアイテム',
+        //     'fi': 'Sekalaiset tavarat',
+        //     'tr': 'Diğer öğeler',
+        //     'el': 'Διάφορα αντικείμενα',
+        //     'ru': 'Разное',
+        // },
         DLG_OTHER: {
-            'en': 'Miscellaneous items',
-            'pt': 'Itens miscelâneos',
-            'de': 'Sonstige Gegenstände',
-            'fr': 'Articles divers',
-            'es': 'Artículos diversos',
-            'cs': 'Různé položky',
-            'vi': 'Những thứ linh tinh',
-            'it': 'Articoli vari',
-            'lv': 'Dažādas vienumus',
-            'pl': 'Różne pozycje',
-            'nl': 'Diversen',
-            'he': 'פריטים שונים',
-            'ar': 'عناصر متنوعة',
-            'id': 'Barang lain-lain',
-            'zh-Hans': '杂件',
-            'zh-Hant': '雜項',
-            'ja': 'その他のアイテム',
-            'fi': 'Sekalaiset tavarat',
-            'tr': 'Diğer öğeler',
-            'el': 'Διάφορα αντικείμενα',
-            'ru': 'Разное',
+            'en': 'Supplementary / information section',
+            'pt': 'Seção suplementar / informativa',
+            'de': 'Ergänzungs-/Informationsbereich',
+            'fr': 'Section supplémentaire / information',
+            'es': 'Sección suplementaria / información',
+            'cs': 'Doplňková/informační část',
+            'vi': 'Phần bổ sung/thông tin',
+            'it': 'Sezione supplementare / informativa',
+            'lv': 'Papildu / informācija sadaļa',
+            'pl': 'Sekcja uzupełniająca/informacyjna',
+            'nl': 'Aanvullende / informatie sectie',
+            'he': 'מדור משלים / מידע',
+            'ar': 'قسم التكميلي / المعلومات',
+            'id': 'Bagian tambahan / informasi',
+            'zh-Hans': '补充/资料部分',
+            'zh-Hant': '補充/資訊部分',
+            'ja': '補足・情報セクション',
+            'fi': 'Täydentävä / tieto-osio',
+            'tr': 'Tamamlayıcı / bilgi bölümü',
+            'el': 'Συμπληρωματικό τμήμα / πληροφοριακό τμήμα',
+            'ru': 'Дополнительный/информационный раздел',
+            'uk': 'Додатковий/інформаційний розділ',
+            'bg': 'Допълнителен / информационен раздел',
         },
 
         // - text filter label (title)
@@ -1057,6 +1311,8 @@
             'tr': 'Metin filtresi',
             'el': 'Φίλτρο κειμένου',
             'ru': 'Текстовый фильтр',
+            'uk': 'Текстовий фільтр',
+            'bg': 'Текстов филтър',
         },
 
         // - text filter - separate keywords with new line:
@@ -1082,6 +1338,8 @@
             'tr': '(sözcükleri veya tümcecikleri satır sonu ile ayırın)',
             'el': '(διαχωρίστε λέξεις ή φράσεις με αλλαγή γραμμής)',
             'ru': '(разделяйте слова или фразы с помощью переноса строки)',
+            'uk': '(розділяти слова або фрази розривом рядка)',
+            'bg': '(разделяйте думи или фрази с нов ред)',
         },
 
         NF_BLOCKED_ENABLED: {
@@ -1106,6 +1364,8 @@
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
             'ru': 'Включено',
+            'uk': 'Увімкнено',
+            'bg': 'Активирано',
             'defaultEnabled': false,
         },
 
@@ -1131,6 +1391,8 @@
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
             'ru': 'Включено',
+            'uk': 'Увімкнено',
+            'bg': 'Активирано',
             'defaultEnabled': false,
         },
 
@@ -1156,6 +1418,8 @@
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
             'ru': 'Включено',
+            'uk': 'Увімкнено',
+            'bg': 'Активирано',
             'defaultEnabled': false,
         },
 
@@ -1181,6 +1445,8 @@
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
             'ru': 'Включено',
+            'uk': 'Увімкнено',
+            'bg': 'Активирано',
             'defaultEnabled': false,
         },
 
@@ -1206,7 +1472,9 @@
             'fi': 'Monisanaisuus',
             'tr': 'Ayrıntı',
             'el': 'Πολυλογία',
-            'ru': 'Сообщения',
+            'ru': 'Многословие',
+            'uk': 'Багатослівність',
+            'bg': 'Многословие',
             'defaultValue': '1',
         },
 
@@ -1233,6 +1501,8 @@
             'tr': 'Bir gönderi gizlenmişse bir mesaj göster',
             'el': 'Εμφάνιση μηνύματος αν ένας δημοσίευση είναι κρυμμένη',
             'ru': 'Показывать сообщение, если пост скрыт',
+            'uk': 'Відображати повідомлення, якщо публікація прихована',
+            'bg': 'Показване на съобщение, ако публикацията е скрита',
         },
 
         // - Verbosity - say nothing:
@@ -1258,6 +1528,8 @@
             'tr': 'esaj yok',
             'el': 'Κανένα μήνυμα',
             'ru': 'сообщение отсутствует',
+            'uk': 'немає повідомлення',
+            'bg': 'Без съобщение',
         },
 
         // - notification
@@ -1283,6 +1555,8 @@
             'tr': ['1 gönderi gizlendi. Kural: ', ' gönderi gizlendi'],
             'el': ['1 δημοσίευση κρυμμένη. Κανόνας: ', ' δημοσιεύσεις κρυμμένες'],
             'ru': ['1 пост скрыт. Правило: ', ' постов скрыто'],
+            'uk': ['1 допис прихований. Правило: ', ' дописи приховано'],
+            'bg': ['1 скрита публикация. Правило: ', '  скрити публикации'],
         },
 
         // - colour of the verbosity message:
@@ -1308,6 +1582,8 @@
             'tr': 'Metin rengi',
             'el': 'Χρώμα κειμένου',
             'ru': 'Цвет текста',
+            'uk': 'Колір тексту',
+            'bg': 'Цвят на текста',
         },
 
         // - background colour of the verbosity message:
@@ -1333,6 +1609,8 @@
             'tr': 'Arka plan rengi',
             'el': 'Χρώμα φόντου',
             'ru': 'Цвет фона',
+            'uk': 'Колір фону',
+            'bg': 'Цвят на фона',
             'defaultValue': 'LightGrey',
         },
 
@@ -1359,6 +1637,8 @@
             'tr': '"Gizli" gönderileri vurgulayın',
             'el': 'Επισήμανση "κρυφών αναρτήσεων"',
             'ru': 'Выделить «скрытые» посты',
+            'uk': '«Виділяти «приховані» дописи»',
+            'bg': 'Открояване на скритите публикации',
             'defaultValue': false,
         },
 
@@ -1385,6 +1665,8 @@
             'tr': 'özelleştirmeler',
             'el': 'Προσαρμογές',
             'ru': 'Настройки',
+            'uk': 'Налаштування',
+            'bg': 'Настройки',
         },
 
         // - label for location of button:
@@ -1409,7 +1691,9 @@
             'fi': 'Puhdista syötteeni -painikkeen sijainti',
             'tr': '"Feed\'lerimi temizle" için düğmenin konumu',
             'el': 'Τοποθεσία του κουμπιού "Καθαρισμός των ροών μου"',
-            'ru': 'Расположение кнопки «Очистить мои ленты»',
+            'ru': 'Расположение кнопки «Очистить мои новостные ленты»',
+            'uk': 'Розташування кнопки «Очистити мої стрічки»',
+            'bg': 'Местоположение на бутона "Почисти моите емисии"',
         },
 
         // - location of button:
@@ -1435,6 +1719,8 @@
             'tr': ['sol alt', 'sağ üst', 'devre dışı (Kullanıcı Komut Dosyası Komutları menüsünde "Ayarlar"ı kullanın)'],
             'el': ['κάτω αριστερά', 'πάνω δεξιά', 'απενεργοποιημένο (χρησιμοποιήστε "Ρυθμίσεις" στο μενού "Εντολές σεναρίου χρήστη")'],
             'ru': ['внизу слева', 'вверху справа', 'отключено (используйте «Настройки» в меню «Пользовательские команды скрипта»)'],
+            'uk': ['внизу ліворуч', 'вгорі праворуч', 'вимкнено (використовуйте «Параметри» в меню команд сценарію користувача»)'],
+            'bg': ['долу вляво', 'горе вдясно', 'деактивирано (използвайте "Настройки" в менюто с команди за потребителски сценарии)'],
             'defaultValue': '0',
         },
         // - script manager's menu item "Settings"
@@ -1460,6 +1746,8 @@
             'tr': 'Ayarlar',
             'el': 'Ρυθμίσεις',
             'ru': 'Настройки',
+            'uk': 'Параметри',
+            'bg': 'Настройки',
         },
 
         // - label for location of dialog:
@@ -1485,6 +1773,8 @@
             'tr': '"Feed\'lerimi temizle" iletişim kutusunun konumu',
             'el': 'Τοποθεσία της διαλόγου "Καθαρισμός των ροών μου"',
             'ru': 'Расположение диалогового окна «Очистить мои ленты»',
+            'uk': 'Розташування діалогового вікна «Очистити мої стрічки»',
+            'bg': 'Местоположение на диалоговия прозорец "Почисти моите емисии"',
         },
 
         // - location of dialog:
@@ -1510,6 +1800,8 @@
             'tr': ['sol yan', 'sağ yan'],
             'el': ['αριστερή πλευρά', 'δεξιά πλευρά'],
             'ru': ['левая сторона', 'правая сторона'],
+            'uk': ['ліва сторона', 'права сторона'],
+            'bg': ['лява страна', 'дясна страна'],
             'defaultValue': '0',
         },
 
@@ -1536,6 +1828,8 @@
             'tr': 'Metin rengi',
             'el': 'Χρώμα κειμένου',
             'ru': 'Цвет текста',
+            'uk': 'Колір тексту',
+            'bg': 'Цвят на текста',
             'defaultValue': '',
         },
 
@@ -1562,6 +1856,8 @@
             'tr': 'Arka plan rengi',
             'el': 'Χρώμα φόντου',
             'ru': 'Цвет фона',
+            'uk': 'Колір фону',
+            'bg': 'Цвят на фона',
             'defaultValue': '',
         },
 
@@ -1588,6 +1884,8 @@
             'tr': 'Kenarlık rengi',
             'el': 'Χρώμα περιγράμματος',
             'ru': 'Цвет границы',
+            'uk': 'Колір кордону',
+            'bg': 'Цвят на рамката',
             'defaultValue': 'OrangeRed',
         },
 
@@ -1614,6 +1912,8 @@
             'tr': 'Ipuçları',
             'el': 'Συμβουλές',
             'ru': 'Советы',
+            'uk': 'Підказки',
+            'bg': 'Съвети',
         },
 
         // - tip's content:
@@ -1639,31 +1939,34 @@
             'tr': 'Tarayıcınızın önbelleğini temizlemek, ayarlarınızı varsayılan değerlerine sıfırlayacaktır. \n\nÖzelleştirilmiş ayarlarınızı yedeklemek ve geri yüklemek için "Dışa Aktar" ve "İçe Aktar" düğmelerini kullanın.',
             'el': 'Η εκκαθάριση της μνήμης cache του προγράμματος περιήγησης θα επαναφέρει τις ρυθμίσεις σας στις προεπιλεγμένες τιμές τους.\n\nΧρησιμοποιήστε τα κουμπιά "Εξαγωγή" και "Εισαγωγή" για να δημιουργήσετε αντίγραφο ασφαλείας και να επαναφέρετε τις εξατομικευμένες ρυθμίσεις σας.',
             'ru': 'Очистка кэша браузера сбросит ваши настройки на значения по умолчанию.\n\nИспользуйте кнопки «Экспорт» и «Импорт», чтобы создать резервную копию и восстановить ваши настройки.',
+            'uk': 'Очищення кешу браузера призведе до скидання налаштувань до значень за замовчуванням.\n\nВикористовуйте кнопки «Експорт» та «Імпорт», щоб створити резервну копію та відновити налаштовані налаштування.',
+            'bg': 'Изчистването на кеша на браузъра ще нулира настройките ви до техните стандартни стойности.\n\nИзползвайте бутоните "Експорт" и "Импорт", за да запазите и възстановите персонализираните си настройки.'
         },
 
-        // - dailog's action buttons:
         DLG_BUTTONS: {
-            'en': ['Save', 'Close', 'Export', 'Import'],
-            'pt': ['Salvar', 'Fechar', 'Exportar', 'Importar'],
-            'de': ['Speichern', 'Schließen', 'Exportieren', 'Importieren'],
-            'fr': ['Sauvegarder', 'Fermer', 'Exporter', 'Importer'],
-            'es': ['Guardar', 'Cerrar', 'Exportar', 'Importar'],
-            'cs': ['Uložit', 'Zavřít', 'Export', 'Import'],
-            'vi': ['Lưu', 'Đóng', 'Xuất', 'Nhập'],
-            'it': ['Salva', 'Chiudi', 'Esportare', 'Importare'],
-            'lv': ['Saglabājiet', 'Aizveriet', 'Eksportēt', 'Importēt'],
-            'pl': ['Zapisz', 'Zamknij', 'Eksport', 'Import'],
-            'nl': ['Opslaan', 'Sluiten', 'Exporteren', 'Importeren'],
-            'he': ['שמור', 'סגור', 'ייצא', 'ייבא'],
-            'ar': ['حفظ', 'قريب', 'يصدّر', 'يستورد'],
-            'id': ['Simpan', 'Tutup', 'Ekspor', 'Impor'],
-            'zh-Hans': ['节省', '关', '出口', '进口'],
-            'zh-Hant': ['儲存', '關閉', '匯出', '匯入'],
-            'ja': ['セーブ', 'クローズ', '輸出する', '輸入'],
-            'fi': ['Tallentaa', 'Sulkea', 'Vienti', 'Tuonti'],
-            'tr': ['Kaydetmek', 'Kapat', 'İhracat', 'İçe aktarmak'],
-            'el': ['Αποθήκευση', 'Κλείσιμο', 'Εξαγωγή', 'Εισαγωγή'],
-            'ru': ['Сохранить', 'Закрыть', 'Экспорт', 'Импорт'],
+            'en': ['Save', 'Close', 'Export', 'Import', 'Reset'],
+            'pt': ['Salvar', 'Fechar', 'Exportar', 'Importar', 'Redefinir'],
+            'de': ['Speichern', 'Schließen', 'Exportieren', 'Importieren', 'Zurücksetzen'],
+            'fr': ['Sauvegarder', 'Fermer', 'Exporter', 'Importer', 'Réinitialiser'],
+            'es': ['Guardar', 'Cerrar', 'Exportar', 'Importar', 'Reajustar'],
+            'cs': ['Uložit', 'Zavřít', 'Export', 'Import', 'Resetovat'],
+            'vi': ['Lưu', 'Đóng', 'Xuất', 'Nhập', 'Đặt lại'],
+            'it': ['Salva', 'Chiudi', 'Esportare', 'Importare', 'Ripristina'],
+            'lv': ['Saglabājiet', 'Aizveriet', 'Eksportēt', 'Importēt', 'Atiestatīt'],
+            'pl': ['Zapisz', 'Zamknij', 'Eksport', 'Import', 'Przeskładać'],
+            'nl': ['Opslaan', 'Sluiten', 'Exporteren', 'Importeren', 'Reset'],
+            'he': ['שמור', 'סגור', 'ייצא', 'ייבא', 'איפוס'],
+            'ar': ['حفظ', 'قريب', 'يصدّر', 'يستورد', 'إعادة تعيين'],
+            'id': ['Simpan', 'Tutup', 'Ekspor', 'Impor', 'Reset'],
+            'zh-Hans': ['节省', '关', '出口', '进口', '重置'],
+            'zh-Hant': ['儲存', '關閉', '匯出', '匯入', '重設'],
+            'ja': ['セーブ', 'クローズ', '輸出する', '輸入', 'リセット'],
+            'fi': ['Tallentaa', 'Sulkea', 'Vienti', 'Tuonti', 'Nollaa'],
+            'tr': ['Kaydetmek', 'Kapat', 'İhracat', 'İçe aktarmak', 'Sıfırla'],
+            'el': ['Αποθήκευση', 'Κλείσιμο', 'Εξαγωγή', 'Εισαγωγή', 'Επαναφορά'],
+            'ru': ['Сохранить', 'Закрыть', 'Экспорт', 'Импорт', 'Сброс'],
+            'uk': ['Зберегти', 'Закрити', 'Експорт', 'Імпорт', 'Скинути'],
+            'bg': ['Запази', 'Затвори', 'Експорт', 'Импорт', 'Нулиране'],
         },
 
         DLG_FB_COLOUR_HINT: {
@@ -1688,6 +1991,8 @@
             'tr': 'FB\'un renk düzenini kullanmak için boş bırakın',
             'el': 'Αφήστε κενό για να χρησιμοποιήσετε το χρωματικό σχήμα του FB',
             'ru': 'Оставьте пустым, чтобы использовать цветовую схему FB',
+            'uk': 'Залиште порожнім, щоб використовувати колірну схему FB',
+            'bg': 'Оставете празно, за да използвате цветовата схема на FB',
         }
     };
 
@@ -1699,7 +2004,7 @@
     // - idb-keyval - indexedDB wrapper
     // -- needs the "@require https://unpkg.com/idb-keyval@6.0.3/dist/umd.js" entry.
     // -- which functions do we want to use from the idb-keyval?
-    const { get, set, createStore } = idbKeyval;
+    const { get, set, del, createStore } = idbKeyval;
     // - override idb-keyval's default db and store names.
     let DBVARS = {
         DBName: 'dbCMF',
@@ -1726,9 +2031,6 @@
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
     const VARS = {
-        // -- userscript version (for cmf's dialog)
-        // VARS.fbcmfVersion: (GM.info.script.version) ? (GM.info.script.version) : '',
-
         // - mutations counter
         mutationsCount: 0,
         // - how many mutations to ignore @ start (usually non-feed elements)
@@ -1754,6 +2056,9 @@
         isMF: false, // marketplace
         isAF: false, // all feeds
         isSF: false, // search feed
+        isRF: false, // reel feed
+
+        isRF_InTimeoutMode: false, // -- processing Reel videos in timeout calls instead of mutations
 
         // groups feed type : 'group' = single group; 'groups' = multiple groups;
         gfType: '',
@@ -2008,6 +2313,10 @@
             'flex-grow:2; align-self:auto; order:2;'
         );
         addToSS(
+            '.fb-cmf header .fb-cmf-title .script-version',
+            'font-size: 0.75rem; font-weight: normal;'
+        );
+        addToSS(
             '.fb-cmf header .fb-cmf-lang-1',
             'padding-top:1.25rem;'
         );
@@ -2038,10 +2347,6 @@
             `    flex:1; overflow:auto; border:2px double ${bColour}; border-radius:0.5rem; color: var(--primary-text);`
         );
         addToSS(
-            '.fb-cmf footer.buttons',
-            'padding:1rem; text-align:center;'
-        );
-        addToSS(
             '.fb-cmf fieldset',
             'margin:0.5rem; padding:0.5rem; border-color:LightGrey;'
         );
@@ -2070,10 +2375,15 @@
             '.__fb-dark-mode .fb-cmf fieldset input[type="input"]',
             'background-color:var(--comment-background); color:var(--primary-text);'
         );
-        // -- footer - buttons
+        // -- footer - buttons + results
+        addToSS(
+            '.fb-cmf footer',
+            'display: grid; justify-content: space-evenly; padding:1rem 0.25rem; text-align:center;'
+        );
         addToSS(
             '.fb-cmf .buttons button',
-            'margin-left: 1rem; margin-right:1rem;'
+            // 'margin-left: 1rem; margin-right:1rem;'
+            'margin-left: 0.25rem; margin-right: 0.25rem;'
         );
         // -- footer - file input
         addToSS(
@@ -2083,7 +2393,7 @@
         // -- footer - import results
         addToSS(
             '.fb-cmf .fileResults',
-            'font-style:italic; margin-top: 1rem;'
+            'grid-column-start: 1; grid-column-end: 6; font-style:italic; margin-top: 1rem;'
         );
         // -- show dialog box (default is not to show)
         addToSS(
@@ -2217,19 +2527,19 @@
         // -- check that all variables exists ... if not, assign them default values..
         // -- Sponsored (always enabled)
         if (!VARS.Options.hasOwnProperty('NF_SPONSORED')) {
-            VARS.Options.NF_SPONSORED = true;
+            VARS.Options.NF_SPONSORED = KeyWords['SPONSORED'].defaultEnabled;
             changed = true;
         }
         if (!VARS.Options.hasOwnProperty('GF_SPONSORED')) {
-            VARS.Options.GF_SPONSORED = true;
+            VARS.Options.GF_SPONSORED = KeyWords['SPONSORED'].defaultEnabled;
             changed = true;
         }
         if (!VARS.Options.hasOwnProperty('VF_SPONSORED')) {
-            VARS.Options.VF_SPONSORED = true;
+            VARS.Options.VF_SPONSORED = KeyWords['SPONSORED'].defaultEnabled;
             changed = true;
         }
         if (!VARS.Options.hasOwnProperty('MP_SPONSORED')) {
-            VARS.Options.MP_SPONSORED = true;
+            VARS.Options.MP_SPONSORED = KeyWords['SPONSORED'].defaultEnabled;
             changed = true;
         }
 
@@ -2383,6 +2693,10 @@
             VARS.Options.CMF_DIALOG_BG_COLOUR = KeyWords.CMF_DIALOG_BG_COLOUR.defaultValue;
             changed = true;
         }
+        if (!VARS.Options.hasOwnProperty('NF_LIKES_MAXIMUM_COUNT')) {
+            VARS.Options.NF_LIKES_MAXIMUM_COUNT = '';
+            changed = true;
+        }
 
         if (changed) {
             // - save the changes ...
@@ -2483,6 +2797,7 @@
                 }
             }
         }
+
         // -- market place (stand-alone)
         if (VARS.Options.MP_BLOCKED_ENABLED) {
             mpBlockedTextList = mpBlockedText;
@@ -2641,6 +2956,51 @@
             return div;
         }
 
+        function createCheckboxAndInput(cbName, iName) {
+            // -- checkbox with input box.
+            // -- no read-only attributes
+            // -- no multiple keyword values.
+
+            // -- create checkbox first.
+            const CBTYPE = 'T';
+            let cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.setAttribute('cbType', CBTYPE);
+            cb.name = cbName;
+            cb.value = cbName;
+            cb.checked = VARS.Options[cbName];
+
+            // -- create input box
+            let input = document.createElement('input');
+            input.type = 'text';
+            input.name = iName;
+            input.value = VARS.Options[iName];
+            input.placeholder = '1000';
+            input.size = 6;
+            input.addEventListener('input', checkInputNumber, false);
+
+            // -- wrap checkbox and input inside a label
+            let label = document.createElement('label');
+            label.appendChild(cb);
+            label.appendChild(document.createTextNode(KeyWords[cbName][VARS.language] + ': '));
+            label.appendChild(input);
+
+            // -- wrap inside a div container ..
+            let div = document.createElement('div');
+            div.appendChild(label);
+            return div;
+        }
+
+        function checkInputNumber(event) {
+            // -- accept numbers/digits only.
+            const el = event.target;
+            if (el.value === '') {
+                return true;
+            }
+            const digitsValues = el.value.replace(/\D/g, '');
+            el.value = digitsValues.length > 0 ? parseInt(digitsValues) : '';
+        }
+
         function createDialog() {
             let dlg, hdr, hdr1, hdr2, hdr3, htxt, stxt, btn, cnt, fs, l, s, ta, div, footer;
 
@@ -2659,6 +3019,10 @@
             hdr2.className = 'fb-cmf-title';
             htxt = document.createElement('div');
             htxt.textContent = KeyWords.DLG_TITLE['en'];
+            s = document.createElement('small');
+            s.className = 'script-version';
+            s.appendChild(document.createTextNode(` (${SCRIPT_VERSION})`));
+            htxt.appendChild(s);
             hdr2.appendChild(htxt);
             if (VARS.language !== 'en') {
                 stxt = document.createElement('small');
@@ -2690,10 +3054,20 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_NF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createSingleCB('NF_SPONSORED', true));
+            fs.appendChild(createSingleCB('NF_SPONSORED', false)); // -- changed to false (Dec 2023)
             for (const key in KeyWords) {
-                if (key.slice(0, 3) === 'NF_' && key.slice(0, 8) !== 'NF_BLOCK') {
-                    fs.appendChild(createSingleCB(key));
+                if (key.slice(0, 3) === 'NF_') {
+                    if (key.slice(0, 8) === 'NF_BLOCK') {
+                        continue;
+                    }
+                    if (key.slice(0, 8) === 'NF_LIKES') {
+                        if (key === 'NF_LIKES_MAXIMUM') {
+                            fs.appendChild(createCheckboxAndInput(key, 'NF_LIKES_MAXIMUM_COUNT'));
+                        }
+                    }
+                    else {
+                        fs.appendChild(createSingleCB(key));
+                    }
                 }
             }
 
@@ -2722,7 +3096,7 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_GF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createSingleCB('GF_SPONSORED', true));
+            fs.appendChild(createSingleCB('GF_SPONSORED', false)); // -- changed to false (Dec 2023)
             for (const key in KeyWords) {
                 if (key.slice(0, 3) === 'GF_' && key.slice(0, 8) !== 'GF_BLOCK') {
                     fs.appendChild(createSingleCB(key));
@@ -2754,7 +3128,7 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_VF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createSingleCB('VF_SPONSORED', true));
+            fs.appendChild(createSingleCB('VF_SPONSORED', false)); // -- changed to false (Dec 2023)
             for (const key in KeyWords) {
                 if (key.slice(0, 3) === 'VF_' && key.slice(0, 8) !== 'VF_BLOCK') {
                     fs.appendChild(createSingleCB(key));
@@ -2786,7 +3160,7 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_MP[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createSingleCB('MP_SPONSORED', true));
+            fs.appendChild(createSingleCB('MP_SPONSORED', false)); // -- changed to false (Dec 2023)
 
             // -- Keywords to block - Marketplace Feed
             fs.appendChild(document.createElement('br'));
@@ -2839,6 +3213,14 @@
             }
             cnt.appendChild(fs);
 
+            // -- Reels
+            fs = document.createElement('fieldset');
+            l = document.createElement('legend');
+            l.textContent = KeyWords.REELS_TITLE[VARS.language];
+            fs.appendChild(l);
+            fs.appendChild(createSingleCB('REELS_CONTROLS'), false);
+            cnt.appendChild(fs);
+
             // -- Verbosity
             fs = document.createElement('fieldset');
             l = document.createElement('legend');
@@ -2887,9 +3269,9 @@
 
             dlg.appendChild(cnt);
 
-            // -- Actions (buttons)
+            // -- Actions (buttons) + status
             footer = document.createElement('footer');
-            footer.classList.add('buttons');
+            // footer.classList.add('buttons');
             btn = document.createElement('button');
             btn.textContent = KeyWords.DLG_BUTTONS[VARS.language][0]; // save
             btn.addEventListener('click', saveUserOptions, false);
@@ -2906,13 +3288,17 @@
             btn.textContent = KeyWords.DLG_BUTTONS[VARS.language][3]; // import
             btn.setAttribute('id', 'BTNImport');
             footer.appendChild(btn);
+            btn = document.createElement('button');
+            btn.textContent = KeyWords.DLG_BUTTONS[VARS.language][4]; // reset
+            btn.addEventListener('click', resetUserOptions, false);
+            footer.appendChild(btn);
             // -- file input field is hidden, but triggered by the Import button.
             let fileImport = document.createElement('input');
             fileImport.setAttribute('type', 'file');
             fileImport.setAttribute('id', `FI${postAtt}`);
             fileImport.classList.add('fileInput');
             footer.appendChild(fileImport);
-            // -- import results
+            // -- save/export/import/reset status/results
             div = document.createElement('div');
             div.classList.add('fileResults');
             footer.appendChild(div);
@@ -2965,7 +3351,7 @@
                 // -- plain inputs
                 let inputs = Array.from(content.querySelectorAll('input[type="text"]'));
                 inputs.forEach(inp => {
-                    if (VARS.Options.hasOwnProperty[inp.name]) {
+                    if (VARS.Options.hasOwnProperty(inp.name)) {
                         inp.value = VARS.Options[inp.name];
                     }
                 });
@@ -2979,6 +3365,18 @@
 
                 // -- grab the dialog box and get the various options.
                 md = document.getElementById('fbcmf');
+
+                // -- input validation for NF_LIKES_MAXIMUM_COUNT
+                const elLikesMaximum = md.querySelector('input[name="NF_LIKES_MAXIMUM"]');
+                if (elLikesMaximum.checked) {
+                    const elLikesMaximumCount = md.querySelector('input[name="NF_LIKES_MAXIMUM_COUNT"]');
+                    if (elLikesMaximumCount.value.length === 0) {
+                        alert(KeyWords.NF_LIKES_MAXIMUM[VARS.language] + '?');
+                        elLikesMaximumCount.focus();
+                        return;
+                    }
+                }
+
                 // -- checkboxes (toggle variations)
                 cbs = Array.from(md.querySelectorAll('input[type="checkbox"][cbtype="T"]'));
                 cbs.forEach(cb => {
@@ -3128,7 +3526,11 @@
                 else if (VARS.isSF) {
                     mopUpTheSearchFeed();
                 }
+                else if (VARS.isRF) {
+                    mopUpTheReelFeed('saveUserOptions');
+                }
             }
+            // console.info(log + 'saveUserOptions(); OPTIONS:', VARS.Options);
         }
 
         function exportUserOptions() {
@@ -3180,6 +3582,22 @@
             reader.readAsText(file);
         }
 
+        function resetUserOptions() {
+            // -- reset the options to original state (before customisations)
+            del(DBVARS.DBKey, DBVARS.ostore)
+                .then(() => {
+                    // console.info(log + 'resetUserOptions();', 'Data deleted successfully');
+                    setLanguageAndOptions();
+                    let result = saveUserOptions(null, 'reset').then(() => {
+                        updateDialog();
+                        return true;
+                    });
+                })
+                .catch((error) => {
+                    console.info(log + 'resetUserOptions(); Error - unable to delete Data.', error);
+                });
+        }
+
         function createToggleButton() {
             let btn = document.createElement('button');
             btn.innerHTML = VARS.logoHTML;
@@ -3222,6 +3640,7 @@
             VARS.isVF = false;
             VARS.isMF = false;
             VARS.isSF = false;
+            VARS.isRF = false;
             if ((VARS.prevPathname === '/') || (VARS.prevPathname === '/home.php')) {
                 // -- news feed
                 // -- nb: "Feeds (most recent)" combines a few feeds into one ... apply NF rules to all, except Groups.
@@ -3230,6 +3649,7 @@
                 }
                 else {
                     VARS.isGF = true;
+                    VARS.gfType = 'groups-recent';
                 }
             }
             else if (VARS.prevPathname.indexOf('/groups/') >= 0) {
@@ -3240,6 +3660,9 @@
                 }
                 else if (VARS.prevPathname.indexOf('/groups/search') >= 0) {
                     VARS.gfType = 'search';
+                }
+                else if (VARS.prevPathname.indexOf('?filter=groups&sk=h_chr') >= 0) {
+                    VARS.gfType = 'groups-recent';
                 }
                 else {
                     VARS.gfType = 'group';
@@ -3299,8 +3722,13 @@
                 // -- search results page : "All" and "Posts"
                 VARS.isSF = true;
             }
+            else if (VARS.prevPathname.indexOf('/reel/') >= 0) {
+                // -- reel(s) page
+                // VARS.isRF = true;
+                VARS.isRF = (VARS.Options.REELS_CONTROLS === true);
+            }
 
-            VARS.isAF = (VARS.isNF || VARS.isGF || VARS.isVF || VARS.isMF || VARS.isSF);
+            VARS.isAF = (VARS.isNF || VARS.isGF || VARS.isVF || VARS.isMF || VARS.isSF || VARS.isRF);
 
             // when to display the cmf button
             if (VARS.isAF) {
@@ -3317,7 +3745,8 @@
             // - reset consecutive count of hidden posts
             VARS.echoCount = 0;
 
-            // console.info(`${log}setFeedSettings() :: isAF: ${VARS.isAF}; isNF: ${VARS.isNF}; isGF: ${VARS.isGF}; isVF: ${VARS.isVF}; isMF: ${VARS.isMF}; isSF: ${VARS.isSF};`);
+            // console.info(`${log}setFeedSettings() :: isAF: ${VARS.isAF}; isNF: ${VARS.isNF}; isGF: ${VARS.isGF}; isVF: ${VARS.isVF}; isMF: ${VARS.isMF}; isSF: ${VARS.isSF}; isRF: ${VARS.isRF};`);
+
             return true;
         }
         else {
@@ -3371,6 +3800,8 @@
                 const elParentTN = elParent.tagName.toLowerCase();
                 const val = cleanText(currentNode.textContent).trim();
 
+                // console.info(log + '---> scanTreeForText(); currentNode:', currentNode, elParent, elParentTN, val);
+
                 if (val === '' || val.toLowerCase() === 'facebook') {
                     // -- skip this node
                     continue;
@@ -3381,9 +3812,17 @@
                     continue;
                 }
 
+                // if (elParentTN === 'div' && elParent.hasAttribute('role') && elParent.getAttribute('role') === 'button') {
+                //     // -- skip this node
+                //     continue;
+                // }
                 if (elParentTN === 'div' && elParent.hasAttribute('role') && elParent.getAttribute('role') === 'button') {
-                    // -- skip this node
-                    continue;
+                    // -- February 2024 - issue with "Anonymous participant" not being detected properly
+                    // -- when viewing a post in a group (not groups feed), "Anonymous participant" is inside a div:button wrapped inside an object.
+                    if (elParent.parentElement && elParent.parentElement.tagName.toLowerCase() !== 'object') {
+                        // -- skip this node
+                        continue;
+                    }
                 }
 
                 if (elParentTN === 'title') {
@@ -3391,8 +3830,22 @@
                     continue;
                 }
 
+                // const elGeneric = elParent.closest('div[role="button"]');
+                // if (elGeneric === null && val.length > 1) {
+                //     // - keep 2+ char strings.
+                //     arrayTextValues.push(...val.split('\n'));
+                // }
+                // else {
+                //     // -- skip this node (hidden / meta info)
+                // }
+
+                // -- February 2024 - issue with "Anonymous participant" not being detected properly
+                // --- usually has a div with role of button, and that div only has 1 descendant.
+                // --- previously, we skipped when a div has a button role.
                 const elGeneric = elParent.closest('div[role="button"]');
-                if (elGeneric === null && val.length > 1) {
+                const elGenericDescendantsCount = elGeneric ? countDescendants(elGeneric) : 0;
+                // console.info(log + 'scanTreeForText(); final test:', elGeneric, elParent, currentNode, elGenericDescendantsCount, val);
+                if (elGenericDescendantsCount < 2 && val.length > 1) {
                     // - keep 2+ char strings.
                     arrayTextValues.push(...val.split('\n'));
                 }
@@ -3465,6 +3918,26 @@
         }
 
         return arrayTextValues.filter(item => item !== '');
+    }
+
+    function extractTextContentVF(post, selector, whichBlock) {
+        // - get the text node values of the regular feed posts
+        // -- scan a certain block in the posts
+        // -- parameters:
+        //    post: post to scan
+        //    selector: querySelector's query
+        //    whichBlock: the block to scan for text (0 = first block ...)
+        const blocks = post.querySelectorAll(selector);
+        const arrayTextValues = [];
+        if ((blocks.length - 1) >= whichBlock) {
+            // - block 0 = Suggested headings, block 1 = title/heading, block 2 = content, block 3 = info box / comments, block 4 = comments
+            // - nb: some suggested posts only have one block ...
+            let blockToScan = blocks[whichBlock];
+            if (blockToScan.innerHTML.length > 0) {
+                arrayTextValues = arrayTextValues.concat(scanTreeForText(blockToScan));
+            }
+        }
+        return arrayTextValues;
     }
 
     function createTogglePostStateBar(reason) {
@@ -3583,13 +4056,13 @@
         }
     }
 
-    function hidePost(post, reason) {
+    function gvf_hidePost(post, reason) {
         // -- hide something ..
-        // -- if requested, echo post is hidden ..
-        // -- (separate function for marketplace)
+        // -- group feed
+        // -- video feed
         // -- Verbosity_Level: 0 = hide; 1 = single info note; 2 = consecutive info notes
 
-        // console.info(log + 'hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
+        // console.info(log + 'gvf_hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
 
         if ((VARS.Options.VERBOSITY_LEVEL !== '0') && (reason !== '')) {
             // -- in info tab mode
@@ -3604,10 +4077,9 @@
             if (VARS.echoCount < 2) {
                 // - 1 post to be hidden (includes first of consecutive group)
 
-                VARS.echoEl = createTogglePostStateBar(reason);
-
                 const postFirstChildEl = post.querySelector(':scope > :first-child');
                 if (postFirstChildEl) {
+                    VARS.echoEl = createTogglePostStateBar(reason);
                     postFirstChildEl.before(VARS.echoEl);
                 }
                 else {
@@ -3648,8 +4120,44 @@
             post.setAttribute(VARS.cssShow, '');
         }
 
-        //console.info(log+'hidePost():', VARS.echoElFirst);
+        //console.info(log+'gvf_hidePost():', VARS.echoElFirst);
     }
+
+    function nf_hidePost(post, reason) {
+        // -- hide something ..
+        // -- news feed + search feed
+        // -- no consecutive counts.
+        // -- Verbosity_Level: 0 = hide; 1|2 = single info note; (no consecutive mode)
+
+        // console.info(log + 'nf_hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
+
+        if ((VARS.Options.VERBOSITY_LEVEL !== '0') && (reason !== '')) {
+            // -- in message/info tab mode
+            // -- code 2 is switched to code 1.
+            // -- VARS.echoCount is ignored.
+
+            const postFirstChildEl = post.querySelector(':scope > :first-child');
+            if (postFirstChildEl) {
+                const elMessageTab = createTogglePostStateBar(reason);
+                postFirstChildEl.before(elMessageTab);
+            }
+            else {
+                // post has been changed while being processed (very rare)
+            }
+        }
+
+        // - flag & hide the post
+        post.setAttribute(VARS.cssHide, '');
+        post.setAttribute(postAtt, sanitizeReason(reason));
+
+        // - in debugging mode?
+        if (VARS.Options.VERBOSITY_DEBUG) {
+            post.setAttribute(VARS.cssShow, '');
+        }
+
+        //console.info(log+'nf_hidePost():', VARS.echoElFirst);
+    }
+
 
     function nf_dropTags(post) {
         // -- remove cmf's attributes/classes from empty posts.
@@ -3994,6 +4502,13 @@
         return blockedText;
     }
 
+    function vf_isVideoLive(post) {
+        // - check for "LIVE" indicator on videos
+        const liveRule = 'div[role="presentation"] ~ div > div:nth-of-type(1) > span';
+        const elLive = post.querySelectorAll(liveRule);
+        return (elLive.length > 0) ? KeyWords.VF_LIVE[VARS.language] : '';
+    }
+
     function mp_getBlockedPrices(elBlockOfText) {
         // -- scan the first price listed in itemPrices for a match.
         // -- (second price is the old one (with strike-through))
@@ -4119,12 +4634,14 @@
         // -- both appear at top of NF
         // -- FB Survey
         // -- appears after Tablist / Stories
-        const queryTabList = `div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]`;
+        const queryTabList = 'div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]';
         const elTabList = document.querySelector(queryTabList);
         if (elTabList) {
             if (doScrubTheSurvey === true) {
                 const elParent = climbUpTheTree(elTabList, 4);
-                nf_scrubTheSurvey(elParent);
+                if (elParent !== null) {
+                    nf_scrubTheSurvey(elParent);
+                }
             }
             if (doScrubTheTabbies === true) {
                 if (elTabList.hasAttribute(postAttChildFlag)) {
@@ -4160,7 +4677,8 @@
                 return elParent;
             }
 
-            const queryForCreateStory = 'a[href*="/stories/create"]';
+            // const queryForCreateStory = 'a[href*="/stories/create"]'; - too loose, grabs the FB menu's entries as well ...
+            const queryForCreateStory = 'div[role="main"] > div > div > div > div > div > div > div > div a[href*="/stories/create"]';
             const elCreateStory = document.querySelector(queryForCreateStory);
             if (doScrubTheSurvey === true && elCreateStory) {
                 const elParent = getStoriesParent(elCreateStory);
@@ -4367,19 +4885,84 @@
         nf_hideNumberOfShares(post);
     }
 
+    function nf_postExceedsLikeCount(post) {
+        // -- hide posts having Like counts over a certain number
+        // const query = 'div[data-visualcompletion="ignore-dynamic"] > div:not([class]) > div:not([class]) > div:not([class]) > div[class] > div:nth-of-type(1) > div > div[class] > span > div[role="button"] > span[class][aria-hidden] > span:not([class]) > span[class]';
+        const queryLikes = 'span[role="toolbar"] ~ div div[role="button"] > span[class][aria-hidden] > span:not([class]) > span[class]';
+        const elLikes = post.querySelectorAll(queryLikes);
+        if (elLikes.length > 0) {
+            const maxLikes = parseInt(VARS.Options.NF_LIKES_MAXIMUM_COUNT);
+            const postLikesCount = getFullNumber(elLikes[0].textContent.trim());
+            // const postLikesCount = parseInt(elLikes[0].textContent);
+            const results = postLikesCount >= maxLikes ? KeyWords.NF_LIKES_MAXIMUM[VARS.language] : '';
+            // console.info(log + 'nf_postExceedsLikeCount(); results:', results, maxLikes, postLikesCount, post);
+            return results;
+        }
+        return false;
+    }
+
+    function getFullNumber(value) {
+        // -- convert shortened numbers into full numbers
+        // -- e.g 323 to 323; 1.2K to 1200; 1.4M to 1400000;
+        // :: returns a whole number.
+        let nvalue = 0;
+        if (value !== '') {
+            value = value.toUpperCase();
+            if (value.endsWith('K') || value.endsWith('M')) {
+                let multiplier = 1;
+                let pow_Y = 0;
+                if (value.endsWith('K')) {
+                    // -- thousands
+                    multiplier = 1000;
+                    pow_Y = 3;
+                }
+                else if (value.endsWith('M')) {
+                    // -- millions
+                    multiplier = 1000000;
+                    pow_Y = 6;
+                }
+
+                let bits = value.replace(/[KM]/g, '').replace(',', '.').split('.');
+
+                nvalue = parseInt(bits[0], 10) * multiplier;
+
+                if (bits.length > 1) {
+                    nvalue += (parseInt(bits[1], 10) * Math.pow(10, (pow_Y - bits[1].length)));
+                }
+            }
+            else {
+                // -- less than 1000.
+                nvalue = parseInt(value, 10);
+            }
+        }
+        // console.info('results:', value, nvalue);
+        return nvalue;
+    }
+
+
     function nf_scrubTheSurvey(containerTablist) {
         // -- fb survey
         // - located in the container next to Stories / Reels / Rooms tablist
 
-        const elContainer = containerTablist.nextElementSibling.querySelector(':scope > div > div');
+        const elParent = containerTablist.parentElement;
+        if (!elParent.nextElementSibling) {
+            return;
+        }
+
+        const elContainer = elParent.nextElementSibling.querySelector(':scope > div > div > div');
+
+        if (elContainer.hasAttribute(postAtt)) {
+            return;
+        }
 
         const surveyLink = elContainer.querySelector('a[href^="https://www.facebook.com/survey/"]');
 
         if (surveyLink) {
-            const surveyContainer = climbUpTheTree(surveyLink, 8);
-            if (surveyContainer) {
-                hideFeature(surveyContainer, 'Survey', false);
-            }
+            // const surveyContainer = climbUpTheTree(surveyLink, 8);
+            // const surveyContainer = climbUpTheTree(surveyLink, 7);
+            // if (surveyContainer) {
+            //     hideFeature(surveyContainer, 'Survey', false);
+            // }
             hideFeature(elContainer, 'Survey', false);
             // console.info('fbcmf - survey:', elContainer, surveyLink)
         }
@@ -4513,8 +5096,11 @@
                             hideReason = nf_isStoriesPost(post);
                         }
                         // -- placed here due to "overlaps" between this rule and at least 1 of the above rule.
-                        if (hideReason === '' && isSponsored(post)) {
+                        if (hideReason === '' && VARS.Options.NF_SPONSORED && isSponsored(post)) {
                             hideReason = KeyWords.SPONSORED[VARS.language];
+                        }
+                        if (hideReason === '' && VARS.Options.NF_LIKES_MAXIMUM && VARS.Options.NF_LIKES_MAXIMUM !== '') {
+                            hideReason = nf_postExceedsLikeCount(post);
                         }
                     }
 
@@ -4523,7 +5109,7 @@
                         VARS.echoCount++;
                         if (hideReason !== 'hidden') {
                             // -- post not yet hidden, hide it.
-                            hidePost(post, hideReason);
+                            nf_hidePost(post, hideReason);
                         }
                     }
                     else {
@@ -4554,9 +5140,11 @@
 
         // console.info(log+'mopUpTheGroupsFeed(), gfType:', VARS.gfType, '; hide an info box:', VARS.hideAnInfoBox);
 
-        if (VARS.gfType === 'groups' || VARS.gfType === 'search') {
+        if (VARS.gfType === 'groups' || VARS.gfType === 'groups-recent' || VARS.gfType === 'search') {
             // - main groups feed.
-            // - search groups (same layout as groups feed)
+            // -- 'groups' - accessible via the Groups link
+            // -- 'groups-recent' - accessible via the Feeds > group link (has similar HTML structure to News Feed)
+            // -- 'search' - groups (same layout as groups feed)
 
             // -- aside's suggestions (also appears above feed on narrow pages)
             if (VARS.Options.GF_SUGGESTIONS) {
@@ -4564,7 +5152,7 @@
             }
 
             // -- groups feed stream ...
-            const query = 'div[role="feed"] > div';
+            const query = VARS.gfType === 'groups-recent' ? 'h2[dir="auto"] + div > div' : 'div[role="feed"] > div';
             const posts = Array.from(document.querySelectorAll(query));
             if (posts.length) {
                 // console.info(log+'---> mopUpTheGroupsFeed() - multiple groups');
@@ -4572,7 +5160,6 @@
                     if (post.innerHTML.length === 0) {
                         continue;
                     }
-
 
                     let hideReason = '';
 
@@ -4592,7 +5179,7 @@
 
                         doLightDusting(post);
 
-                        if (hideReason === '' && isSponsored(post)) {
+                        if (hideReason === '' && VARS.Options.GF_SPONSORED && isSponsored(post)) {
                             hideReason = KeyWords.SPONSORED[VARS.language];
                         }
                         if (hideReason === '' && VARS.Options.GF_SUGGESTIONS) {
@@ -4614,7 +5201,7 @@
                         VARS.echoCount++;
                         if (hideReason !== 'hidden') {
                             // -- post not yet hidden, hide it.
-                            hidePost(post, hideReason)
+                            gvf_hidePost(post, hideReason)
                         }
                     }
                     else {
@@ -4652,7 +5239,6 @@
                         continue;
                     }
 
-
                     let hideReason = '';
 
                     if (post.hasAttribute(postAtt)) {
@@ -4678,7 +5264,7 @@
                         VARS.echoCount++;
                         if (hideReason !== 'hidden') {
                             // -- post not yet hidden, hide it.
-                            hidePost(post, hideReason)
+                            gvf_hidePost(post, hideReason)
                         }
                     }
                     else {
@@ -4751,8 +5337,11 @@
                 else {
                     doLightDusting(post);
 
-                    if (hideReason === '' && isSponsored(post)) {
+                    if (hideReason === '' && VARS.Options.VF_SPONSORED && isSponsored(post)) {
                         hideReason = KeyWords.SPONSORED[VARS.language];
+                    }
+                    if (hideReason === '' && VARS.Options.VF_LIVE) {
+                        hideReason = vf_isVideoLive(post);
                     }
                     if (hideReason === '' && VARS.Options.VF_BLOCKED_ENABLED) {
                         hideReason = vf_isBlockedText(post, queryBlocks);
@@ -4765,7 +5354,7 @@
                     VARS.echoCount++;
                     if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
-                        hidePost(post, hideReason);
+                        gvf_hidePost(post, hideReason);
                     }
                 }
                 else {
@@ -4781,6 +5370,8 @@
                     if (VARS.hideAnInfoBox) {
                         scrubInfoBoxes(post);
                     }
+                    // -- nb: videos do not have a number of shares box
+
                     // -- hide sponsored blocks (appears between video & comments)
                     vf_scrubSponsoredBlock(post);
                 }
@@ -4810,7 +5401,7 @@
                     VARS.echoCount++;
                     if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
-                        hidePost(post, hideReason);
+                        gvf_hidePost(post, hideReason);
                     }
                 }
                 else {
@@ -4864,7 +5455,7 @@
             // console.info(log+'marketplace(); headings:', headings);
             // console.info(log+'marketplace(); items:', items);
 
-            if ((headings.length > 0) && (items.length > 0)) {
+            if (VARS.Options.MP_SPONSORED && (headings.length > 0) && (items.length > 0)) {
                 for (const heading of headings) {
                     // heading = heading.parentElement;
                     mp_hideBox(heading.parentElement, KeyWords.SPONSORED[VARS.language]);
@@ -4881,74 +5472,76 @@
         }
         if (VARS.mpType === 'item') {
             // -- viewing a marketplace item - a small sponsored box often shows up on the right.
-            const elDialog = document.querySelector('div[role="dialog"]');
-            if (elDialog) {
-                // -- viewing a mp item via mp feed (no new tab or reloaded page)
-                let queryPattern = 'a[href*="/ads/"]';
-                let element = elDialog.querySelector(queryPattern);
-                if (element) {
-                    if (element.hasAttribute(postAtt)) {
-                        return;
+            if (VARS.Options.MP_SPONSORED) {
+                const elDialog = document.querySelector('div[role="dialog"]');
+                if (elDialog) {
+                    // -- viewing a mp item via mp feed (no new tab or reloaded page)
+                    let queryPattern = 'a[href*="/ads/"]';
+                    let element = elDialog.querySelector(queryPattern);
+                    if (element) {
+                        if (element.hasAttribute(postAtt)) {
+                            return;
+                        }
+                        // console.info(`${log}MPItem() - element:`, queryPattern1, element);
+                        if (element.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
+                            // -- found the sponsored box inside the mp item box.
+                            // -- mp item do not have a parent element having data-pagelet attribute.
+                            let elParent = element.parentElement.closest('h2');
+                            if (elParent) {
+                                elParent = elParent.closest('span');
+                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                                element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                            }
+                        }
                     }
-                    // console.info(`${log}MPItem() - element:`, queryPattern1, element);
-                    if (element.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
-                        // -- found the sponsored box inside the mp item box.
-                        // -- mp item do not have a parent element having data-pagelet attribute.
-                        let elParent = element.parentElement.closest('h2');
-                        if (elParent) {
-                            elParent = elParent.closest('span');
-                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
-                            element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                    else {
+                        // -- structure change, Nov 2023
+                        // -- multiple sponsored items (slider style)
+                        queryPattern = 'a[href*="//l.facebook.com/l.php?u="]';
+                        const elements = elDialog.querySelectorAll(queryPattern);
+                        if (elements.length > 0) {
+                            element = elements[0];
+                            if (element.hasAttribute(postAttChildFlag)) {
+                                return;
+                            }
+                            if (element.href.length > 500) {
+                                const elParent = climbUpTheTree(element, 9);
+                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                                element.setAttribute(postAttChildFlag, KeyWords.SPONSORED[VARS.language]);
+                            }
                         }
                     }
                 }
                 else {
-                    // -- structure change, Nov 2023
-                    // -- multiple sponsored items (slider style)
-                    queryPattern = 'a[href*="//l.facebook.com/l.php?u="]';
-                    const elements = elDialog.querySelectorAll(queryPattern);
-                    if (elements.length > 0) {
-                        element = elements[0];
-                        if (element.hasAttribute(postAttChildFlag)) {
-                            return;
-                        }
-                        if (element.href.length > 500) {
-                            const elParent = climbUpTheTree(element, 9);
-                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
-                            element.setAttribute(postAttChildFlag, KeyWords.SPONSORED[VARS.language]);
-                        }
-                    }
-                }
-            }
-            else {
-                // -- viewing a mp item in a new tab / reloaded page.
-                let queryPattern = 'a[href*="/ads/"]';
-                let element = document.querySelector(queryPattern);
-                if (element) {
-                    if (!element.hasAttribute(postAtt)) {
-                        // -- found the sponsored box inside the mp item box.
-                        let elParent = element.parentElement.closest('h2');
-                        if (elParent) {
-                            elParent = elParent.closest('span');
-                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
-                            element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                    // -- viewing a mp item in a new tab / reloaded page.
+                    let queryPattern = 'a[href*="/ads/"]';
+                    let element = document.querySelector(queryPattern);
+                    if (element) {
+                        if (!element.hasAttribute(postAtt)) {
+                            // -- found the sponsored box inside the mp item box.
+                            let elParent = element.parentElement.closest('h2');
+                            if (elParent) {
+                                elParent = elParent.closest('span');
+                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                                element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                            }
                         }
                     }
-                }
-                else {
-                    // -- structure change, Nov 2023
-                    // -- multiple sponsored items (slider style)
-                    queryPattern = 'a[href*="//l.facebook.com/l.php?u="]';
-                    const elements = document.querySelectorAll(queryPattern);
-                    if (elements.length > 0) {
-                        element = elements[0];
-                        if (element.hasAttribute(postAttChildFlag)) {
-                            return;
-                        }
-                        if (element.href.length > 500) {
-                            const elParent = climbUpTheTree(element, 9);
-                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
-                            element.setAttribute(postAttChildFlag, KeyWords.SPONSORED[VARS.language]);
+                    else {
+                        // -- structure change, Nov 2023
+                        // -- multiple sponsored items (slider style)
+                        queryPattern = 'a[href*="//l.facebook.com/l.php?u="]';
+                        const elements = document.querySelectorAll(queryPattern);
+                        if (elements.length > 0) {
+                            element = elements[0];
+                            if (element.hasAttribute(postAttChildFlag)) {
+                                return;
+                            }
+                            if (element.href.length > 500) {
+                                const elParent = climbUpTheTree(element, 9);
+                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                                element.setAttribute(postAttChildFlag, KeyWords.SPONSORED[VARS.language]);
+                            }
                         }
                     }
                 }
@@ -4957,13 +5550,15 @@
         else if ((VARS.mpType === 'category') || (VARS.mpType === 'search')) {
             // - viewing a markplace category or marketplace search results
             // - (both have similar layout)
-            const query = `a[href*="/ads/"]:not([${postAtt}])`;
-            const elements = document.querySelectorAll(query);
-            for (const element of elements) {
-                // console.info(log + 'mp-clean:', element);
-                element.setAttribute(postAtt, element.innerHTML.length);
-                const itemBox = climbUpTheTree(element.parentElement.closest('a'), 3);
-                mp_hideBox(itemBox, KeyWords.SPONSORED[VARS.language]);
+            if (VARS.Options.MP_SPONSORED) {
+                const query = `a[href*="/ads/"]:not([${postAtt}])`;
+                const elements = document.querySelectorAll(query);
+                for (const element of elements) {
+                    // console.info(log + 'mp-clean:', element);
+                    element.setAttribute(postAtt, element.innerHTML.length);
+                    const itemBox = climbUpTheTree(element.parentElement.closest('a'), 3);
+                    mp_hideBox(itemBox, KeyWords.SPONSORED[VARS.language]);
+                }
             }
             if (VARS.Options.MP_BLOCKED_ENABLED) {
                 mp_doBlockingByBlockedText();
@@ -4991,13 +5586,11 @@
                     hideReason = 'hidden';
                 }
                 else {
-                    if (isSponsored(post)) {
+                    if (VARS.Options.NF_SPONSORED && isSponsored(post)) {
                         hideReason = KeyWords.SPONSORED[VARS.language];
                     }
-                    else {
-                        if (VARS.NF_BLOCKED_ENABLED) {
-                            hideReason = nf_isBlockedText(post);
-                        }
+                    if (hideReason === '' && VARS.NF_BLOCKED_ENABLED) {
+                        hideReason = nf_isBlockedText(post);
                     }
                 }
 
@@ -5006,7 +5599,7 @@
                     VARS.echoCount++;
                     if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
-                        hidePost(post, hideReason);
+                        nf_hidePost(post, hideReason);
                     }
                 }
                 else {
@@ -5025,6 +5618,69 @@
                 }
             }
         }
+    }
+
+    function mopUpTheReelFeed(caller) {
+        // -- display the reel's video controls
+
+        // -- bodyMutation will initially trigger this function to run, but sometimes misses out on a reel video ...
+        // -- so, we use setTimeout() to make it run regularly until no longer in Reels.
+
+        // -- saveUserOptions will also call this function ...
+
+        // -- nb: videos from the watch videos feed are also collected in the query ..
+        // -- .. but they do not have a container with [data-video-id] attribute
+        // -- .. and therefore skipped ...
+
+        // -- nb: setting VARS.isRF determines if this function is called or not.
+
+        if (!VARS.isRF) {
+            // -- no longer in Reels Feed
+            VARS.isRF_InTimeoutMode = false;
+            return;
+        }
+        if (caller !== 'self' && VARS.isRF_InTimeoutMode === true) {
+            // -- either bodyMutation or saveUserOptions is calling and TimeoutMode is currently active.
+            return;
+        }
+
+        const videoRules = 'video:not([controls])';
+        const videos = document.querySelectorAll(videoRules);
+        // console.info(log+'mopUpTheReelFeed(); videos:', caller, videos);
+        for (const video of videos) {
+            // -- get the video's container's child element
+            const elVideoId = video.closest('[data-video-id]');
+            if (elVideoId) {
+                // -- get the video's container
+                const videoContainer = elVideoId.parentElement;
+                if (videoContainer) {
+                    // -- get the video's description + audio track info container.
+                    const descriptionOverlay = videoContainer.nextElementSibling;
+                    if (descriptionOverlay) {
+                        // -- make room to display the controls by moving the description element up a bit ...
+                        const elDescriptionContainer = descriptionOverlay.children[0];
+                        elDescriptionContainer.setAttribute('style', 'margin-bottom:2.15rem;');
+                        // -- enable controls on the video
+                        video.setAttribute('controls', 'true');
+                        // -- hide the video's sibling (makes it easier to click on the video's controls)
+                        const sibling = video.nextElementSibling;
+                        if (sibling) {
+                            sibling.setAttribute('style', 'display:none;');
+                        }
+                    }
+                }
+            }
+            else {
+                // -- a video from the watch videos feed
+                // -- hidden underneath the reels feed overlay)
+            }
+        }
+
+        // -- call me again in a few ms ...
+        VARS.isRF_InTimeoutMode = true;
+        setTimeout(function () {
+            mopUpTheReelFeed('self')
+        }, 1000);
     }
 
 
@@ -5046,7 +5702,7 @@
                     //     console.info(log+'bodyMutating(); mutationsCount:', VARS.mutationsCount);
                     // }
                     if (VARS.mutationsCount > VARS.mutationsInitSkip) {
-                        if (['A', 'DIV', 'IMG', 'SPAN', '#text', 'svg'].indexOf(mnode.nodeName) > 0) {
+                        if (['A', 'DIV', 'IMG', 'SPAN', '#text', 'svg', 'VIDEO'].indexOf(mnode.nodeName) > 0) {
                             if ((mnode.nodeType === Node.ELEMENT_NODE) && ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0))) {
                                 // - skip these ...
                             }
@@ -5066,6 +5722,9 @@
                                 }
                                 else if (VARS.isSF) {
                                     mopUpTheSearchFeed();
+                                }
+                                else if (VARS.isRF) {
+                                    mopUpTheReelFeed('mutations');
                                 }
                             }
                         }
@@ -5091,7 +5750,6 @@
                 window.setTimeout(addExtraCSS, 150); // fb is sometimes laggy ...
                 buildMoppingDialog();
                 firstRun = false;
-                // VARS.fbcmfVersion = (GM.info.script.version) ? (GM.info.script.version) : '';
             }
             if (setFeedSettings()) {
                 // - clear out mutations not yet processed ...
@@ -5103,6 +5761,11 @@
                     subtree: true,
                     attributes: false
                 });
+
+                if (VARS.isRF) {
+                    // -- mutations might not call mopUpTheReelFeed() when the URL changes, so call it now.
+                    mopUpTheReelFeed('setFeedSettings');
+                }
             }
         }
         else {
