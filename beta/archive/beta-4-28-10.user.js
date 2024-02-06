@@ -3023,7 +3023,7 @@
             htxt.textContent = KeyWords.DLG_TITLE['en'];
             s = document.createElement('small');
             s.className = 'script-version';
-            s.appendChild(document.createTextNode(` (${SCRIPT_VERSION)`));
+            s.appendChild(document.createTextNode(` (${SCRIPT_VERSION})`));
             htxt.appendChild(s);
             hdr2.appendChild(htxt);
             if (VARS.language !== 'en') {
