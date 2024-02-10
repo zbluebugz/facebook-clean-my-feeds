@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.28
+// @version      4.29
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://www.facebook.com/*
 // @match        https://web.facebook.com/*
@@ -23,6 +23,12 @@
         1) Install uBlock Origin (uBO) in your browser(s)
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
+
+    v4.29 :: February 2024
+        !!! Hot fix !!!
+        Issues with FB, Adblockers and FB-CMF - all clashing
+        Adjusted News Feed's query rules
+        Temporarily disabled News Feed's message/notification tab (will be restored in next version)
 
     v4.28 :: January 2024
         Enabled option to toggle Sponsored post detection rule (for uBO compatibility)
@@ -124,8 +130,8 @@
 
     'use strict';
 
-    const SCRIPT_VERSION = 'v4.28'; // TM doesn't like spaces in version number ...
-   
+    const SCRIPT_VERSION = 'v4.29'; // TM doesn't like spaces in version number ...
+
     // Due to a GreaseMonkey bug with @require, we've copied an external script into here.
     // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
     function _typeof(n) { return (_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (n) { return typeof n } : function (n) { return n && "function" == typeof Symbol && n.constructor === Symbol && n !== Symbol.prototype ? "symbol" : typeof n })(n) } !function (n, t) { "object" === ("undefined" == typeof exports ? "undefined" : _typeof(exports)) && "undefined" != typeof module ? t(exports) : "function" == typeof define && define.amd ? define(["exports"], t) : t((n = "undefined" != typeof globalThis ? globalThis : n || self).idbKeyval = {}) }(this, (function (n) { "use strict"; function t(n) { return new Promise((function (t, e) { n.oncomplete = n.onsuccess = function () { return t(n.result) }, n.onabort = n.onerror = function () { return e(n.error) } })) } function e(n, e) { var r, o = (!navigator.userAgentData && /Safari\//.test(navigator.userAgent) && !/Chrom(e|ium)\//.test(navigator.userAgent) && indexedDB.databases ? new Promise((function (n) { var t = function () { return indexedDB.databases().finally(n) }; r = setInterval(t, 100), t() })).finally((function () { return clearInterval(r) })) : Promise.resolve()).then((function () { var r = indexedDB.open(n); return r.onupgradeneeded = function () { return r.result.createObjectStore(e) }, t(r) })); return function (n, t) { return o.then((function (r) { return t(r.transaction(e, n).objectStore(e)) })) } } var r; function o() { return r || (r = e("keyval-store", "keyval")), r } function u(n, e) { return n("readonly", (function (n) { return n.openCursor().onsuccess = function () { this.result && (e(this.result), this.result.continue()) }, t(n.transaction) })) } n.clear = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(); return n("readwrite", (function (n) { return n.clear(), t(n.transaction) })) }, n.createStore = e, n.del = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return e.delete(n), t(e.transaction) })) }, n.delMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return n.forEach((function (n) { return e.delete(n) })), t(e.transaction) })) }, n.entries = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push([n.key, n.value]) })).then((function () { return t })) }, n.get = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readonly", (function (e) { return t(e.get(n)) })) }, n.getMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readonly", (function (e) { return Promise.all(n.map((function (n) { return t(e.get(n)) }))) })) }, n.keys = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push(n.key) })).then((function () { return t })) }, n.promisifyRequest = t, n.set = function (n, e) { var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : o(); return r("readwrite", (function (r) { return r.put(e, n), t(r.transaction) })) }, n.setMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return n.forEach((function (n) { return e.put(n[1], n[0]) })), t(e.transaction) })) }, n.update = function (n, e) { var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : o(); return r("readwrite", (function (r) { return new Promise((function (o, u) { r.get(n).onsuccess = function () { try { r.put(e(this.result), n), o(t(r.transaction)) } catch (n) { u(n) } } })) })) }, n.values = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push(n.value) })).then((function () { return t })) }, Object.defineProperty(n, "__esModule", { value: !0 }) }));
@@ -2016,7 +2022,7 @@
     DBVARS.ostore = createStore(DBVARS.DBName, DBVARS.DBStore);
 
     // - post attribute - hidden and reason
-    const postAtt = 'cmfr';
+    const postAtt = 'cmfrx';
     // - post attribute - consecutive posts id
     const postAttCPID = 'cmfcpid';
     // - post property - # of light dusting duties done
@@ -2185,6 +2191,13 @@
         // VARS.cssHide = 'cmfr-hide';
         // VARS.cssHideEl = 'cmfr-hide-element';
         // VARS.cssHideNumberOfShares = 'cmfr-hide-shares';
+
+
+        // -- **** fix fb's bug in not "hiding" certain elements properly when scrolling
+        addToSS('body > div[style*="position: absolute"], ' +
+            'body > div[style*="position:absolute"]',
+            'top: -1000000px !important;'
+        );
 
         // - insert Styles (as classes)
         // - NF/GF/VF
@@ -3490,6 +3503,12 @@
                     element.removeAttribute(VARS.cssHideEl);
                     element.removeAttribute(VARS.cssHideNumberOfShares);
                     element.removeAttribute(VARS.cssShow);
+
+                    // -- February 2024 - hot fix !!! - remove the collapse post completely hack
+                    const elWithMargin = climbUpTheTree(element, 4);
+                    if (elWithMargin && elWithMargin.hasAttribute('style')) {
+                        elWithMargin.removeAttribute('style');
+                    }
                 }
                 // -- remove other attributes
                 elements = document.querySelectorAll(`[${postAttCPID}], [${postAttChildFlag}]`);
@@ -4131,6 +4150,8 @@
 
         // console.info(log + 'nf_hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
 
+        // -- February 2024 - hit fix !!! - disabled.
+        /*
         if ((VARS.Options.VERBOSITY_LEVEL !== '0') && (reason !== '')) {
             // -- in message/info tab mode
             // -- code 2 is switched to code 1.
@@ -4145,15 +4166,23 @@
                 // post has been changed while being processed (very rare)
             }
         }
+        */
 
         // - flag & hide the post
         post.setAttribute(VARS.cssHide, '');
         post.setAttribute(postAtt, sanitizeReason(reason));
 
+        // -- February 2024 - hot fix !!! - collapse post completely
+        const elWithMargin = climbUpTheTree(post, 4);
+        elWithMargin.setAttribute('style', 'margin:0 !important;');
+
+        // -- February 2024 - hot fix !!! - disabled
+        /*
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
             post.setAttribute(VARS.cssShow, '');
         }
+        */
 
         //console.info(log+'nf_hidePost():', VARS.echoElFirst);
     }
@@ -4172,6 +4201,13 @@
         if (post.querySelectorAll('div, h6').length > 0) {
             post.removeChild(post.firstElementChild);
         }
+
+        // -- February 2024 - hot fix !!! - remove the collapse post completely hack
+        const elWithMargin = climbUpTheTree(post, 4);
+        if (elWithMargin && elWithMargin.hasAttribute('style')) {
+            elWithMargin.removeAttribute('style');
+        }
+
         post[postPropDS] = 1; // -- reset scanning count
     }
 
@@ -4978,6 +5014,15 @@
         let posts = [];
         // -- various news feed queries
         const queries = [
+            // -- February 2024 - hot fix !!! (no "extra" spaces in the feeds)
+            // 'h3[dir="auto"] ~ div:not([class]) > div[class] > div > div > div > div',
+            // 'h2[dir="auto"] ~ div:not([class]) > div[class] > div > div > div > div',
+
+            // -- February 2024 - hot fix !!! (test)
+            'h3[dir="auto"] ~ div:not([class]) > div[class] :is([aria-posinset],[aria-describedby]:not([aria-posinset]))',
+            'h2[dir="auto"] ~ div:not([class]) > div[class] :is([aria-posinset],[aria-describedby]:not([aria-posinset]))',
+
+
             // -- February 2023 (promoted above Sept/August due to no hard-coded class names.
             'h3[dir="auto"] ~ div:not([class]) > div[class]',
             'h2[dir="auto"] ~ div:not([class]) > div[class]',
