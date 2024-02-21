@@ -1,27 +1,77 @@
 // ==UserScript==
-// @name         FB - Clean my feeds (424-beta-5)
+// @name         FB - Clean my feeds
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.24-beta-5
+// @version      4.29
 // @author       zbluebugz (https://github.com/zbluebugz/)
-// @match        https://*.facebook.com/*
+// @match        https://www.facebook.com/*
+// @match        https://web.facebook.com/*
+// @match        https://facebook.com/*
 // @noframes
 // @grant        GM.registerMenuCommand
+// @grant        GM.info
 // @license      MIT; https://opensource.org/licenses/MIT
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAanSURBVHic5ZtpjBVFEMd/u8vthsCi3OcGxQWBKJdEDEbuDypqNoGgxGgkWY8YDaIYFQ9MRCOJJ0Y80JhgVESiRpCVIAYIIAQPCEoQZCOIyuIB667IPj/8qzPzhveANzPvvX3LP5nMVHdPT1V3VVd1zQwUNroDK4A/gB3A1Pyyk1sUA18DCeBPoBH4FxiRT6ZyiXFI+C+AFsAdRj+TSSfF8fOVM0y281LgP+BwHnnJC75FM15u9BtGV+aNoxyiG7L5H3xlNUgTyjLpqFBNYDJQBKw0ejDQE9gC1GbSUaEOwCQ7r0pDN2sUA78CDUCpla1G9j86X0zlEqOQsJ8b3RaoQ6pfkmlnhWgCQXW/Ag1CNXAi086awwCcVfbfATgOHEReAGAXMone+WIql7geCbvE6F5G7wjbYaGZQFDdpwToZo99aKHrbPQypAGT0t3QnFCBhN1idAlyff8A7cJ2WkgmEFT/S4GOwDoUB4RCIQ3ARDt/ZudL7LwyRdtmhzbAMZT5aWll5wGzgfb5YiqXmIDsf3ncHReKCQTtfwDwGtA1P+zkHi7708/o142ekvaOZoQeKPvzva8sVPYnFQrBBCahuN+pf+jsTyoUygDAWbr7KwF+J4vZnxZxdJICFYQLTxvQzi5h9HCgE7AGOGp9jgGOAJujs5kd3IAECHvc7+vrYSubY/QUo9+Ni9lsrAG97LwN+NiuDwPvAVuN/s7oA0avBjbatdvpQYHa/1w0S1Xo7W0CT7hZRj9o9IdGX4yX7FhodTnJ/jRlLzAerVGrkNC9UAS4A9gf10Oa8gDkJPvTlAdgIooAXf4/K/YflxssBc5HA9rdynoDQ+z6HGAYnu12N7qD0RUo5AXoAlxtbb9Cb4FaAFeidFid3XschccNMckQGpXIR0dxfemO+faMy9LUH0RvikIjqga0QdvS1sBHQH3E/hzGo3RX0P1twlsAy9BXIq8AQ2N6bsa4CM1EnHaZKvuzyZ4zMNB2P1onWhISURdBp0Fx2uHlKORdg+y8E7L5GmBnoG09ihFCyxHVBH6280jgRsKbwGbgJ7sOrvbj0aaohuTPXzoCfYHfyPNC+CrRF7tdvv7SZX/SHfdEYb7o9E3OqI9K9JHidBTnf5JhH+vsXAE8DexGUV8Rmvmu6PO3BNK07sCzaK9RHY39+DAUMZip8AB3kzyrK5Dwg43e4Gu7By18baIwmw2UIWa/yfC+3iiOqAfeRsGO20AttutHrG2RtTsUnd3s4ChnlqfrjFT5MWA9EvIJqxuFIkC/Royzui5Gb6WJwm1XS9PUlyFbriNZwEa8V18gt1aF8ggJ5G3KUYYogbbRTRLViMGKFHW98AboLxTBzQJewhuEJWiWHc7Fyxk8ihbaBPBCVriPAe5z1QmB8g7Aj1a3DAnm0Bt98Oy04QhwJ/L9RXgmMsPKE8B9WZMgIh5HDN4cKH8e792e+5StL/IY6fz7duApu95m9y3AG4xYEHdWuMbOPX1lA4Bb0QJ5O1rlxyIfXorc2jIkJGjnNw251aHoDdBtdp/LN7rnNDm4rO1io8fiqb6L2AaiPzwSSGNap+hnttXvRKGww5dWXp7inryhGH28vAjvD46jaKFz6vwmnrY5tZ+Xoq9StBdwqv9+oH4vWixTDVpeMA5vZQ8etSjEnYYXco+wut0km18nZN/HAn34w9xi9EvML9kRJXPMRbORANYCM4E+QKs07VuhAUkAN/nKL0T7eqc5y/G8yQe+dt2sbAtNAC52/5tT/6FRhgSsxEtqbMWb/XKU80ugMNjFADM42d+PxPMkecUwpIp1nJyPKwKuRTPnojj/sZHkNz/uReeLJO9MX7bymb6y66zsuZjkCI2VxkhVoHwQml0nbB3a269GMzmVZCHddz970dfeDm1RMOQixlo73Ppwb6zSZIh+xsQekhexCXgMrgeu4tQr9RiU0U1YWz/m4Q1gre9osPLpUYWIgipj4klf2RDEbCPwAMn5ueHI17+FNKEaeQCnJQtJxnD05Wc9cEGg7lO7Z0wMcoSGy8q4ha8EL4U1x9duLMoLpHKPjSheCIazg9A+P4EW2SC2W13f6GKEh0tQuK2rW63X4tn3Ajz3uAFtYEYD/dGq77d3kMbcgvdyZVGaZx9C4XDoFHgcuAsxudQYcWrpdn/zjT4MXHOavvqj312dBp1AW95UecqWVn8gRV0kZJoUbY9Uuw+KAdohM9hHcia3FsX7qdAK+fvgTNaTXsBipPqbifgqLA70AN5B+fhTpavjPhqBh+IW5n827DI9G+eQwwAAAABJRU5ErkJggg==
 // @icon64       data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAanSURBVHic5ZtpjBVFEMd/u8vthsCi3OcGxQWBKJdEDEbuDypqNoGgxGgkWY8YDaIYFQ9MRCOJJ0Y80JhgVESiRpCVIAYIIAQPCEoQZCOIyuIB667IPj/8qzPzhveANzPvvX3LP5nMVHdPT1V3VVd1zQwUNroDK4A/gB3A1Pyyk1sUA18DCeBPoBH4FxiRT6ZyiXFI+C+AFsAdRj+TSSfF8fOVM0y281LgP+BwHnnJC75FM15u9BtGV+aNoxyiG7L5H3xlNUgTyjLpqFBNYDJQBKw0ejDQE9gC1GbSUaEOwCQ7r0pDN2sUA78CDUCpla1G9j86X0zlEqOQsJ8b3RaoQ6pfkmlnhWgCQXW/Ag1CNXAi086awwCcVfbfATgOHEReAGAXMone+WIql7geCbvE6F5G7wjbYaGZQFDdpwToZo99aKHrbPQypAGT0t3QnFCBhN1idAlyff8A7cJ2WkgmEFT/S4GOwDoUB4RCIQ3ARDt/ZudL7LwyRdtmhzbAMZT5aWll5wGzgfb5YiqXmIDsf3ncHReKCQTtfwDwGtA1P+zkHi7708/o142ekvaOZoQeKPvzva8sVPYnFQrBBCahuN+pf+jsTyoUygDAWbr7KwF+J4vZnxZxdJICFYQLTxvQzi5h9HCgE7AGOGp9jgGOAJujs5kd3IAECHvc7+vrYSubY/QUo9+Ni9lsrAG97LwN+NiuDwPvAVuN/s7oA0avBjbatdvpQYHa/1w0S1Xo7W0CT7hZRj9o9IdGX4yX7FhodTnJ/jRlLzAerVGrkNC9UAS4A9gf10Oa8gDkJPvTlAdgIooAXf4/K/YflxssBc5HA9rdynoDQ+z6HGAYnu12N7qD0RUo5AXoAlxtbb9Cb4FaAFeidFid3XschccNMckQGpXIR0dxfemO+faMy9LUH0RvikIjqga0QdvS1sBHQH3E/hzGo3RX0P1twlsAy9BXIq8AQ2N6bsa4CM1EnHaZKvuzyZ4zMNB2P1onWhISURdBp0Fx2uHlKORdg+y8E7L5GmBnoG09ihFCyxHVBH6280jgRsKbwGbgJ7sOrvbj0aaohuTPXzoCfYHfyPNC+CrRF7tdvv7SZX/SHfdEYb7o9E3OqI9K9JHidBTnf5JhH+vsXAE8DexGUV8Rmvmu6PO3BNK07sCzaK9RHY39+DAUMZip8AB3kzyrK5Dwg43e4Gu7By18baIwmw2UIWa/yfC+3iiOqAfeRsGO20AttutHrG2RtTsUnd3s4ChnlqfrjFT5MWA9EvIJqxuFIkC/Royzui5Gb6WJwm1XS9PUlyFbriNZwEa8V18gt1aF8ggJ5G3KUYYogbbRTRLViMGKFHW98AboLxTBzQJewhuEJWiWHc7Fyxk8ihbaBPBCVriPAe5z1QmB8g7Aj1a3DAnm0Bt98Oy04QhwJ/L9RXgmMsPKE8B9WZMgIh5HDN4cKH8e792e+5StL/IY6fz7duApu95m9y3AG4xYEHdWuMbOPX1lA4Bb0QJ5O1rlxyIfXorc2jIkJGjnNw251aHoDdBtdp/LN7rnNDm4rO1io8fiqb6L2AaiPzwSSGNap+hnttXvRKGww5dWXp7inryhGH28vAjvD46jaKFz6vwmnrY5tZ+Xoq9StBdwqv9+oH4vWixTDVpeMA5vZQ8etSjEnYYXco+wut0km18nZN/HAn34w9xi9EvML9kRJXPMRbORANYCM4E+QKs07VuhAUkAN/nKL0T7eqc5y/G8yQe+dt2sbAtNAC52/5tT/6FRhgSsxEtqbMWb/XKU80ugMNjFADM42d+PxPMkecUwpIp1nJyPKwKuRTPnojj/sZHkNz/uReeLJO9MX7bymb6y66zsuZjkCI2VxkhVoHwQml0nbB3a269GMzmVZCHddz970dfeDm1RMOQixlo73Ppwb6zSZIh+xsQekhexCXgMrgeu4tQr9RiU0U1YWz/m4Q1gre9osPLpUYWIgipj4klf2RDEbCPwAMn5ueHI17+FNKEaeQCnJQtJxnD05Wc9cEGg7lO7Z0wMcoSGy8q4ha8EL4U1x9duLMoLpHKPjSheCIazg9A+P4EW2SC2W13f6GKEh0tQuK2rW63X4tn3Ajz3uAFtYEYD/dGq77d3kMbcgvdyZVGaZx9C4XDoFHgcuAsxudQYcWrpdn/zjT4MXHOavvqj312dBp1AW95UecqWVn8gRV0kZJoUbY9Uuw+KAdohM9hHcia3FsX7qdAK+fvgTNaTXsBipPqbifgqLA70AN5B+fhTpavjPhqBh+IW5n827DI9G+eQwwAAAABJRU5ErkJggg==
 // @run-at       document-start
 // ==/UserScript==
 /*
-    v4.24 :: August 2023
-        Beta-v5 :: News feed selection rules issues.
-        Removed "Create Room" detection component
+
+    :: Tip ::
+        This userscript does not block video ads (begin-roll, mid-roll, end-roll), however there's a work-around:
+        1) Install uBlock Origin (uBO) in your browser(s)
+        2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
+        Note: I have not tested this in other content/ad-blockers.
+
+    v4.29 :: February 2024
+        !!! Hot fix !!!
+        Issues with FB, Adblockers and FB-CMF - all clashing
+        Adjusted News Feed's query rules
+        Temporarily disabled News Feed's message/notification tab (will be restored in next version)
+
+    v4.28 :: January 2024
+        Enabled option to toggle Sponsored post detection rule (for uBO compatibility)
+        Added Video's "Live" detection rule
+        Enabled Reels' video controls
+        Added Ukrainian (Україна)
+        Added Bulgarian (български)
+        Dialog box - reworded "Miscellaneous items" to "Supplementary / information section"
+        Dialog box - added "Reset" button to reset the options
+        Fixed bug with Survey detection component
+        Fixed bug with Importing settings from a file
+        Revised message/notification tab for News feed
+        Revised Create Stories detection rule
+        Add option to filter posts by number of Likes
+        Fixed bug with function scanTreeForText() - failing to detect "Anonymous participant"
+        Updated Groups Feed filter rules - new HTML structure via (Feeds > Groups)
+        Added display of script's version number to dialog box
+
+    v4.27 :: December 2023
+        Added Russian (Русский) - supplied by github user Kenya-West
+    v4.26 :: November 2023
+        Added web.facebook.com to @match conditions
+        Added Survey detection component (Home / News feed)
+        Added Follow detection component (Home / News feed)
+        Added Participate detection component (Home / News feed)
+        Updated Marketplace detection rules
+    v4.25 :: November 2023
+        Added extra filter rule for nf_isSuggested() (for "Suggested for you" posts) - fix supplied by opello (via github)
+        Added News Feed's Stories post detection rule.
+        Revised function scanTreeForText() to include other elements for scanning
+        Fixed bug with Marketplace prices' filter
+        Reduce possible conflicts with uBlock Origin / other adblockers
+        Code tweaks
+    v4.24 :: September 2023
+        Fixed issues with v4.23 (selection/detection rules)
+        Code tweaks
+    v4.23 :: August 2023
         Fixed bug with showing Marketplace's hidden items
         Updated Marketplace detection rules
         Split Marketplace's text filter into two - prices and description
         Merged "Stories" with "Stories | Reels | Rooms" detection rules.
         Fixed bug with CMF's hidden dialog box's text being included in CTRL+F search (now excluded)
+        Dropped "Create room" detection component (no longer listed in FB)
     v4.22 :: July 2023
         Updated News Feed posts selection rule (FB changed structure)
         Updated Events you may like detection rule
@@ -80,6 +130,8 @@
 
     'use strict';
 
+    const SCRIPT_VERSION = 'v4.29'; // TM doesn't like spaces in version number ...
+
     // Due to a GreaseMonkey bug with @require, we've copied an external script into here.
     // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
     function _typeof(n) { return (_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (n) { return typeof n } : function (n) { return n && "function" == typeof Symbol && n.constructor === Symbol && n !== Symbol.prototype ? "symbol" : typeof n })(n) } !function (n, t) { "object" === ("undefined" == typeof exports ? "undefined" : _typeof(exports)) && "undefined" != typeof module ? t(exports) : "function" == typeof define && define.amd ? define(["exports"], t) : t((n = "undefined" != typeof globalThis ? globalThis : n || self).idbKeyval = {}) }(this, (function (n) { "use strict"; function t(n) { return new Promise((function (t, e) { n.oncomplete = n.onsuccess = function () { return t(n.result) }, n.onabort = n.onerror = function () { return e(n.error) } })) } function e(n, e) { var r, o = (!navigator.userAgentData && /Safari\//.test(navigator.userAgent) && !/Chrom(e|ium)\//.test(navigator.userAgent) && indexedDB.databases ? new Promise((function (n) { var t = function () { return indexedDB.databases().finally(n) }; r = setInterval(t, 100), t() })).finally((function () { return clearInterval(r) })) : Promise.resolve()).then((function () { var r = indexedDB.open(n); return r.onupgradeneeded = function () { return r.result.createObjectStore(e) }, t(r) })); return function (n, t) { return o.then((function (r) { return t(r.transaction(e, n).objectStore(e)) })) } } var r; function o() { return r || (r = e("keyval-store", "keyval")), r } function u(n, e) { return n("readonly", (function (n) { return n.openCursor().onsuccess = function () { this.result && (e(this.result), this.result.continue()) }, t(n.transaction) })) } n.clear = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(); return n("readwrite", (function (n) { return n.clear(), t(n.transaction) })) }, n.createStore = e, n.del = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return e.delete(n), t(e.transaction) })) }, n.delMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return n.forEach((function (n) { return e.delete(n) })), t(e.transaction) })) }, n.entries = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push([n.key, n.value]) })).then((function () { return t })) }, n.get = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readonly", (function (e) { return t(e.get(n)) })) }, n.getMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readonly", (function (e) { return Promise.all(n.map((function (n) { return t(e.get(n)) }))) })) }, n.keys = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push(n.key) })).then((function () { return t })) }, n.promisifyRequest = t, n.set = function (n, e) { var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : o(); return r("readwrite", (function (r) { return r.put(e, n), t(r.transaction) })) }, n.setMany = function (n) { var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : o(); return e("readwrite", (function (e) { return n.forEach((function (n) { return e.put(n[1], n[0]) })), t(e.transaction) })) }, n.update = function (n, e) { var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : o(); return r("readwrite", (function (r) { return new Promise((function (o, u) { r.get(n).onsuccess = function () { try { r.put(e(this.result), n), o(t(r.transaction)) } catch (n) { u(n) } } })) })) }, n.values = function () { var n = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : o(), t = []; return u(n, (function (n) { return t.push(n.value) })).then((function () { return t })) }, Object.defineProperty(n, "__esModule", { value: !0 }) }));
@@ -110,8 +162,39 @@
             'ja', // Japanese (Japan)
             'fi', // Suomi - Finnish (Finland)
             'tr', // Türkçe (Turkey)
-            'el', // Ελληνικά (Greek)
+            'el', // Ελληνικά (Greece)
+            'ru', // Русский (Russia)
+            'uk', // Україна (Ukraine)
+            'bg', // България (Bulgaria)
         ],
+
+        // *** sample Object setup:
+        // _VARIABLE_NAME_: {
+        //     'en': '',
+        //     'pt': '',
+        //     'de': '',
+        //     'fr': '',
+        //     'es': '',
+        //     'cs': '',
+        //     'vi': '',
+        //     'it': '',
+        //     'lv': '',
+        //     'pl': '',
+        //     'nl': '',
+        //     'he': '',
+        //     'ar': '',
+        //     'id': '',
+        //     'zh-Hans': '',
+        //     'zh-Hant': '',
+        //     'ja': '',
+        //     'fi': '',
+        //     'tr': '',
+        //     'el': '',
+        //     'ru': '',
+        //     'uk': '',
+        //     'bg': '',
+        // },
+
 
         // - Sponsored
         SPONSORED: {
@@ -135,12 +218,16 @@
             'fi': 'Sponsoroitu',
             'tr': 'Sponsorlu',
             'el': 'Χορηγούμενη',
+            'ru': 'Реклама',
+            'uk': 'Спонсорована',
+            'bg': 'Спонсорирано',
+            'defaultEnabled': true
         },
 
         // *** News Feed ::
 
-        // - "Stories | Reels | Rooms" tablist box 
-        // -- (Includes standalone "Stories")
+        // - "Stories | Reels | Rooms" tablist box
+        // -- includes the standalone Stories component
         NF_TABLIST_STORIES_REELS_ROOMS: {
             'en': '"Stories | Reels | Rooms" tabs list box',
             'pt': 'Caixa de listagem da guia "Stories | Vídeos do Reels | Salas"',
@@ -162,8 +249,68 @@
             'fi': '"Tarinat | Reels | Rooms" -välilehtien luetteloruutu',
             'tr': '"Hikayeler | Makaralar | Odalar" sekmeleri liste kutusu',
             'el': 'Λίστα καρτελών "Ιστορίες | Reels | Δωμάτια"',
+            'ru': 'Список вкладок "Истории | Reels | Комнаты"',
+            'uk': 'Поле списку вкладок «Історії | Reels | Кімнати»',
+            'bg': 'Списъчно поле на раздела „Истории | Макари | Стаи“',
             'defaultEnabled': false
         },
+        // - "Stories" posts (separate from tablist, in News Feed stream)
+        NF_STORIES: {
+            'en': 'Stories',
+            'pt': 'Stories',
+            'de': 'Stories',
+            'fr': 'Stories',
+            'es': 'Historias',
+            'cs': 'Stories',
+            'vi': 'Tin',
+            'it': 'Storie',
+            'lv': 'Stāsti',
+            'pl': 'Relacje',
+            'nl': 'Verhalen',
+            'he': 'סטוריז ',
+            'ar': 'القصص',
+            'id': 'Cerita',
+            'zh-Hans': '故事',
+            'zh-Hant': '故事',
+            'ja': 'Stories',
+            'fi': 'Tarinat',
+            'tr': 'Hikayeler',
+            'el': 'Ιστορίες',
+            'ru': 'Истории',
+            'uk': 'Історії',
+            'bg': 'Истории',
+            'defaultEnabled': false
+        },
+        // - fb's survey
+        // - <name>, we're asking a small group of people for their opinion
+        // - could you take a few minutes to answer a short survey?  <button>start survey</button>
+        NF_SURVEY: {
+            'en': 'Survey',
+            'pt': 'Enquete',
+            'de': 'Umfrage',
+            'fr': 'Enquête',
+            'es': 'Encuesta',
+            'cs': 'Průzkum',
+            'vi': 'Khảo sát',
+            'it': 'Sondaggio',
+            'lv': 'Aptauja',
+            'pl': 'Badanie',
+            'nl': 'Vragenlijst',
+            'he': 'סקר',
+            'ar': 'استبيان',
+            'id': 'Survei',
+            'zh-Hans': '调查',
+            'zh-Hant': '調查',
+            'ja': 'アンケート',
+            'fi': 'Kysely',
+            'tr': 'Anket',
+            'el': 'Τοπογράφηση',
+            'ru': 'Опрос',
+            'uk': 'Опитування',
+            'bg': 'Анкета',
+            'defaultEnabled': false
+        },
+
         // - People you may know:
         NF_PEOPLE_YOU_MAY_KNOW: {
             'en': 'People you may know',
@@ -186,6 +333,9 @@
             'fi': 'Ihmiset, jotka saatat tuntea',
             'tr': 'Tanıyor olabileceğin kişiler',
             'el': 'Άτομα που ίσως γνωρίζετε',
+            'ru': 'Люди, которых вы можете знать',
+            'uk': 'Люди, яких Ви можете знати',
+            'bg': 'Хора, които може би познавате',
             'defaultEnabled': false
         },
 
@@ -212,6 +362,9 @@
             'fi': 'Maksettu kumppanuus',
             'tr': 'ücretli ortaklık',
             'el': 'Πληρωμένη συνεργασία',
+            'ru': 'Платное партнерство',
+            'uk': 'Оплачуване партнерство',
+            'bg': 'Платено партньорство',
             'defaultEnabled': true
         },
 
@@ -238,6 +391,9 @@
             'fi': 'Sponsoroitu · Maksaja ______',
             'tr': 'Sponsorlu · ______ tarafından ödendi',
             'el': 'Χορηγούμενο · Πληρωμένο από ______',
+            'ru': 'Реклама · Оплачено ______',
+            'uk': 'Спонсоровано · Оплачено ______',
+            'bg': 'Спонсорирано · Платено от ______',
             'defaultEnabled': true
         },
 
@@ -263,6 +419,65 @@
             'fi': 'Ehdotuksia / Suosituksia',
             'tr': 'Öneriler',
             'el': 'Προτάσεις / Συστάσεις',
+            'ru': 'Предложения / Рекомендации',
+            'uk': 'Пропозиції / Рекомендації',
+            'bg': 'Предложения / Препоръки',
+            'defaultEnabled': false
+        },
+
+        // - Follow
+        NF_FOLLOW: {
+            'en': 'Follow',
+            'pt': 'Seguir',
+            'de': 'Folgen',
+            'fr': 'Suivre',
+            'es': 'Seguir',
+            'cs': 'Sledovat',
+            'vi': 'Theo dõi',
+            'it': 'Segui',
+            'lv': 'Sekot',
+            'pl': 'Obserwuj',
+            'nl': 'Volgen',
+            'he': 'עקוב',
+            'ar': 'تابع',
+            'id': 'Ikuti',
+            'zh-Hans': '关注',
+            'zh-Hant': '追蹤',
+            'ja': 'フォロー',
+            'fi': 'Seuraa',
+            'tr': 'Takip Et',
+            'el': 'Ακολούθησε',
+            'ru': 'Подписаться',
+            'uk': 'Слідуйте',
+            'bg': 'Следвай',
+            'defaultEnabled': false
+        },
+
+        // - Participate
+        NF_PARTICIPATE: {
+            'en': 'Participate',
+            'pt': 'Participar',
+            'de': 'Teilnehmen',
+            'fr': 'Participer',
+            'es': 'Participar',
+            'cs': 'Participovat',
+            'vi': 'Tham gia',
+            'it': 'Partecipare',
+            'lv': 'Piedalīties',
+            'pl': 'Uczestniczyć',
+            'nl': 'Deelnemen',
+            'he': 'השתתף',
+            'ar': 'المشاركة',
+            'id': 'Berpartisipasi',
+            'zh-Hans': '参与',
+            'zh-Hant': '參與',
+            'ja': '参加する',
+            'fi': 'Osallistua',
+            'tr': 'Katılmak',
+            'el': 'Συμμετέχω',
+            'ru': 'Участвовать',
+            'uk': 'Беріть участь',
+            'bg': 'Участвай',
             'defaultEnabled': false
         },
 
@@ -288,6 +503,9 @@
             'fi': 'Keloja ja lyhyitä videoita',
             'tr': 'Makaralar ve kısa videolar',
             'el': 'Reel και σύντομα βίντεο',
+            'ru': 'Reels и короткие видео',
+            'uk': 'Відео Reels і короткі відео',
+            'bg': 'Ленти и кратки видеоклипове',
             'defaultEnabled': false
         },
 
@@ -313,6 +531,9 @@
             'fi': 'Kela/lyhyt video',
             'tr': 'makara/kısa video',
             'el': 'Ριλς/μικρό βίντεο',
+            'ru': 'Reels/короткое видео',
+            'uk': 'Reel/коротке відео',
+            'bg': 'Рил/късо видео',
             'defaultEnabled': false
         },
 
@@ -338,6 +559,9 @@
             'fi': 'Kela/lyhyt video',
             'tr': 'makara/kısa video',
             'el': 'Εκδηλώσεις που μπορεί να σας αρέσουν',
+            'ru': 'Мероприятия, которые вам могут понравиться',
+            'uk': 'Події, які можуть вам сподобатися',
+            'bg': 'Събития, които може да ви харесат',
             'defaultEnabled': false,
         },
 
@@ -363,6 +587,9 @@
             'fi': 'Keskeytä animoidut GIF-kuvat',
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
+            'ru': 'Приостановить анимированные GIF',
+            'uk': 'Призупинити анімовані GIF-файли',
+            'bg': 'Пауза на анимирани GIF файлове',
             'defaultEnabled': false
         },
 
@@ -388,6 +615,39 @@
             'fi': '# jakoa',
             'tr': '# Paylaşım',
             'el': '# μερίδια',
+            'ru': '# поделились',
+            'uk': '# Поширити',
+            'bg': '# споделяния',
+            'defaultEnabled': false
+        },
+
+        // -- Maximum Likes
+        // -- hide posts having excessive Likes
+        // -- user's input count value is stored in NF_LIKES_MAXIMUM_COUNT
+        NF_LIKES_MAXIMUM: {
+            'en': 'Maximum number of Likes',
+            'pt': 'Número máximo de curtidas',
+            'de': 'Maximale Anzahl an Likes',
+            'fr': 'Nombre maximum de J\'aime',
+            'es': 'Número máximo de Me gusta',
+            'cs': 'Maximální počet hodnocení Líbí se mi',
+            'vi': 'Số lượt thích tối đa',
+            'it': 'Numero massimo di Mi piace',
+            'lv': 'Maksimālais atzīmju Patīk skaits',
+            'pl': 'Maksymalna ilość "Lubię to!"',
+            'nl': 'Maximaal aantal likes',
+            'he': 'מספר לייקים מקסימלי',
+            'ar': 'الحد الأقصى لعدد الإعجابات',
+            'id': 'Jumlah maksimum Suka',
+            'zh-Hans': '最大点赞数',
+            'zh-Hant': '最大按讚數',
+            'ja': '「いいね！」の最大数',
+            'fi': 'Maksimimäärä tykkäyksiä',
+            'tr': 'Maksimum Beğeni sayısı',
+            'el': 'Μέγιστα "Μου αρέσει"',
+            'ru': 'Максимальное количество «Нравится»',
+            'uk': 'Максимальна кількість «Подобається».',
+            'bg': 'Максимален брой Харесвания',
             'defaultEnabled': false
         },
 
@@ -416,6 +676,9 @@
             'fi': 'Maksettu kumppanuus',
             'tr': 'ücretli ortaklık',
             'el': 'Πληρωμένη συνεργασία',
+            'ru': 'Платное партнерство',
+            'uk': 'Оплачуване партнерство',
+            'bg': 'Платено партньорство',
             'defaultEnabled': true
         },
 
@@ -441,6 +704,9 @@
             'fi': 'Ehdotuksia / Suosituksia',
             'tr': 'Öneriler',
             'el': 'Προτάσεις / Συστάσεις',
+            'ru': 'Предложения / Рекомендации',
+            'uk': 'Пропозиції / Рекомендації',
+            'bg': 'Предложения / Препоръки',
             'defaultEnabled': false
         },
 
@@ -466,6 +732,9 @@
             'fi': 'Keloja ja lyhyitä videoita',
             'tr': 'makara/kısa video',
             'el': 'Ριλς/μικρό βίντεο',
+            'ru': 'Reel/короткое видео',
+            'uk': 'Reel/коротке відео',
+            'bg': 'Рил/късо видео',
             'defaultEnabled': false
         },
 
@@ -491,6 +760,9 @@
             'fi': 'Kela/lyhyt video',
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
+            'ru': 'Приостановить анимированные GIF',
+            'uk': 'Призупинити анімовані GIF-файли',
+            'bg': 'Пауза на анимирани GIF файлове',
             'defaultEnabled': false,
         },
         // - # shares
@@ -515,10 +787,41 @@
             'fi': '# jakoa',
             'tr': '# Paylaşım',
             'el': '# μερίδια',
+            'ru': '# поделились',
+            'uk': '# Поширити',
+            'bg': '# споделяния',
             'defaultEnabled': false
         },
 
         // *** Watch Videos Feed ::
+
+        // - LIVE videos:
+        VF_LIVE: {
+            'en': 'LIVE',
+            'pt': 'DIRETO',
+            'de': 'LIVE',
+            'fr': 'EN DIRECT',
+            'es': 'ESTRENO',
+            'cs': 'ŽIVĚ',
+            'vi': 'TRỰC TIẾP',
+            'it': 'IN DIRETTA',
+            'lv': 'TIEŠRAIDE',
+            'pl': 'NA ŻYWO',
+            'nl': 'LIVE',
+            'he': 'שידור חי',
+            'ar': 'مباشر',
+            'id': 'LANGSUNG',
+            'zh-Hans': '现场直播',
+            'zh-Hant': '現場直播',
+            'ja': 'ライブ',
+            'fi': 'LIVE',
+            'tr': 'CANLI',
+            'el': 'ΖΩΝΤΑΝΑ',
+            'ru': 'В ЭФИРЕ',
+            'uk': 'ЕФІР',
+            'bg': 'НА ЖИВО',
+            'defaultEnabled': false,
+        },
 
         // - pause animated GIFs:
         VF_ANIMATED_GIFS: {
@@ -542,8 +845,13 @@
             'fi': 'Keskeytä animoidut GIF-kuvat',
             'tr': 'Hareketli GIF\'leri duraklat',
             'el': 'Παύση κινούμενων GIF',
+            'ru': 'Приостановить анимированные GIF',
+            'uk': 'Призупинити анімовані GIF-файли',
+            'bg': 'Пауза на анимирани GIF файлове',
             'defaultEnabled': false,
         },
+        // (videos do not have # shares count)
+
 
         // *** block text - feeds
 
@@ -569,6 +877,9 @@
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
+            'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
+            'uk': ['Стрічка новин', 'Стрічка Групи', 'Стрічка відео'],
+            'bg': ['Новинарски поток', 'Поток с групи', 'Поток с видеа'],
             'defaultEnabled': ['1', '0', '0'],
         },
         // - text filter for Groups Feed:
@@ -593,6 +904,9 @@
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
+            'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
+            'uk': ['Стрічка новин', 'Стрічка Групи', 'Стрічка відео'],
+            'bg': ['Новинарски поток', 'Поток с групи', 'Поток с видеа'],
             'defaultEnabled': ['0', '1', '0'],
         },
         // - text filter for Vidoes Feed:
@@ -617,6 +931,9 @@
             'fi': ['Uutissyöte', 'Ryhmäsyöte', 'Videosyöte'],
             'tr': ['Haber akışı', 'Gruplar Feed\'i', 'Video Beslemelerini İzle'],
             'el': ['Ροή ειδήσεων', 'Ροή ομάδων', 'Ροή βίντεο'],
+            'ru': ['Лента новостей', 'Лента групп', 'Лента видео'],
+            'uk': ['Стрічка новин', 'Стрічка Групи', 'Стрічка відео'],
+            'bg': ['Новинарски поток', 'Поток с групи', 'Поток с видеа'],
             'defaultEnabled': ['0', '0', '1'],
         },
         // - text filter for Marketplace feed:
@@ -641,11 +958,14 @@
             'fi': ['Marketplace-syöte'],
             'tr': ['Pazar Yeri Feed\'i'],
             'el': ['Ροή Marketplace'],
+            'ru': ['Лента Marketplace'],
+            'uk': ['Стрічка Marketplace'],
+            'bg': ['Поток с Marketplace'],
             'defaultEnabled': ['1', '0', '0'],
         },
 
 
-        // *** Miscellaneous/Other items ::
+        // *** Miscellaneous/Supplementary/Other items ::
 
         // - Info box - coronavirus:
         OTHER_INFO_BOX_CORONAVIRUS: {
@@ -669,6 +989,9 @@
             'fi': 'Koronavirus (tietolaatikko)',
             'tr': 'Koronavirüs (bilgi kutusu)',
             'el': 'Κορονοϊός (πλαίσιο πληροφοριών)',
+            'ru': 'Коронавирус (информационное окно)',
+            'uk': 'Коронавірус (інформаційне вікно)',
+            'bg': 'Коронавирус (информационна кутия)',
             'defaultEnabled': false,
             'pathMatch': '/coronavirus_info/',
         },
@@ -695,6 +1018,9 @@
             'fi': 'Ilmastotiede (tietolaatikko)',
             'tr': 'İklim Bilimi (bilgi kutusu)',
             'el': 'Επιστήμη του κλίματος (πλαίσιο πληροφοριών)',
+            'ru': 'Наука о климате (информационное окно)',
+            'uk': 'Наука про клімат (інформаційне вікно)',
+            'bg': 'Наука за климата (информационна кутия)',
             'defaultEnabled': false,
             'pathMatch': '/climatescienceinfo/',
         },
@@ -721,8 +1047,64 @@
             'fi': 'Rekisteröidy (tietolaatikko)',
             'tr': 'Abone ol (bilgi kutusu)',
             'el': 'Εγγραφή (πλαίσιο πληροφοριών)',
+            'ru': 'Подписаться (информационное окно)',
+            'uk': 'Підписатися (інформаційне вікно)',
+            'bg': 'Абонирай се (информационна кутия)',
             'defaultEnabled': false,
             'pathMatch': '/support/',
+        },
+
+        REELS_TITLE: {
+            'en': 'Reels',
+            'pt': 'Reels',
+            'de': 'Reels',
+            'fr': 'Reels',
+            'es': 'Reels',
+            'cs': 'Reels',
+            'vi': 'Reels',
+            'it': 'Reels',
+            'lv': 'Reels',
+            'pl': 'Reels',
+            'nl': 'Reels',
+            'he': 'Reels', // -- FB's label
+            'ar': 'ريلز', // -- FB's label
+            'id': 'Reels',
+            'zh-Hans': 'Reels',
+            'zh-Hant': 'Reels',
+            'ja': 'リール動画',
+            'fi': 'Reels',
+            'tr': 'Reels',
+            'el': 'Reel',
+            'ru': 'Видео Reels',
+            'uk': 'Reels',
+            'bg': 'Ленти', // -- FB's label
+        },
+
+        REELS_CONTROLS: {
+            'en': 'Show video controls',
+            'pt': 'Mostrar controles do vídeo',
+            'de': 'Video-Steuerung anzeigen',
+            'fr': 'Afficher les contrôles vidéo',
+            'es': 'Mostrar controles de video',
+            'cs': 'Zobrazit ovládání videa',
+            'vi': 'Hiển thị điều khiển video',
+            'it': 'Mostra controlli video',
+            'lv': 'Rādīt video vadīklus',
+            'pl': 'Pokaż sterowanie wideo',
+            'nl': 'Toon video bedieningselementen',
+            'he': 'הצג אפשרויות בקרת וידאו',
+            'ar': 'عرض أدوات التحكم في الفيديو',
+            'id': 'Tampilkan kontrol video',
+            'zh-Hans': '显示视频控制',
+            'zh-Hant': '顯示影片控制',
+            'ja': 'ビデオコントロールを表示',
+            'fi': 'Näytä videon hallintaelementit',
+            'tr': 'Video kontrollerini göster',
+            'el': 'Εμφάνιση χειριστηρίων βίντεο',
+            'ru': 'Показать элементы управления видео',
+            'uk': 'Відображення елементів керування відео',
+            'bg': 'Покажи контроли на видеото',
+            'defaultEnabled': true
         },
 
         // *** Dialog box ::
@@ -749,6 +1131,9 @@
             'fi': 'Puhdista syötteeni',
             'tr': 'Feed\'lerimi temizle',
             'el': 'Καθαρισμός των ροών μου',
+            'ru': 'Очистить мои новостные ленты',
+            'uk': 'Очистити мої стрічки',
+            'bg': 'Почисти моите емисии',
         },
 
         // - label for News Feed:
@@ -773,6 +1158,9 @@
             'fi': 'Uutisvirta',
             'tr': 'Haber akışı',
             'el': 'Ροή ειδήσεων',
+            'ru': 'Лента новостей',
+            'uk': 'Стрічка новин',
+            'bg': 'Новинарски поток',
         },
 
         // - label for Groups Feed:
@@ -797,6 +1185,9 @@
             'fi': 'Ryhmäsyöte',
             'tr': 'Gruplar Feed\'i',
             'el': 'Ροή ομάδων',
+            'ru': 'Лента групп',
+            'uk': 'Стрічка Групи',
+            'bg': 'Поток с групи',
         },
 
         // - label for Videos Feed:
@@ -821,6 +1212,9 @@
             'fi': 'Videosyöte',
             'tr': 'Video Beslemelerini İzle',
             'el': 'Ροή βίντεο',
+            'ru': 'Лента видео',
+            'uk': 'Стрічка відео',
+            'bg': 'Поток с видеа',
         },
 
         // - label for Marketplace Feed:
@@ -845,30 +1239,59 @@
             'fi': 'Marketplace-syöte',
             'tr': 'Pazar Yeri Feed\'i',
             'el': 'Ροή Marketplace',
+            'ru': 'Лента Marketplace',
+            'uk': 'Стрічка Marketplace',
+            'bg': 'Поток с Marketplace',
         },
 
         // - label for Miscellaneous/Other items:
+        // DLG_OTHER: {
+        //     'en': 'Miscellaneous items',
+        //     'pt': 'Itens miscelâneos',
+        //     'de': 'Sonstige Gegenstände',
+        //     'fr': 'Articles divers',
+        //     'es': 'Artículos diversos',
+        //     'cs': 'Různé položky',
+        //     'vi': 'Những thứ linh tinh',
+        //     'it': 'Articoli vari',
+        //     'lv': 'Dažādas vienumus',
+        //     'pl': 'Różne pozycje',
+        //     'nl': 'Diversen',
+        //     'he': 'פריטים שונים',
+        //     'ar': 'عناصر متنوعة',
+        //     'id': 'Barang lain-lain',
+        //     'zh-Hans': '杂件',
+        //     'zh-Hant': '雜項',
+        //     'ja': 'その他のアイテム',
+        //     'fi': 'Sekalaiset tavarat',
+        //     'tr': 'Diğer öğeler',
+        //     'el': 'Διάφορα αντικείμενα',
+        //     'ru': 'Разное',
+        // },
         DLG_OTHER: {
-            'en': 'Miscellaneous items',
-            'pt': 'Itens miscelâneos',
-            'de': 'Sonstige Gegenstände',
-            'fr': 'Articles divers',
-            'es': 'Artículos diversos',
-            'cs': 'Různé položky',
-            'vi': 'Những thứ linh tinh',
-            'it': 'Articoli vari',
-            'lv': 'Dažādas vienumus',
-            'pl': 'Różne pozycje',
-            'nl': 'Diversen',
-            'he': 'פריטים שונים',
-            'ar': 'عناصر متنوعة',
-            'id': 'Barang lain-lain',
-            'zh-Hans': '杂件',
-            'zh-Hant': '雜項',
-            'ja': 'その他のアイテム',
-            'fi': 'Sekalaiset tavarat',
-            'tr': 'Diğer öğeler',
-            'el': 'Διάφορα αντικείμενα',
+            'en': 'Supplementary / information section',
+            'pt': 'Seção suplementar / informativa',
+            'de': 'Ergänzungs-/Informationsbereich',
+            'fr': 'Section supplémentaire / information',
+            'es': 'Sección suplementaria / información',
+            'cs': 'Doplňková/informační část',
+            'vi': 'Phần bổ sung/thông tin',
+            'it': 'Sezione supplementare / informativa',
+            'lv': 'Papildu / informācija sadaļa',
+            'pl': 'Sekcja uzupełniająca/informacyjna',
+            'nl': 'Aanvullende / informatie sectie',
+            'he': 'מדור משלים / מידע',
+            'ar': 'قسم التكميلي / المعلومات',
+            'id': 'Bagian tambahan / informasi',
+            'zh-Hans': '补充/资料部分',
+            'zh-Hant': '補充/資訊部分',
+            'ja': '補足・情報セクション',
+            'fi': 'Täydentävä / tieto-osio',
+            'tr': 'Tamamlayıcı / bilgi bölümü',
+            'el': 'Συμπληρωματικό τμήμα / πληροφοριακό τμήμα',
+            'ru': 'Дополнительный/информационный раздел',
+            'uk': 'Додатковий/інформаційний розділ',
+            'bg': 'Допълнителен / информационен раздел',
         },
 
         // - text filter label (title)
@@ -893,6 +1316,9 @@
             'fi': 'Tekstisuodatin',
             'tr': 'Metin filtresi',
             'el': 'Φίλτρο κειμένου',
+            'ru': 'Текстовый фильтр',
+            'uk': 'Текстовий фільтр',
+            'bg': 'Текстов филтър',
         },
 
         // - text filter - separate keywords with new line:
@@ -917,6 +1343,9 @@
             'fi': '(erottele sanat tai lauseet rivinvaihdolla)',
             'tr': '(sözcükleri veya tümcecikleri satır sonu ile ayırın)',
             'el': '(διαχωρίστε λέξεις ή φράσεις με αλλαγή γραμμής)',
+            'ru': '(разделяйте слова или фразы с помощью переноса строки)',
+            'uk': '(розділяти слова або фрази розривом рядка)',
+            'bg': '(разделяйте думи или фрази с нов ред)',
         },
 
         NF_BLOCKED_ENABLED: {
@@ -940,6 +1369,9 @@
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
+            'ru': 'Включено',
+            'uk': 'Увімкнено',
+            'bg': 'Активирано',
             'defaultEnabled': false,
         },
 
@@ -964,6 +1396,9 @@
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
+            'ru': 'Включено',
+            'uk': 'Увімкнено',
+            'bg': 'Активирано',
             'defaultEnabled': false,
         },
 
@@ -988,6 +1423,9 @@
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
+            'ru': 'Включено',
+            'uk': 'Увімкнено',
+            'bg': 'Активирано',
             'defaultEnabled': false,
         },
 
@@ -1012,6 +1450,9 @@
             'fi': 'Ota vaihtoehto käyttöön',
             'tr': 'Etkinleştirildi',
             'el': 'Ενεργοποιημένο',
+            'ru': 'Включено',
+            'uk': 'Увімкнено',
+            'bg': 'Активирано',
             'defaultEnabled': false,
         },
 
@@ -1037,6 +1478,9 @@
             'fi': 'Monisanaisuus',
             'tr': 'Ayrıntı',
             'el': 'Πολυλογία',
+            'ru': 'Многословие',
+            'uk': 'Багатослівність',
+            'bg': 'Многословие',
             'defaultValue': '1',
         },
 
@@ -1062,6 +1506,9 @@
             'fi': 'Näytä viesti, jos postaus on piilotettu',
             'tr': 'Bir gönderi gizlenmişse bir mesaj göster',
             'el': 'Εμφάνιση μηνύματος αν ένας δημοσίευση είναι κρυμμένη',
+            'ru': 'Показывать сообщение, если пост скрыт',
+            'uk': 'Відображати повідомлення, якщо публікація прихована',
+            'bg': 'Показване на съобщение, ако публикацията е скрита',
         },
 
         // - Verbosity - say nothing:
@@ -1086,6 +1533,9 @@
             'fi': 'ei viestiä',
             'tr': 'esaj yok',
             'el': 'Κανένα μήνυμα',
+            'ru': 'сообщение отсутствует',
+            'uk': 'немає повідомлення',
+            'bg': 'Без съобщение',
         },
 
         // - notification
@@ -1109,7 +1559,10 @@
             'ja': ['1 件の投稿が非表示になっています。 ルール： ', ' 件の投稿が非表示'],
             'fi': ['1 viesti piilotettu. Sääntö: ', ' viestiä piilotettu'],
             'tr': ['1 gönderi gizlendi. Kural: ', ' gönderi gizlendi'],
-            'el': ['1 δημοσίευση κρυμμένη. Κανόνας: ', ' δημοσιεύσεις κρυμμένες']
+            'el': ['1 δημοσίευση κρυμμένη. Κανόνας: ', ' δημοσιεύσεις κρυμμένες'],
+            'ru': ['1 пост скрыт. Правило: ', ' постов скрыто'],
+            'uk': ['1 допис прихований. Правило: ', ' дописи приховано'],
+            'bg': ['1 скрита публикация. Правило: ', '  скрити публикации'],
         },
 
         // - colour of the verbosity message:
@@ -1134,6 +1587,9 @@
             'fi': 'Tekstin väri',
             'tr': 'Metin rengi',
             'el': 'Χρώμα κειμένου',
+            'ru': 'Цвет текста',
+            'uk': 'Колір тексту',
+            'bg': 'Цвят на текста',
         },
 
         // - background colour of the verbosity message:
@@ -1158,6 +1614,9 @@
             'fi': 'Taustaväri',
             'tr': 'Arka plan rengi',
             'el': 'Χρώμα φόντου',
+            'ru': 'Цвет фона',
+            'uk': 'Колір фону',
+            'bg': 'Цвят на фона',
             'defaultValue': 'LightGrey',
         },
 
@@ -1183,6 +1642,9 @@
             'fi': 'Korosta "piilotetut" postaus',
             'tr': '"Gizli" gönderileri vurgulayın',
             'el': 'Επισήμανση "κρυφών αναρτήσεων"',
+            'ru': 'Выделить «скрытые» посты',
+            'uk': '«Виділяти «приховані» дописи»',
+            'bg': 'Открояване на скритите публикации',
             'defaultValue': false,
         },
 
@@ -1208,6 +1670,9 @@
             'fi': 'Räätälöinnit',
             'tr': 'özelleştirmeler',
             'el': 'Προσαρμογές',
+            'ru': 'Настройки',
+            'uk': 'Налаштування',
+            'bg': 'Настройки',
         },
 
         // - label for location of button:
@@ -1232,6 +1697,9 @@
             'fi': 'Puhdista syötteeni -painikkeen sijainti',
             'tr': '"Feed\'lerimi temizle" için düğmenin konumu',
             'el': 'Τοποθεσία του κουμπιού "Καθαρισμός των ροών μου"',
+            'ru': 'Расположение кнопки «Очистить мои новостные ленты»',
+            'uk': 'Розташування кнопки «Очистити мої стрічки»',
+            'bg': 'Местоположение на бутона "Почисти моите емисии"',
         },
 
         // - location of button:
@@ -1256,6 +1724,9 @@
             'fi': ['alhaalla vasemmalla', 'ylhäällä oikealle', 'pois käytöstä (käytä "Asetukset" User Script Commands -valikossa)'],
             'tr': ['sol alt', 'sağ üst', 'devre dışı (Kullanıcı Komut Dosyası Komutları menüsünde "Ayarlar"ı kullanın)'],
             'el': ['κάτω αριστερά', 'πάνω δεξιά', 'απενεργοποιημένο (χρησιμοποιήστε "Ρυθμίσεις" στο μενού "Εντολές σεναρίου χρήστη")'],
+            'ru': ['внизу слева', 'вверху справа', 'отключено (используйте «Настройки» в меню «Пользовательские команды скрипта»)'],
+            'uk': ['внизу ліворуч', 'вгорі праворуч', 'вимкнено (використовуйте «Параметри» в меню команд сценарію користувача»)'],
+            'bg': ['долу вляво', 'горе вдясно', 'деактивирано (използвайте "Настройки" в менюто с команди за потребителски сценарии)'],
             'defaultValue': '0',
         },
         // - script manager's menu item "Settings"
@@ -1280,6 +1751,9 @@
             'fi': 'Asetukset',
             'tr': 'Ayarlar',
             'el': 'Ρυθμίσεις',
+            'ru': 'Настройки',
+            'uk': 'Параметри',
+            'bg': 'Настройки',
         },
 
         // - label for location of dialog:
@@ -1304,6 +1778,9 @@
             'fi': 'Puhdista syötteeni -valintaikkunan sijainti',
             'tr': '"Feed\'lerimi temizle" iletişim kutusunun konumu',
             'el': 'Τοποθεσία της διαλόγου "Καθαρισμός των ροών μου"',
+            'ru': 'Расположение диалогового окна «Очистить мои ленты»',
+            'uk': 'Розташування діалогового вікна «Очистити мої стрічки»',
+            'bg': 'Местоположение на диалоговия прозорец "Почисти моите емисии"',
         },
 
         // - location of dialog:
@@ -1328,6 +1805,9 @@
             'fi': ['vasen puoli', 'oikea puoli'],
             'tr': ['sol yan', 'sağ yan'],
             'el': ['αριστερή πλευρά', 'δεξιά πλευρά'],
+            'ru': ['левая сторона', 'правая сторона'],
+            'uk': ['ліва сторона', 'права сторона'],
+            'bg': ['лява страна', 'дясна страна'],
             'defaultValue': '0',
         },
 
@@ -1353,6 +1833,9 @@
             'fi': 'Tekstin väri',
             'tr': 'Metin rengi',
             'el': 'Χρώμα κειμένου',
+            'ru': 'Цвет текста',
+            'uk': 'Колір тексту',
+            'bg': 'Цвят на текста',
             'defaultValue': '',
         },
 
@@ -1378,6 +1861,9 @@
             'fi': 'Taustaväri',
             'tr': 'Arka plan rengi',
             'el': 'Χρώμα φόντου',
+            'ru': 'Цвет фона',
+            'uk': 'Колір фону',
+            'bg': 'Цвят на фона',
             'defaultValue': '',
         },
 
@@ -1403,6 +1889,9 @@
             'fi': 'Reunuksen väri',
             'tr': 'Kenarlık rengi',
             'el': 'Χρώμα περιγράμματος',
+            'ru': 'Цвет границы',
+            'uk': 'Колір кордону',
+            'bg': 'Цвят на рамката',
             'defaultValue': 'OrangeRed',
         },
 
@@ -1428,6 +1917,9 @@
             'fi': 'Vinkkejä',
             'tr': 'Ipuçları',
             'el': 'Συμβουλές',
+            'ru': 'Советы',
+            'uk': 'Підказки',
+            'bg': 'Съвети',
         },
 
         // - tip's content:
@@ -1452,30 +1944,35 @@
             'fi': 'Selaimen välimuistin tyhjentäminen palauttaa asetuksesi oletusarvoihinsa.\n\nKäytä "Vie"- ja "Tuo"-painikkeita varmuuskopioidaksesi ja palauttaaksesi mukautetut asetukset.',
             'tr': 'Tarayıcınızın önbelleğini temizlemek, ayarlarınızı varsayılan değerlerine sıfırlayacaktır. \n\nÖzelleştirilmiş ayarlarınızı yedeklemek ve geri yüklemek için "Dışa Aktar" ve "İçe Aktar" düğmelerini kullanın.',
             'el': 'Η εκκαθάριση της μνήμης cache του προγράμματος περιήγησης θα επαναφέρει τις ρυθμίσεις σας στις προεπιλεγμένες τιμές τους.\n\nΧρησιμοποιήστε τα κουμπιά "Εξαγωγή" και "Εισαγωγή" για να δημιουργήσετε αντίγραφο ασφαλείας και να επαναφέρετε τις εξατομικευμένες ρυθμίσεις σας.',
+            'ru': 'Очистка кэша браузера сбросит ваши настройки на значения по умолчанию.\n\nИспользуйте кнопки «Экспорт» и «Импорт», чтобы создать резервную копию и восстановить ваши настройки.',
+            'uk': 'Очищення кешу браузера призведе до скидання налаштувань до значень за замовчуванням.\n\nВикористовуйте кнопки «Експорт» та «Імпорт», щоб створити резервну копію та відновити налаштовані налаштування.',
+            'bg': 'Изчистването на кеша на браузъра ще нулира настройките ви до техните стандартни стойности.\n\nИзползвайте бутоните "Експорт" и "Импорт", за да запазите и възстановите персонализираните си настройки.'
         },
 
-        // - dailog's action buttons:
         DLG_BUTTONS: {
-            'en': ['Save', 'Close', 'Export', 'Import'],
-            'pt': ['Salvar', 'Fechar', 'Exportar', 'Importar'],
-            'de': ['Speichern', 'Schließen', 'Exportieren', 'Importieren'],
-            'fr': ['Sauvegarder', 'Fermer', 'Exporter', 'Importer'],
-            'es': ['Guardar', 'Cerrar', 'Exportar', 'Importar'],
-            'cs': ['Uložit', 'Zavřít', 'Export', 'Import'],
-            'vi': ['Lưu', 'Đóng', 'Xuất', 'Nhập'],
-            'it': ['Salva', 'Chiudi', 'Esportare', 'Importare'],
-            'lv': ['Saglabājiet', 'Aizveriet', 'Eksportēt', 'Importēt'],
-            'pl': ['Zapisz', 'Zamknij', 'Eksport', 'Import'],
-            'nl': ['Opslaan', 'Sluiten', 'Exporteren', 'Importeren'],
-            'he': ['שמור', 'סגור', 'ייצא', 'ייבא'],
-            'ar': ['حفظ', 'قريب', 'يصدّر', 'يستورد'],
-            'id': ['Simpan', 'Tutup', 'Ekspor', 'Impor'],
-            'zh-Hans': ['节省', '关', '出口', '进口'],
-            'zh-Hant': ['儲存', '關閉', '匯出', '匯入'],
-            'ja': ['セーブ', 'クローズ', '輸出する', '輸入'],
-            'fi': ['Tallentaa', 'Sulkea', 'Vienti', 'Tuonti'],
-            'tr': ['Kaydetmek', 'Kapat', 'İhracat', 'İçe aktarmak'],
-            'el': ['Αποθήκευση', 'Κλείσιμο', 'Εξαγωγή', 'Εισαγωγή'],
+            'en': ['Save', 'Close', 'Export', 'Import', 'Reset'],
+            'pt': ['Salvar', 'Fechar', 'Exportar', 'Importar', 'Redefinir'],
+            'de': ['Speichern', 'Schließen', 'Exportieren', 'Importieren', 'Zurücksetzen'],
+            'fr': ['Sauvegarder', 'Fermer', 'Exporter', 'Importer', 'Réinitialiser'],
+            'es': ['Guardar', 'Cerrar', 'Exportar', 'Importar', 'Reajustar'],
+            'cs': ['Uložit', 'Zavřít', 'Export', 'Import', 'Resetovat'],
+            'vi': ['Lưu', 'Đóng', 'Xuất', 'Nhập', 'Đặt lại'],
+            'it': ['Salva', 'Chiudi', 'Esportare', 'Importare', 'Ripristina'],
+            'lv': ['Saglabājiet', 'Aizveriet', 'Eksportēt', 'Importēt', 'Atiestatīt'],
+            'pl': ['Zapisz', 'Zamknij', 'Eksport', 'Import', 'Przeskładać'],
+            'nl': ['Opslaan', 'Sluiten', 'Exporteren', 'Importeren', 'Reset'],
+            'he': ['שמור', 'סגור', 'ייצא', 'ייבא', 'איפוס'],
+            'ar': ['حفظ', 'قريب', 'يصدّر', 'يستورد', 'إعادة تعيين'],
+            'id': ['Simpan', 'Tutup', 'Ekspor', 'Impor', 'Reset'],
+            'zh-Hans': ['节省', '关', '出口', '进口', '重置'],
+            'zh-Hant': ['儲存', '關閉', '匯出', '匯入', '重設'],
+            'ja': ['セーブ', 'クローズ', '輸出する', '輸入', 'リセット'],
+            'fi': ['Tallentaa', 'Sulkea', 'Vienti', 'Tuonti', 'Nollaa'],
+            'tr': ['Kaydetmek', 'Kapat', 'İhracat', 'İçe aktarmak', 'Sıfırla'],
+            'el': ['Αποθήκευση', 'Κλείσιμο', 'Εξαγωγή', 'Εισαγωγή', 'Επαναφορά'],
+            'ru': ['Сохранить', 'Закрыть', 'Экспорт', 'Импорт', 'Сброс'],
+            'uk': ['Зберегти', 'Закрити', 'Експорт', 'Імпорт', 'Скинути'],
+            'bg': ['Запази', 'Затвори', 'Експорт', 'Импорт', 'Нулиране'],
         },
 
         DLG_FB_COLOUR_HINT: {
@@ -1498,7 +1995,10 @@
             'ja': '空白のままにすると、FB の配色が使用されます',
             'fi': 'Jätä tyhjäksi käyttääksesi FB:n värimaailmaa',
             'tr': 'FB\'un renk düzenini kullanmak için boş bırakın',
-            'el': 'Αφήστε κενό για να χρησιμοποιήσετε το χρωματικό σχήμα του FB'
+            'el': 'Αφήστε κενό για να χρησιμοποιήσετε το χρωματικό σχήμα του FB',
+            'ru': 'Оставьте пустым, чтобы использовать цветовую схему FB',
+            'uk': 'Залиште порожнім, щоб використовувати колірну схему FB',
+            'bg': 'Оставете празно, за да използвате цветовата схема на FB',
         }
     };
 
@@ -1510,7 +2010,7 @@
     // - idb-keyval - indexedDB wrapper
     // -- needs the "@require https://unpkg.com/idb-keyval@6.0.3/dist/umd.js" entry.
     // -- which functions do we want to use from the idb-keyval?
-    const { get, set, createStore } = idbKeyval;
+    const { get, set, del, createStore } = idbKeyval;
     // - override idb-keyval's default db and store names.
     let DBVARS = {
         DBName: 'dbCMF',
@@ -1522,7 +2022,7 @@
     DBVARS.ostore = createStore(DBVARS.DBName, DBVARS.DBStore);
 
     // - post attribute - hidden and reason
-    const postAtt = 'cmfr';
+    const postAtt = 'cmfrx';
     // - post attribute - consecutive posts id
     const postAttCPID = 'cmfcpid';
     // - post property - # of light dusting duties done
@@ -1531,6 +2031,8 @@
     const postAttChildFlag = 'cmfcf';
     // - post's toggle state bar + post tab.
     const postAttTab = 'cmftsb'
+    // - marketplace post - indicate already scanned
+    const postAttMPSkip = 'cmfsmp';
 
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
@@ -1541,7 +2043,7 @@
         mutationsInitSkip: 75,
         // - how many times to scan a post
         scanCountStart: 0,
-        scanCountMaxLoop: 12,
+        scanCountMaxLoop: 15, // Nov 2023; changed from 12 to 15, need to make code a tad bit more aggressive.
 
         // - langauge (default to EN)
         language: '',
@@ -1560,6 +2062,9 @@
         isMF: false, // marketplace
         isAF: false, // all feeds
         isSF: false, // search feed
+        isRF: false, // reel feed
+
+        isRF_InTimeoutMode: false, // -- processing Reel videos in timeout calls instead of mutations
 
         // groups feed type : 'group' = single group; 'groups' = multiple groups;
         gfType: '',
@@ -1591,7 +2096,7 @@
         cssHideEl: '',
         cssEcho: '',
         cssHideNumberOfShares: '',
-        cssShow: 'show',
+        cssShow: '',
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl: null,
         // - script's logo
@@ -1619,11 +2124,11 @@
         }
     }
 
-    // -- generate a string of random charcters
-    // -- used for css classes
-    // -- used for postAttCPID
     function generateRandomString() {
         // - generate random text (first letter must be an alphabet)
+        // -- used for css classes
+        // -- used for postAttCPID
+        // -- used for tagging items
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         const strArray = [chars.charAt(Math.floor(Math.random() * 52))]; // First letter must be an alphabet
 
@@ -1674,10 +2179,11 @@
             head = document.getElementsByTagName('head')[0];
             head.appendChild(styleEl);
 
-            // - remember class names (for other functions to use)
+            // - remember <element> attribute names (for other functions to use)
             VARS.cssHide = generateRandomString(); // - the parent element - hides the nth level down element
             VARS.cssHideEl = generateRandomString(); // - the element to hide - where there's no child element
             VARS.cssHideNumberOfShares = generateRandomString(); // - hide "# shares" on posts.
+            VARS.cssShow = generateRandomString(); // - for revealing hidden elements.
         }
         VARS.tempStyleSheetCode = ''; // reset temp CSS code.
 
@@ -1686,20 +2192,26 @@
         // VARS.cssHideEl = 'cmfr-hide-element';
         // VARS.cssHideNumberOfShares = 'cmfr-hide-shares';
 
+        // -- **** fix fb's bug in not "hiding" certain elements properly when scrolling
+        addToSS('body > div[style*="position: absolute"], ' +
+            'body > div[style*="position:absolute"]',
+            'top: -1000000px !important;'
+        );
+
         // - insert Styles (as classes)
         // - NF/GF/VF
         // -- remove margins
         addToSS(
-            `.${VARS.cssHide},` +
-            `.${VARS.cssHideEl}`,
+            `[${VARS.cssHide}],` +
+            `[${VARS.cssHideEl}]`,
             'margin:0 !important;'
         );
 
         // -- post wrapper (mainly for news, groups and video feeds posts)
-        classes = `.${VARS.cssHide} > div:not([${postAttTab}]) > div,`;
-        classes += `.${VARS.cssHide} > span,`;
+        classes = `[${VARS.cssHide}] > div:not([${postAttTab}]) > div,`;
+        classes += `[${VARS.cssHide}] > span,`;
         // -- non n/f & g/f wrappers (mainly for marketplace posts + some aside boxes)
-        classes += `.${VARS.cssHideEl}`;
+        classes += `[${VARS.cssHideEl}]`;
         // -- which styles to apply?
         // --- (display:block is for those span tags being a nth-of-child element.)
         styles = 'display:none !important;';
@@ -1707,7 +2219,7 @@
 
         // -- # shares
         addToSS(
-            `.${VARS.cssHideNumberOfShares}`,
+            `[${VARS.cssHideNumberOfShares}]`,
             'display:none !important;'
         );
 
@@ -1755,26 +2267,26 @@
             `background-color:${(VARS.Options.VERBOSITY_MESSSAGE_BG_COLOUR === '') ? KeyWords.VERBOSITY_MESSAGE_BG_COLOUR.defaultValue : VARS.Options.VERBOSITY_MESSAGE_BG_COLOUR}; `
         );
 
-        // - 'show' - reveal a hidden post
+        // - 'show' - reveal a hidden post (except for mp)
         addToSS(
-            `.show > div:not([${postAttTab}]) > div, ` +
-            `.${VARS.cssHideNumberOfShares}.show`,
+            `[${VARS.cssShow}]:not([${VARS.cssHideEl}]) > div:not([${postAttTab}]) > div, ` +
+            `[${VARS.cssHideNumberOfShares}][${VARS.cssShow}]`,
             'display:block !important; ' +
             `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.2rem 0.1rem 0.1rem 0.1rem;` // 4px
         );
         // - echo msg show state
         addToSS(
-            `.show > div[${postAttTab}]`,
+            `[${VARS.cssShow}] > div[${postAttTab}]`,
             'margin-top:0.5rem; margin-bottom:0.5rem;'
         );
         // - echo msg's button show state
         addToSS(
-            `.show > div[${postAttTab}] > div.wbtn > button`,
+            `[${VARS.cssShow}] > div[${postAttTab}] > div.wbtn > button`,
             'transform: rotate(360deg);transition: transform 0.15s linear;'
         );
-        // - non-standard post's show state
+        // - non-standard post's show state (mp)
         addToSS(
-            `.${VARS.cssHideEl}.show `,
+            `[${VARS.cssHideEl}][${VARS.cssShow}] `,
             `display: block !important; border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.1rem;` // 4px
         );
         // - dailog box CSS
@@ -1813,6 +2325,10 @@
             'flex-grow:2; align-self:auto; order:2;'
         );
         addToSS(
+            '.fb-cmf header .fb-cmf-title .script-version',
+            'font-size: 0.75rem; font-weight: normal;'
+        );
+        addToSS(
             '.fb-cmf header .fb-cmf-lang-1',
             'padding-top:1.25rem;'
         );
@@ -1843,10 +2359,6 @@
             `    flex:1; overflow:auto; border:2px double ${bColour}; border-radius:0.5rem; color: var(--primary-text);`
         );
         addToSS(
-            '.fb-cmf footer.buttons',
-            'padding:1rem; text-align:center;'
-        );
-        addToSS(
             '.fb-cmf fieldset',
             'margin:0.5rem; padding:0.5rem; border-color:LightGrey;'
         );
@@ -1875,10 +2387,15 @@
             '.__fb-dark-mode .fb-cmf fieldset input[type="input"]',
             'background-color:var(--comment-background); color:var(--primary-text);'
         );
-        // -- footer - buttons
+        // -- footer - buttons + results
+        addToSS(
+            '.fb-cmf footer',
+            'display: grid; justify-content: space-evenly; padding:1rem 0.25rem; text-align:center;'
+        );
         addToSS(
             '.fb-cmf .buttons button',
-            'margin-left: 1rem; margin-right:1rem;'
+            // 'margin-left: 1rem; margin-right:1rem;'
+            'margin-left: 0.25rem; margin-right: 0.25rem;'
         );
         // -- footer - file input
         addToSS(
@@ -1888,11 +2405,11 @@
         // -- footer - import results
         addToSS(
             '.fb-cmf .fileResults',
-            'font-style:italic; margin-top: 1rem;'
+            'grid-column-start: 1; grid-column-end: 6; font-style:italic; margin-top: 1rem;'
         );
         // -- show dialog box (default is not to show)
         addToSS(
-            '.fb-cmf.show',
+            `.fb-cmf[${VARS.cssShow}]`,
             'opacity:1; transform:scale(1); visibility:visible;'
         );
         // -- new window icon
@@ -1973,7 +2490,7 @@
             addToSS('.fb-cmf-toggle svg', 'height:32px; width:32px;');
             addToSS('.fb-cmf-toggle:hover', 'cursor:pointer;');
             // - dialog box's display
-            addToSS('.fb-cmf-toggle.show', 'display:block;');
+            addToSS(`.fb-cmf-toggle[${VARS.cssShow}]`, 'display:block;');
         }
         // - dialog box's left/right + animated open/close behaviour
         if (cmfDlgLocation === '1') {
@@ -2022,19 +2539,19 @@
         // -- check that all variables exists ... if not, assign them default values..
         // -- Sponsored (always enabled)
         if (!VARS.Options.hasOwnProperty('NF_SPONSORED')) {
-            VARS.Options.NF_SPONSORED = true;
+            VARS.Options.NF_SPONSORED = KeyWords['SPONSORED'].defaultEnabled;
             changed = true;
         }
         if (!VARS.Options.hasOwnProperty('GF_SPONSORED')) {
-            VARS.Options.GF_SPONSORED = true;
+            VARS.Options.GF_SPONSORED = KeyWords['SPONSORED'].defaultEnabled;
             changed = true;
         }
         if (!VARS.Options.hasOwnProperty('VF_SPONSORED')) {
-            VARS.Options.VF_SPONSORED = true;
+            VARS.Options.VF_SPONSORED = KeyWords['SPONSORED'].defaultEnabled;
             changed = true;
         }
         if (!VARS.Options.hasOwnProperty('MP_SPONSORED')) {
-            VARS.Options.MP_SPONSORED = true;
+            VARS.Options.MP_SPONSORED = KeyWords['SPONSORED'].defaultEnabled;
             changed = true;
         }
 
@@ -2188,6 +2705,10 @@
             VARS.Options.CMF_DIALOG_BG_COLOUR = KeyWords.CMF_DIALOG_BG_COLOUR.defaultValue;
             changed = true;
         }
+        if (!VARS.Options.hasOwnProperty('NF_LIKES_MAXIMUM_COUNT')) {
+            VARS.Options.NF_LIKES_MAXIMUM_COUNT = '';
+            changed = true;
+        }
 
         if (changed) {
             // - save the changes ...
@@ -2288,6 +2809,7 @@
                 }
             }
         }
+
         // -- market place (stand-alone)
         if (VARS.Options.MP_BLOCKED_ENABLED) {
             mpBlockedTextList = mpBlockedText;
@@ -2446,6 +2968,51 @@
             return div;
         }
 
+        function createCheckboxAndInput(cbName, iName) {
+            // -- checkbox with input box.
+            // -- no read-only attributes
+            // -- no multiple keyword values.
+
+            // -- create checkbox first.
+            const CBTYPE = 'T';
+            let cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.setAttribute('cbType', CBTYPE);
+            cb.name = cbName;
+            cb.value = cbName;
+            cb.checked = VARS.Options[cbName];
+
+            // -- create input box
+            let input = document.createElement('input');
+            input.type = 'text';
+            input.name = iName;
+            input.value = VARS.Options[iName];
+            input.placeholder = '1000';
+            input.size = 6;
+            input.addEventListener('input', checkInputNumber, false);
+
+            // -- wrap checkbox and input inside a label
+            let label = document.createElement('label');
+            label.appendChild(cb);
+            label.appendChild(document.createTextNode(KeyWords[cbName][VARS.language] + ': '));
+            label.appendChild(input);
+
+            // -- wrap inside a div container ..
+            let div = document.createElement('div');
+            div.appendChild(label);
+            return div;
+        }
+
+        function checkInputNumber(event) {
+            // -- accept numbers/digits only.
+            const el = event.target;
+            if (el.value === '') {
+                return true;
+            }
+            const digitsValues = el.value.replace(/\D/g, '');
+            el.value = digitsValues.length > 0 ? parseInt(digitsValues) : '';
+        }
+
         function createDialog() {
             let dlg, hdr, hdr1, hdr2, hdr3, htxt, stxt, btn, cnt, fs, l, s, ta, div, footer;
 
@@ -2464,6 +3031,10 @@
             hdr2.className = 'fb-cmf-title';
             htxt = document.createElement('div');
             htxt.textContent = KeyWords.DLG_TITLE['en'];
+            s = document.createElement('small');
+            s.className = 'script-version';
+            s.appendChild(document.createTextNode(` (${SCRIPT_VERSION})`));
+            htxt.appendChild(s);
             hdr2.appendChild(htxt);
             if (VARS.language !== 'en') {
                 stxt = document.createElement('small');
@@ -2495,10 +3066,20 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_NF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createSingleCB('NF_SPONSORED', true));
+            fs.appendChild(createSingleCB('NF_SPONSORED', false)); // -- changed to false (Dec 2023)
             for (const key in KeyWords) {
-                if (key.slice(0, 3) === 'NF_' && key.slice(0, 8) !== 'NF_BLOCK') {
-                    fs.appendChild(createSingleCB(key));
+                if (key.slice(0, 3) === 'NF_') {
+                    if (key.slice(0, 8) === 'NF_BLOCK') {
+                        continue;
+                    }
+                    if (key.slice(0, 8) === 'NF_LIKES') {
+                        if (key === 'NF_LIKES_MAXIMUM') {
+                            fs.appendChild(createCheckboxAndInput(key, 'NF_LIKES_MAXIMUM_COUNT'));
+                        }
+                    }
+                    else {
+                        fs.appendChild(createSingleCB(key));
+                    }
                 }
             }
 
@@ -2527,7 +3108,7 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_GF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createSingleCB('GF_SPONSORED', true));
+            fs.appendChild(createSingleCB('GF_SPONSORED', false)); // -- changed to false (Dec 2023)
             for (const key in KeyWords) {
                 if (key.slice(0, 3) === 'GF_' && key.slice(0, 8) !== 'GF_BLOCK') {
                     fs.appendChild(createSingleCB(key));
@@ -2559,7 +3140,7 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_VF[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createSingleCB('VF_SPONSORED', true));
+            fs.appendChild(createSingleCB('VF_SPONSORED', false)); // -- changed to false (Dec 2023)
             for (const key in KeyWords) {
                 if (key.slice(0, 3) === 'VF_' && key.slice(0, 8) !== 'VF_BLOCK') {
                     fs.appendChild(createSingleCB(key));
@@ -2591,7 +3172,7 @@
             l = document.createElement('legend');
             l.textContent = KeyWords.DLG_MP[VARS.language];
             fs.appendChild(l);
-            fs.appendChild(createSingleCB('MP_SPONSORED', true));
+            fs.appendChild(createSingleCB('MP_SPONSORED', false)); // -- changed to false (Dec 2023)
 
             // -- Keywords to block - Marketplace Feed
             fs.appendChild(document.createElement('br'));
@@ -2644,6 +3225,14 @@
             }
             cnt.appendChild(fs);
 
+            // -- Reels
+            fs = document.createElement('fieldset');
+            l = document.createElement('legend');
+            l.textContent = KeyWords.REELS_TITLE[VARS.language];
+            fs.appendChild(l);
+            fs.appendChild(createSingleCB('REELS_CONTROLS'), false);
+            cnt.appendChild(fs);
+
             // -- Verbosity
             fs = document.createElement('fieldset');
             l = document.createElement('legend');
@@ -2692,9 +3281,9 @@
 
             dlg.appendChild(cnt);
 
-            // -- Actions (buttons)
+            // -- Actions (buttons) + status
             footer = document.createElement('footer');
-            footer.classList.add('buttons');
+            // footer.classList.add('buttons');
             btn = document.createElement('button');
             btn.textContent = KeyWords.DLG_BUTTONS[VARS.language][0]; // save
             btn.addEventListener('click', saveUserOptions, false);
@@ -2711,13 +3300,17 @@
             btn.textContent = KeyWords.DLG_BUTTONS[VARS.language][3]; // import
             btn.setAttribute('id', 'BTNImport');
             footer.appendChild(btn);
+            btn = document.createElement('button');
+            btn.textContent = KeyWords.DLG_BUTTONS[VARS.language][4]; // reset
+            btn.addEventListener('click', resetUserOptions, false);
+            footer.appendChild(btn);
             // -- file input field is hidden, but triggered by the Import button.
             let fileImport = document.createElement('input');
             fileImport.setAttribute('type', 'file');
             fileImport.setAttribute('id', `FI${postAtt}`);
             fileImport.classList.add('fileInput');
             footer.appendChild(fileImport);
-            // -- import results
+            // -- save/export/import/reset status/results
             div = document.createElement('div');
             div.classList.add('fileResults');
             footer.appendChild(div);
@@ -2770,7 +3363,7 @@
                 // -- plain inputs
                 let inputs = Array.from(content.querySelectorAll('input[type="text"]'));
                 inputs.forEach(inp => {
-                    if (VARS.Options.hasOwnProperty[inp.name]) {
+                    if (VARS.Options.hasOwnProperty(inp.name)) {
                         inp.value = VARS.Options[inp.name];
                     }
                 });
@@ -2784,6 +3377,18 @@
 
                 // -- grab the dialog box and get the various options.
                 md = document.getElementById('fbcmf');
+
+                // -- input validation for NF_LIKES_MAXIMUM_COUNT
+                const elLikesMaximum = md.querySelector('input[name="NF_LIKES_MAXIMUM"]');
+                if (elLikesMaximum.checked) {
+                    const elLikesMaximumCount = md.querySelector('input[name="NF_LIKES_MAXIMUM_COUNT"]');
+                    if (elLikesMaximumCount.value.length === 0) {
+                        alert(KeyWords.NF_LIKES_MAXIMUM[VARS.language] + '?');
+                        elLikesMaximumCount.focus();
+                        return;
+                    }
+                }
+
                 // -- checkboxes (toggle variations)
                 cbs = Array.from(md.querySelectorAll('input[type="checkbox"][cbtype="T"]'));
                 cbs.forEach(cb => {
@@ -2893,10 +3498,16 @@
                 elements = document.querySelectorAll(`[${postAtt}]`);
                 for (const element of elements) {
                     element.removeAttribute(postAtt);
-                    element.classList.remove(VARS.cssHide);
-                    element.classList.remove(VARS.cssHideEl);
-                    element.classList.remove(VARS.cssHideNumberOfShares);
-                    element.classList.remove(VARS.cssShow);
+                    element.removeAttribute(VARS.cssHide);
+                    element.removeAttribute(VARS.cssHideEl);
+                    element.removeAttribute(VARS.cssHideNumberOfShares);
+                    element.removeAttribute(VARS.cssShow);
+
+                    // -- February 2024 - hot fix !!! - remove the collapse post completely hack
+                    const elWithMargin = climbUpTheTree(element, 4);
+                    if (elWithMargin && elWithMargin.hasAttribute('style')) {
+                        elWithMargin.removeAttribute('style');
+                    }
                 }
                 // -- remove other attributes
                 elements = document.querySelectorAll(`[${postAttCPID}], [${postAttChildFlag}]`);
@@ -2908,14 +3519,14 @@
                         element.removeAttribute(postAttChildFlag);
                     }
                 }
-                // -- remove classes
-                // -- (don't add .show to query, the button needs it ...)
-                elements = document.querySelectorAll(`.${VARS.cssHide}, .${VARS.cssHideEl}, .${VARS.cssHideNumberOfShares}`);
+                // -- remove some more attributes
+                // -- (don't add cssShow to query, the button needs it ...)
+                elements = document.querySelectorAll(`[${VARS.cssHide}], [${VARS.cssHideEl}], [${VARS.cssHideNumberOfShares}]`);
                 for (const element of elements) {
-                    element.classList.remove(VARS.cssHide);
-                    element.classList.remove(VARS.cssHideEl);
-                    element.classList.remove(VARS.cssHideNumberOfShares);
-                    element.classList.remove(VARS.cssShow);
+                    element.removeAttribute(VARS.cssHide);
+                    element.removeAttribute(VARS.cssHideEl);
+                    element.removeAttribute(VARS.cssHideNumberOfShares);
+                    element.removeAttribute(VARS.cssShow);
                 }
 
                 if (VARS.isNF) {
@@ -2933,7 +3544,11 @@
                 else if (VARS.isSF) {
                     mopUpTheSearchFeed();
                 }
+                else if (VARS.isRF) {
+                    mopUpTheReelFeed('saveUserOptions');
+                }
             }
+            // console.info(log + 'saveUserOptions(); OPTIONS:', VARS.Options);
         }
 
         function exportUserOptions() {
@@ -2985,6 +3600,22 @@
             reader.readAsText(file);
         }
 
+        function resetUserOptions() {
+            // -- reset the options to original state (before customisations)
+            del(DBVARS.DBKey, DBVARS.ostore)
+                .then(() => {
+                    // console.info(log + 'resetUserOptions();', 'Data deleted successfully');
+                    setLanguageAndOptions();
+                    let result = saveUserOptions(null, 'reset').then(() => {
+                        updateDialog();
+                        return true;
+                    });
+                })
+                .catch((error) => {
+                    console.info(log + 'resetUserOptions(); Error - unable to delete Data.', error);
+                });
+        }
+
         function createToggleButton() {
             let btn = document.createElement('button');
             btn.innerHTML = VARS.logoHTML;
@@ -3003,8 +3634,13 @@
 
     // -- toggleDialog() function placed here to allow a GM.registerMenuCommand(...) to call it.
     function toggleDialog() {
-        let dlg = document.getElementById('fbcmf');
-        dlg.classList.toggle(VARS.cssShow);
+        const elDialog = document.getElementById('fbcmf');
+        if (elDialog.hasAttribute(VARS.cssShow)) {
+            elDialog.removeAttribute(VARS.cssShow);
+        }
+        else {
+            elDialog.setAttribute(VARS.cssShow, '');
+        }
     }
 
     // adjust some settings - if URL has changed.
@@ -3022,6 +3658,7 @@
             VARS.isVF = false;
             VARS.isMF = false;
             VARS.isSF = false;
+            VARS.isRF = false;
             if ((VARS.prevPathname === '/') || (VARS.prevPathname === '/home.php')) {
                 // -- news feed
                 // -- nb: "Feeds (most recent)" combines a few feeds into one ... apply NF rules to all, except Groups.
@@ -3030,6 +3667,7 @@
                 }
                 else {
                     VARS.isGF = true;
+                    VARS.gfType = 'groups-recent';
                 }
             }
             else if (VARS.prevPathname.indexOf('/groups/') >= 0) {
@@ -3040,6 +3678,9 @@
                 }
                 else if (VARS.prevPathname.indexOf('/groups/search') >= 0) {
                     VARS.gfType = 'search';
+                }
+                else if (VARS.prevPathname.indexOf('?filter=groups&sk=h_chr') >= 0) {
+                    VARS.gfType = 'groups-recent';
                 }
                 else {
                     VARS.gfType = 'group';
@@ -3099,25 +3740,31 @@
                 // -- search results page : "All" and "Posts"
                 VARS.isSF = true;
             }
+            else if (VARS.prevPathname.indexOf('/reel/') >= 0) {
+                // -- reel(s) page
+                // VARS.isRF = true;
+                VARS.isRF = (VARS.Options.REELS_CONTROLS === true);
+            }
 
-            VARS.isAF = (VARS.isNF || VARS.isGF || VARS.isVF || VARS.isMF || VARS.isSF);
+            VARS.isAF = (VARS.isNF || VARS.isGF || VARS.isVF || VARS.isMF || VARS.isSF || VARS.isRF);
 
             // when to display the cmf button
             if (VARS.isAF) {
                 if (VARS.btnToggleEl) {
-                    VARS.btnToggleEl.classList.add(VARS.cssShow);
+                    VARS.btnToggleEl.setAttribute(VARS.cssShow, '');
                 }
             }
             else {
                 if (VARS.btnToggleEl) {
-                    VARS.btnToggleEl.classList.remove(VARS.cssShow);
+                    VARS.btnToggleEl.removeAttribute(VARS.cssShow);
                 }
             }
 
             // - reset consecutive count of hidden posts
             VARS.echoCount = 0;
 
-            // console.info(`${log}setFeedSettings() :: isAF: ${VARS.isAF}; isNF: ${VARS.isNF}; isGF: ${VARS.isGF}; isVF: ${VARS.isVF}; isMF: ${VARS.isMF}; isSF: ${VARS.isSF};`);
+            // console.info(`${log}setFeedSettings() :: isAF: ${VARS.isAF}; isNF: ${VARS.isNF}; isGF: ${VARS.isGF}; isVF: ${VARS.isVF}; isMF: ${VARS.isMF}; isSF: ${VARS.isSF}; isRF: ${VARS.isRF};`);
+
             return true;
         }
         else {
@@ -3155,54 +3802,73 @@
 
     function scanTreeForText(theNode) {
         const arrayTextValues = [];
-        const divs = theNode.querySelectorAll(':scope > div');
+        const elements = theNode.querySelectorAll(':scope > div, :scope > blockquote, :scope > span');
 
-        for (const theDiv of divs) {
-            if (theDiv.hasAttribute('aria-hidden') && theDiv.getAttribute('aria-hidden') === "false") {
+        for (const element of elements) {
+            if (element.hasAttribute('aria-hidden') && element.getAttribute('aria-hidden') === "false") {
                 // -- skip this branch (hidden)
                 continue;
             }
 
             // -- scan this branch
-            const walk = document.createTreeWalker(theDiv, NodeFilter.SHOW_TEXT, null);
-            let n;
-            while ((n = walk.nextNode())) {
-                const elParent = n.parentElement;
+            const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+            let currentNode;
+            while ((currentNode = walk.nextNode())) {
+                const elParent = currentNode.parentElement;
                 const elParentTN = elParent.tagName.toLowerCase();
-                const val = cleanText(n.textContent).trim();
+                const val = cleanText(currentNode.textContent).trim();
+
+                // console.info(log + '---> scanTreeForText(); currentNode:', currentNode, elParent, elParentTN, val);
 
                 if (val === '' || val.toLowerCase() === 'facebook') {
                     // -- skip this node
-                    // console.info(log + 'scanTreeForText(); skipping (<empty/facebook>):', elParent);
                     continue;
                 }
 
                 if (elParent.hasAttribute('aria-hidden') && elParent.getAttribute('aria-hidden') === 'true') {
                     // -- skip this node
-                    // console.info(log + 'scanTreeForText(); skipping (aria-hidden=true):', elParent);
                     continue;
+                }
+
+                // if (elParentTN === 'div' && elParent.hasAttribute('role') && elParent.getAttribute('role') === 'button') {
+                //     // -- skip this node
+                //     continue;
+                // }
+                if (elParentTN === 'div' && elParent.hasAttribute('role') && elParent.getAttribute('role') === 'button') {
+                    // -- February 2024 - issue with "Anonymous participant" not being detected properly
+                    // -- when viewing a post in a group (not groups feed), "Anonymous participant" is inside a div:button wrapped inside an object.
+                    if (elParent.parentElement && elParent.parentElement.tagName.toLowerCase() !== 'object') {
+                        // -- skip this node
+                        continue;
+                    }
                 }
 
                 if (elParentTN === 'title') {
                     // -- skip this node
-                    // console.info(log + 'scanTreeForText(); skipping (<title>):', elParent);
                     continue;
                 }
 
-                if (elParentTN === 'div' && elParent.hasAttribute('role') && elParent.getAttribute('role') === 'button') {
-                    // -- skip this node
-                    // console.info(log + 'scanTreeForText(); skipping (role=button):', elParent);
-                    continue;
-                }
+                // const elGeneric = elParent.closest('div[role="button"]');
+                // if (elGeneric === null && val.length > 1) {
+                //     // - keep 2+ char strings.
+                //     arrayTextValues.push(...val.split('\n'));
+                // }
+                // else {
+                //     // -- skip this node (hidden / meta info)
+                // }
 
+                // -- February 2024 - issue with "Anonymous participant" not being detected properly
+                // --- usually has a div with role of button, and that div only has 1 descendant.
+                // --- previously, we skipped when a div has a button role.
                 const elGeneric = elParent.closest('div[role="button"]');
-                if (elGeneric === null && val.length > 1) {
+                const elGenericDescendantsCount = elGeneric ? countDescendants(elGeneric) : 0;
+                // console.info(log + 'scanTreeForText(); final test:', elGeneric, elParent, currentNode, elGenericDescendantsCount, val);
+                if (elGenericDescendantsCount < 2 && val.length > 1) {
                     // - keep 2+ char strings.
                     arrayTextValues.push(...val.split('\n'));
                 }
                 else {
                     // -- skip this node (hidden / meta info)
-                    // console.info(log + 'scanTreeForText(); skipping (<hidden/role=button>):', elParent);
                 }
             }
         }
@@ -3220,7 +3886,8 @@
             let val = cleanText(n.textContent).trim();
             if ((val !== '') && (val.length > 1) && (val.toLowerCase() !== 'facebook')) {
                 // - keep 2+ char strings.
-                arrayTextValues.push(val);
+                // arrayTextValues.push(val);
+                arrayTextValues.push(val.toLowerCase());
             }
         }
         return arrayTextValues;
@@ -3271,6 +3938,26 @@
         return arrayTextValues.filter(item => item !== '');
     }
 
+    function extractTextContentVF(post, selector, whichBlock) {
+        // - get the text node values of the regular feed posts
+        // -- scan a certain block in the posts
+        // -- parameters:
+        //    post: post to scan
+        //    selector: querySelector's query
+        //    whichBlock: the block to scan for text (0 = first block ...)
+        const blocks = post.querySelectorAll(selector);
+        const arrayTextValues = [];
+        if ((blocks.length - 1) >= whichBlock) {
+            // - block 0 = Suggested headings, block 1 = title/heading, block 2 = content, block 3 = info box / comments, block 4 = comments
+            // - nb: some suggested posts only have one block ...
+            let blockToScan = blocks[whichBlock];
+            if (blockToScan.innerHTML.length > 0) {
+                arrayTextValues = arrayTextValues.concat(scanTreeForText(blockToScan));
+            }
+        }
+        return arrayTextValues;
+    }
+
     function createTogglePostStateBar(reason) {
         // :: <toggle button> <reason for hiding post(s)>
         const elToggleBar = document.createElement('div');
@@ -3302,6 +3989,11 @@
         return elTab;
     }
 
+    function sanitizeReason(reason) {
+        // -- setting an attribute, so remove double quotes from reason's text.
+        return reason.replaceAll('"', '');
+    }
+
     function hideFeature(post, reason, addPostTab = false) {
         // -- hide something - keep it out of the regular feed stuff.
         // -- no counter
@@ -3315,11 +4007,11 @@
             }
         }
 
-        post.classList.add(VARS.cssHide);
-        post.setAttribute(postAtt, reason);
+        post.setAttribute(VARS.cssHide, '');
+        post.setAttribute(postAtt, sanitizeReason(reason));
 
         if (addPostTab === true) {
-            // - add mini-tab (indicates why post is hidden)
+            // - add mini-tab to indicate why post is hidden
             const elTabSpot = post.querySelector(`:scope > div:not([${postAttTab}]) > div > div > div:first-child`);
             if (elTabSpot) {
                 elTabSpot.before(createPostTab(reason));
@@ -3328,25 +4020,25 @@
 
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            post.classList.add(VARS.cssShow);
+            post.setAttribute(VARS.cssShow, '');
         }
     }
 
     function toggleHiddenElements() {
-        const containers = Array.from(document.querySelectorAll('.' + VARS.cssHide));
-        const blocks = Array.from(document.querySelectorAll('.' + VARS.cssHideEl));
-        const shares = Array.from(document.querySelectorAll('.' + VARS.cssHideNumberOfShares));
+        const containers = Array.from(document.querySelectorAll('[' + VARS.cssHide + ']'));
+        const blocks = Array.from(document.querySelectorAll('[' + VARS.cssHideEl + ']'));
+        const shares = Array.from(document.querySelectorAll('[' + VARS.cssHideNumberOfShares + ']'));
 
         const elements = [...containers, ...blocks, ...shares];
 
         if (VARS.Options.VERBOSITY_DEBUG) {
             for (const element of elements) {
-                element.classList.add(VARS.cssShow);
+                element.setAttribute(VARS.cssShow, '');
             }
         }
         else {
             for (const element of elements) {
-                element.classList.remove(VARS.cssShow);
+                element.removeAttribute(VARS.cssShow);
             }
         }
     }
@@ -3357,10 +4049,10 @@
         const elToggleBarContainer = ev.target.closest(`div[${postAttTab}]`);
         // -- grab the post
         const elPost = elToggleBarContainer.parentElement;
-        // -- then toggle the VARS.cssShow class on the post.
+        // -- then toggle the VARS.cssShow attribute on the post.
         if (!elToggleBarContainer.hasAttribute(postAttCPID)) {
             // -- single post being hidden
-            elPost.classList.toggle(VARS.cssShow);
+            elPost.hasAttribute(VARS.cssShow) ? elPost.removeAttribute(VARS.cssShow) : elPost.setAttribute(VARS.cssShow, '');
         }
         else {
             // -- multiple consecutive posts being hidden
@@ -3368,27 +4060,27 @@
             const flaggedPosts = document.querySelectorAll(`[${postAtt}][${postAttCPID}=${cpid}]`);
             if (flaggedPosts.length > 0) {
                 // -- cannot use classList.toggle() while posts are still being loaded ...
-                if (elPost.classList.contains(VARS.cssShow)) {
+                if (elPost.hasAttribute(VARS.cssShow)) {
                     for (const flaggedPost of flaggedPosts) {
-                        flaggedPost.classList.remove(VARS.cssShow);
+                        flaggedPost.removeAttribute(VARS.cssShow);
                     }
                 }
                 else {
                     for (const flaggedPost of flaggedPosts) {
-                        flaggedPost.classList.add(VARS.cssShow);
+                        flaggedPost.setAttribute(VARS.cssShow, '');
                     }
                 }
             }
         }
     }
 
-    function hidePost(post, reason) {
+    function gvf_hidePost(post, reason) {
         // -- hide something ..
-        // -- if requested, echo post is hidden ..
-        // -- (separate function for marketplace)
+        // -- group feed
+        // -- video feed
         // -- Verbosity_Level: 0 = hide; 1 = single info note; 2 = consecutive info notes
 
-        // console.info(log + 'hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
+        // console.info(log + 'gvf_hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
 
         if ((VARS.Options.VERBOSITY_LEVEL !== '0') && (reason !== '')) {
             // -- in info tab mode
@@ -3403,10 +4095,9 @@
             if (VARS.echoCount < 2) {
                 // - 1 post to be hidden (includes first of consecutive group)
 
-                VARS.echoEl = createTogglePostStateBar(reason);
-
                 const postFirstChildEl = post.querySelector(':scope > :first-child');
                 if (postFirstChildEl) {
+                    VARS.echoEl = createTogglePostStateBar(reason);
                     postFirstChildEl.before(VARS.echoEl);
                 }
                 else {
@@ -3439,38 +4130,92 @@
         }
 
         // - flag & hide the post
-        post.setAttribute(postAtt, reason);
-        post.classList.add(VARS.cssHide);
+        post.setAttribute(VARS.cssHide, '');
+        post.setAttribute(postAtt, sanitizeReason(reason));
 
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            post.classList.add(VARS.cssShow);
+            post.setAttribute(VARS.cssShow, '');
         }
 
-        //console.info(log+'hidePost():', VARS.echoElFirst);
+        //console.info(log+'gvf_hidePost():', VARS.echoElFirst);
     }
+
+    function nf_hidePost(post, reason) {
+        // -- hide something ..
+        // -- news feed + search feed
+        // -- no consecutive counts.
+        // -- Verbosity_Level: 0 = hide; 1|2 = single info note; (no consecutive mode)
+
+        // console.info(log + 'nf_hidePost(); v_L:', VARS.Options.VERBOSITY_LEVEL, VARS.echoEl, VARS.echoCount, reason, post);
+
+        // -- February 2024 - hit fix !!! - disabled.
+        /*
+        if ((VARS.Options.VERBOSITY_LEVEL !== '0') && (reason !== '')) {
+            // -- in message/info tab mode
+            // -- code 2 is switched to code 1.
+            // -- VARS.echoCount is ignored.
+
+            const postFirstChildEl = post.querySelector(':scope > :first-child');
+            if (postFirstChildEl) {
+                const elMessageTab = createTogglePostStateBar(reason);
+                postFirstChildEl.before(elMessageTab);
+            }
+            else {
+                // post has been changed while being processed (very rare)
+            }
+        }
+        */
+
+        // - flag & hide the post
+        post.setAttribute(VARS.cssHide, '');
+        post.setAttribute(postAtt, sanitizeReason(reason));
+
+        // -- February 2024 - hot fix !!! - collapse post completely
+        const elWithMargin = climbUpTheTree(post, 4);
+        elWithMargin.setAttribute('style', 'margin:0 !important;');
+
+        // -- February 2024 - hot fix !!! - disabled
+        /*
+        // - in debugging mode?
+        if (VARS.Options.VERBOSITY_DEBUG) {
+            post.setAttribute(VARS.cssShow, '');
+        }
+        */
+
+        //console.info(log+'nf_hidePost():', VARS.echoElFirst);
+    }
+
 
     function nf_dropTags(post) {
         // -- remove cmf's attributes/classes from empty posts.
+        // -- including tabs (if any)
         post.removeAttribute(postAtt);
-        post.classList.remove(VARS.cssHide);
-        post.classList.remove(VARS.cssHideEl);
-        post.classList.remove(VARS.cssShow);
+        post.removeAttribute(VARS.cssHide);
+        post.removeAttribute(VARS.cssHideEl);
+        post.removeAttribute(VARS.cssShow);
         // -- other attribute(s)
-        if (post.hasAttribute(postAttCPID)) post.removeAttribute(postAttCPID);
+        post.removeAttribute(postAttCPID);
         // -- remove the notification tab.
         if (post.querySelectorAll('div, h6').length > 0) {
             post.removeChild(post.firstElementChild);
         }
+
+        // -- February 2024 - hot fix !!! - remove the collapse post completely hack
+        const elWithMargin = climbUpTheTree(post, 4);
+        if (elWithMargin && elWithMargin.hasAttribute('style')) {
+            elWithMargin.removeAttribute('style');
+        }
+
         post[postPropDS] = 1; // -- reset scanning count
     }
 
     function hideBlock(block, link, reason) {
-        block.classList.add(VARS.cssHideEl);
-        link.setAttribute(postAtt, reason);
+        block.setAttribute(VARS.cssHideEl, '');
+        link.setAttribute(postAtt, sanitizeReason(reason));
         // - in debugging mode?
         if (VARS.Options.VERBOSITY_DEBUG) {
-            block.classList.add(VARS.cssShow);
+            block.setAttribute(VARS.cssShow, '');
         }
     }
 
@@ -3591,6 +4336,11 @@
             // -- February 2023 (no need for light dusting ...)
             ':scope div[aria-posinset] > div > div > div > div > div > div:not([data-0]) > div > div > div:nth-of-type(1) > div > div > div > div > span',
             ':scope div[aria-describedby] > div > div > div > div > div > div:not([data-0]) > div > div > div:nth-of-type(1) > div > div > div > div > span',
+
+            // -- Oct/Nov 2023 (provisional - not tested by zbluebugz)
+            'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > span > span > span:nth-of-type(2)',
+            'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > span > span > span:nth-of-type(2)',
+
             // -- December 2022 - #2
             ':scope div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span',
             ':scope div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > div > div > span',
@@ -3704,13 +4454,29 @@
         return (events.length === 0) ? '' : KeyWords.NF_EVENTS_YOU_MAY_LIKE[VARS.language];
     }
 
+    function nf_isFollow(post) {
+        // -- follow someone/something post
+        const queryFollow = ':scope h4[id] > span > div > span';
+        const elementsFollow = querySelectorAllNoChildren(post, queryFollow, 0);
+        return (elementsFollow.length !== 1) ? '' : KeyWords.NF_FOLLOW[VARS.language];
+    }
+
+    function nf_isParticipate(post) {
+        // -- participate in a post ...
+        const queryParticipate = ':scope h4[id] > div[class] > span[dir] > span[class] > div[class] > span[class]';
+        const elementsParticipate = querySelectorAllNoChildren(post, queryParticipate, 0);
+        return (elementsParticipate.length !== 1) ? '' : KeyWords.NF_PARTICIPATE[VARS.language];
+    }
+
     function findFirstMatch(longText, valuesToFind) {
-        for (const value of valuesToFind) {
-            if (longText.includes(value)) {
-                return value;
-            }
-        }
-        return '';
+        // for (const value of valuesToFind) {
+        //     if (longText.includes(value)) {
+        //         return value;
+        //     }
+        // }
+        // return '';
+        const foundWord = valuesToFind.find(word => longText.includes(word));
+        return foundWord !== undefined ? foundWord : '';
     }
 
     function findFirstMatchRE(longText, patterns) {
@@ -3771,6 +4537,13 @@
         return blockedText;
     }
 
+    function vf_isVideoLive(post) {
+        // - check for "LIVE" indicator on videos
+        const liveRule = 'div[role="presentation"] ~ div > div:nth-of-type(1) > span';
+        const elLive = post.querySelectorAll(liveRule);
+        return (elLive.length > 0) ? KeyWords.VF_LIVE[VARS.language] : '';
+    }
+
     function mp_getBlockedPrices(elBlockOfText) {
         // -- scan the first price listed in itemPrices for a match.
         // -- (second price is the old one (with strike-through))
@@ -3778,8 +4551,8 @@
         // :: return : blocked text or ''.
         if (VARS.Filters.MP_BLOCKED_TEXT.length > 0) {
             const itemPrices = mp_scanTreeForText(elBlockOfText);
-            const idx = VARS.Filters.MP_BLOCKED_TEXT_LC.indexOf(itemPrices[0].toLowerCase());
-            return (idx >= 0) ? VARS.Filters.MP_BLOCKED_TEXT[idx] : '';
+            const blockedPrices = findFirstMatch(itemPrices, VARS.Filters.MP_BLOCKED_TEXT_LC);
+            return blockedPrices;
         }
         return '';
     }
@@ -3809,9 +4582,14 @@
         // :: return <nothing>
         const query = `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`;
         const items = document.querySelectorAll(query);
-        items.forEach(item => {
+        for (const item of items) {
             // - item's container
             const box = item.closest('div[style]');
+            if (box.hasAttribute(postAttMPSkip)) {
+                if (box.innerHTML.length == box.getAttribute(postAttMPSkip)) {
+                    continue;
+                }
+            }
             // - blocks of text to scan
             const queryTextBlock = ':scope > div > div:nth-of-type(2) > div'
             const blocksOfText = item.querySelectorAll(queryTextBlock);
@@ -3832,24 +4610,33 @@
                 else {
                     // -- flag the item not to be scanned again
                     box.setAttribute(postAtt, '');
+                    // box.setAttribute(postAttMPSkip, box.innerHTML.length);
                 }
             }
-        });
+        };
     }
 
     function vf_scrubSponsoredBlock(post) {
         // - some videos have a sponsored block beneath the video block/section
         // - includes "watch more ___ videos by ___"
         // :: return <nothing>
-        const query = `:scope > div > div > div > div > div:nth-of-type(2) > div`;
-        const blocks = post.querySelectorAll(query);
-        if (blocks.length > 3) {
-            const block = blocks[2]; // -- 3rd block
-            const isJunk = block.querySelector(`:scope > div > div > div > div > div > div > span > a:not([${postAtt}])`);
-            if (isJunk !== null) {
-                hideBlock(block, isJunk, KeyWords.SPONSORED[VARS.language]);
+        const queryForContainer = ':scope > div > div > div > div > div > div:nth-of-type(2)';
+        const blocksContainer = post.querySelector(queryForContainer);
+        if (blocksContainer && blocksContainer.childElementCount > 0) {
+            const adBlock = blocksContainer.querySelector(':scope > a');
+            if (adBlock && !adBlock.hasAttribute(postAtt)) {
+                hideBlock(adBlock, adBlock, KeyWords.SPONSORED[VARS.language]);
             }
         }
+        // const query = `:scope > div > div > div > div > div:nth-of-type(2) > div`;
+        // const blocks = post.querySelectorAll(query);
+        // if (blocks.length > 3) {
+        //     const block = blocks[2]; // -- 3rd block
+        //     const isJunk = block.querySelector(`:scope > div > div > div > div > div > div > span > a:not([${postAtt}])`);
+        //     if (isJunk !== null) {
+        //         hideBlock(block, isJunk, KeyWords.SPONSORED[VARS.language]);
+        //     }
+        // }
     }
 
     function swatTheMosquitos(post) {
@@ -3876,37 +4663,80 @@
         }
     }
 
-    function nf_scrubTheTabbies() {
+    function nf_scrubTheTabbiesAndOrSurvey(doScrubTheTabbies = false, doScrubTheSurvey = false) {
         // -- Tablist : stories | reels | rooms
         // -- Stories
         // -- both appear at top of NF
-        const queryTabList = `div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]`;
+        // -- FB Survey
+        // -- appears after Tablist / Stories
+        const queryTabList = 'div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]';
         const elTabList = document.querySelector(queryTabList);
         if (elTabList) {
-            if (elTabList.hasAttribute(postAttChildFlag)) {
-                return;
+            if (doScrubTheSurvey === true) {
+                const elParent = climbUpTheTree(elTabList, 4);
+                if (elParent !== null) {
+                    nf_scrubTheSurvey(elParent);
+                }
             }
-            // -- parent is 4 levels up.
-            const elParent = climbUpTheTree(elTabList, 4);
-            if (elParent) {
-                hideFeature(elParent, (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]).replaceAll('"', ''), false);
-                elTabList.setAttribute(postAttChildFlag, 'tablist');
-                return;
+            if (doScrubTheTabbies === true) {
+                if (elTabList.hasAttribute(postAttChildFlag)) {
+                    return;
+                }
+                // -- parent is 4 levels up.
+                const elParent = climbUpTheTree(elTabList, 4);
+                if (elParent) {
+                    hideFeature(elParent, (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]).replaceAll('"', ''), false);
+                    elTabList.setAttribute(postAttChildFlag, 'tablist');
+                    return;
+                }
             }
         }
         else {
             // - Stories only
-            const queryForStories = 'a[href*="/stories/create"]';
-            const elStories = document.querySelector(queryForStories);
-            if (elStories && !elStories.hasAttribute(postAttChildFlag)) {
-                // -- parent is a few levels up.
-                const elParent = climbUpTheTree(elStories.closest('div[aria-label][role="region"]'), 4);
-                if (elParent) {
+            // -- two patterns
+            // -- - one with listing of stories
+            // -- - one with no listing of stories
+
+            function getStoriesParent(element) {
+                const elAFewBranchesUp = climbUpTheTree(element, 4);
+                const moreStories = elAFewBranchesUp.querySelectorAll('a[href*="/stories/"]');
+                let elParent = null;
+                if (moreStories.length > 1) {
+                    // -- query results has create and at least 1 story link
+                    elParent = climbUpTheTree(elCreateStory.closest('div[aria-label][role="region"]'), 4);
+                }
+                else {
+                    // -- query results has one link - create story
+                    elParent = climbUpTheTree(elCreateStory, 7);
+                }
+                return elParent;
+            }
+
+            // const queryForCreateStory = 'a[href*="/stories/create"]'; - too loose, grabs the FB menu's entries as well ...
+            const queryForCreateStory = 'div[role="main"] > div > div > div > div > div > div > div > div a[href*="/stories/create"]';
+            const elCreateStory = document.querySelector(queryForCreateStory);
+            if (doScrubTheSurvey === true && elCreateStory) {
+                const elParent = getStoriesParent(elCreateStory);
+                if (elParent !== null) {
+                    nf_scrubTheSurvey(elParent);
+                }
+            }
+            if (doScrubTheTabbies && elCreateStory && !elCreateStory.hasAttribute(postAttChildFlag)) {
+                const elParent = getStoriesParent(elCreateStory);
+                if (elParent !== null) {
                     hideFeature(elParent, KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language], false);
-                    elStories.setAttribute(postAttChildFlag, '1');
+                    elCreateStory.setAttribute(postAttChildFlag, '1');
                 }
             }
         }
+    }
+
+    function nf_isStoriesPost(post) {
+        // - Stories posts
+        // -- appears in News-Feed stream
+        const queryForStory = '[href^="/stories/"][href*="source=from_feed"]';
+        const elStory = post.querySelector(queryForStory);
+        return (elStory) ? KeyWords.NF_STORIES[VARS.language] : '';
     }
 
     function nf_cleanTheConsoleTable(findItem = 'Sponsored') {
@@ -3935,10 +4765,10 @@
             elItem = asideContainer.querySelector(`:scope > div:not([${postAtt}])`);
             if (elItem && elItem.innerHTML.length > 0) {
                 // -- check for birthdays
-                const birthdays = Array.from(elItem.querySelectorAll('a[href="/events/birthdays/"]')).length > 0;
+                const birthdays = elItem.querySelectorAll('a[href="/events/birthdays/"]').length > 0;
                 // -- check for "your pages and profiles"
                 // -- suggested groups only have 1 i[..] attribute
-                const pagesAndProfiles = Array.from(elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]')).length > 1;
+                const pagesAndProfiles = elItem.querySelectorAll('div > i[data-visualcompletion="css-img"]').length > 1;
 
                 if (birthdays === false && pagesAndProfiles === false) {
                     reason = KeyWords.NF_SUGGESTIONS[VARS.language];
@@ -4043,7 +4873,7 @@
             const elLink = post.querySelector(`a[href*="${KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE.pathMatch}"]:not([${postAtt}])`);
             if (elLink !== null) {
                 // - block @ 5 levels up.
-                let block = climbUpTheTree(elLink, 5);
+                const block = climbUpTheTree(elLink, 5);
                 hideBlock(block, elLink, KeyWords.OTHER_INFO_BOX_CLIMATE_SCIENCE[VARS.language]);
                 hiding = true;
             }
@@ -4075,9 +4905,9 @@
         const query = `div[data-visualcompletion="ignore-dynamic"] > div:not([class]) > div:not([class]) > div:not([class]) > div[class] > div:nth-of-type(1) > div > div > span > div:not([id]) > span[dir]:not(${postAtt})`;
         const shares = post.querySelectorAll(query);
         for (const share of shares) {
-            share.classList.add(VARS.cssHideNumberOfShares);
+            share.setAttribute(VARS.cssHideNumberOfShares, '');
             if (VARS.Options.VERBOSITY_DEBUG) {
-                share.classList.add(VARS.cssShow);
+                share.setAttribute(VARS.cssShow, '');
             }
             share.setAttribute(postAtt, 'Shares');
         }
@@ -4090,6 +4920,90 @@
         nf_hideNumberOfShares(post);
     }
 
+    function nf_postExceedsLikeCount(post) {
+        // -- hide posts having Like counts over a certain number
+        // const query = 'div[data-visualcompletion="ignore-dynamic"] > div:not([class]) > div:not([class]) > div:not([class]) > div[class] > div:nth-of-type(1) > div > div[class] > span > div[role="button"] > span[class][aria-hidden] > span:not([class]) > span[class]';
+        const queryLikes = 'span[role="toolbar"] ~ div div[role="button"] > span[class][aria-hidden] > span:not([class]) > span[class]';
+        const elLikes = post.querySelectorAll(queryLikes);
+        if (elLikes.length > 0) {
+            const maxLikes = parseInt(VARS.Options.NF_LIKES_MAXIMUM_COUNT);
+            const postLikesCount = getFullNumber(elLikes[0].textContent.trim());
+            // const postLikesCount = parseInt(elLikes[0].textContent);
+            const results = postLikesCount >= maxLikes ? KeyWords.NF_LIKES_MAXIMUM[VARS.language] : '';
+            // console.info(log + 'nf_postExceedsLikeCount(); results:', results, maxLikes, postLikesCount, post);
+            return results;
+        }
+        return false;
+    }
+
+    function getFullNumber(value) {
+        // -- convert shortened numbers into full numbers
+        // -- e.g 323 to 323; 1.2K to 1200; 1.4M to 1400000;
+        // :: returns a whole number.
+        let nvalue = 0;
+        if (value !== '') {
+            value = value.toUpperCase();
+            if (value.endsWith('K') || value.endsWith('M')) {
+                let multiplier = 1;
+                let pow_Y = 0;
+                if (value.endsWith('K')) {
+                    // -- thousands
+                    multiplier = 1000;
+                    pow_Y = 3;
+                }
+                else if (value.endsWith('M')) {
+                    // -- millions
+                    multiplier = 1000000;
+                    pow_Y = 6;
+                }
+
+                let bits = value.replace(/[KM]/g, '').replace(',', '.').split('.');
+
+                nvalue = parseInt(bits[0], 10) * multiplier;
+
+                if (bits.length > 1) {
+                    nvalue += (parseInt(bits[1], 10) * Math.pow(10, (pow_Y - bits[1].length)));
+                }
+            }
+            else {
+                // -- less than 1000.
+                nvalue = parseInt(value, 10);
+            }
+        }
+        // console.info('results:', value, nvalue);
+        return nvalue;
+    }
+
+
+    function nf_scrubTheSurvey(containerTablist) {
+        // -- fb survey
+        // - located in the container next to Stories / Reels / Rooms tablist
+
+        const elParent = containerTablist.parentElement;
+        if (!elParent.nextElementSibling) {
+            return;
+        }
+
+        const elContainer = elParent.nextElementSibling.querySelector(':scope > div > div > div');
+
+        if (elContainer.hasAttribute(postAtt)) {
+            return;
+        }
+
+        const surveyLink = elContainer.querySelector('a[href^="https://www.facebook.com/survey/"]');
+
+        if (surveyLink) {
+            // const surveyContainer = climbUpTheTree(surveyLink, 8);
+            // const surveyContainer = climbUpTheTree(surveyLink, 7);
+            // if (surveyContainer) {
+            //     hideFeature(surveyContainer, 'Survey', false);
+            // }
+            hideFeature(elContainer, 'Survey', false);
+            // console.info('fbcmf - survey:', elContainer, surveyLink)
+        }
+        // <element>.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+    }
+
     function nf_getCollectionOfPosts() {
         // -- get a collection of posts
         // -- fb serves a mixture of html structures
@@ -4099,10 +5013,19 @@
         let posts = [];
         // -- various news feed queries
         const queries = [
+            // -- February 2024 - hot fix !!! (no "extra" spaces in the feeds)
+            // 'h3[dir="auto"] ~ div:not([class]) > div[class] > div > div > div > div',
+            // 'h2[dir="auto"] ~ div:not([class]) > div[class] > div > div > div > div',
+
+            // -- February 2024 - hot fix !!! (test)
+            'h3[dir="auto"] ~ div:not([class]) > div[class] :is([aria-posinset],[aria-describedby]:not([aria-posinset]))',
+            'h2[dir="auto"] ~ div:not([class]) > div[class] :is([aria-posinset],[aria-describedby]:not([aria-posinset]))',
+
+
             // -- February 2023 (promoted above Sept/August due to no hard-coded class names.
             'h3[dir="auto"] ~ div:not([class]) > div[class]',
             'h2[dir="auto"] ~ div:not([class]) > div[class]',
-            // -- September 2023 
+            // -- September 2023
             // -- - home news feed
             'h3[dir="auto"] + div > div.x1lliihq',
             // -- - recent news feed
@@ -4130,8 +5053,9 @@
 
         // -- Tablist - not part of the general news feed stream
         // -- Includes Stories (standalone tab)
-        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS) {
-            nf_scrubTheTabbies();
+        // -- Includes FB' survey
+        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS || VARS.Options.NF_SURVEY) {
+            nf_scrubTheTabbiesAndOrSurvey(VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS, VARS.Options.NF_SURVEY);
         }
 
         // -- aside's sponsored
@@ -4142,6 +5066,7 @@
             nf_cleanTheConsoleTable('Suggestions');
         }
 
+        // -- news feed stream ...
         const posts = nf_getCollectionOfPosts();
 
         // console.info(log + 'mopUpTheNewsFeed(); posts:', posts);
@@ -4154,6 +5079,7 @@
 
             // for (let post of posts) {
             for (let i = start; i < count; i++) {
+
                 const post = posts[i];
 
                 if (post.innerHTML.length === 0) {
@@ -4170,7 +5096,7 @@
                         // -- already flagged ...
                         hideReason = 'hidden';
                         // -- however, fb is clearing out the posts as the user scrolls ...
-                        if (post.querySelectorAll('a').length === 0) {
+                        if (post.querySelector('a') === null) {
                             nf_dropTags(post);
                         }
                     }
@@ -4195,6 +5121,12 @@
                         if (hideReason === '' && VARS.Options.NF_SUGGESTIONS) {
                             hideReason = nf_isSuggested(post);
                         }
+                        if (hideReason === '' && VARS.Options.NF_FOLLOW) {
+                            hideReason = nf_isFollow(post);
+                        }
+                        if (hideReason === '' && VARS.Options.NF_PARTICIPATE) {
+                            hideReason = nf_isParticipate(post);
+                        }
                         if (hideReason === '' && VARS.Options.NF_SPONSORED_PAID) {
                             hideReason = nf_isSponsoredPaidBy(post);
                         }
@@ -4204,9 +5136,15 @@
                         if (hideReason === '' && VARS.Options.NF_BLOCKED_ENABLED) {
                             hideReason = nf_isBlockedText(post);
                         }
+                        if (hideReason === '' && VARS.Options.NF_STORIES) {
+                            hideReason = nf_isStoriesPost(post);
+                        }
                         // -- placed here due to "overlaps" between this rule and at least 1 of the above rule.
-                        if (hideReason === '' && isSponsored(post)) {
+                        if (hideReason === '' && VARS.Options.NF_SPONSORED && isSponsored(post)) {
                             hideReason = KeyWords.SPONSORED[VARS.language];
+                        }
+                        if (hideReason === '' && VARS.Options.NF_LIKES_MAXIMUM && VARS.Options.NF_LIKES_MAXIMUM !== '') {
+                            hideReason = nf_postExceedsLikeCount(post);
                         }
                     }
 
@@ -4215,7 +5153,7 @@
                         VARS.echoCount++;
                         if (hideReason !== 'hidden') {
                             // -- post not yet hidden, hide it.
-                            hidePost(post, hideReason);
+                            nf_hidePost(post, hideReason);
                         }
                     }
                     else {
@@ -4246,9 +5184,11 @@
 
         // console.info(log+'mopUpTheGroupsFeed(), gfType:', VARS.gfType, '; hide an info box:', VARS.hideAnInfoBox);
 
-        if (VARS.gfType === 'groups' || VARS.gfType === 'search') {
+        if (VARS.gfType === 'groups' || VARS.gfType === 'groups-recent' || VARS.gfType === 'search') {
             // - main groups feed.
-            // - search groups (same layout as groups feed)
+            // -- 'groups' - accessible via the Groups link
+            // -- 'groups-recent' - accessible via the Feeds > group link (has similar HTML structure to News Feed)
+            // -- 'search' - groups (same layout as groups feed)
 
             // -- aside's suggestions (also appears above feed on narrow pages)
             if (VARS.Options.GF_SUGGESTIONS) {
@@ -4256,7 +5196,7 @@
             }
 
             // -- groups feed stream ...
-            const query = 'div[role="feed"] > div';
+            const query = VARS.gfType === 'groups-recent' ? 'h2[dir="auto"] + div > div' : 'div[role="feed"] > div';
             const posts = Array.from(document.querySelectorAll(query));
             if (posts.length) {
                 // console.info(log+'---> mopUpTheGroupsFeed() - multiple groups');
@@ -4264,7 +5204,6 @@
                     if (post.innerHTML.length === 0) {
                         continue;
                     }
-
 
                     let hideReason = '';
 
@@ -4284,7 +5223,7 @@
 
                         doLightDusting(post);
 
-                        if (hideReason === '' && isSponsored(post)) {
+                        if (hideReason === '' && VARS.Options.GF_SPONSORED && isSponsored(post)) {
                             hideReason = KeyWords.SPONSORED[VARS.language];
                         }
                         if (hideReason === '' && VARS.Options.GF_SUGGESTIONS) {
@@ -4306,7 +5245,7 @@
                         VARS.echoCount++;
                         if (hideReason !== 'hidden') {
                             // -- post not yet hidden, hide it.
-                            hidePost(post, hideReason)
+                            gvf_hidePost(post, hideReason)
                         }
                     }
                     else {
@@ -4344,7 +5283,6 @@
                         continue;
                     }
 
-
                     let hideReason = '';
 
                     if (post.hasAttribute(postAtt)) {
@@ -4370,7 +5308,7 @@
                         VARS.echoCount++;
                         if (hideReason !== 'hidden') {
                             // -- post not yet hidden, hide it.
-                            hidePost(post, hideReason)
+                            gvf_hidePost(post, hideReason)
                         }
                     }
                     else {
@@ -4438,12 +5376,16 @@
                 }
                 else if ((post[postPropDS] !== undefined) && (parseInt(post[postPropDS]) >= VARS.scanCountMaxLoop)) {
                     // -- skip these - already been scanned a few times
+                    // console.info(log + 'video; skipping;', post[postPropDS], VARS.scanCountMaxLoop, post);
                 }
                 else {
                     doLightDusting(post);
 
-                    if (isSponsored(post)) {
+                    if (hideReason === '' && VARS.Options.VF_SPONSORED && isSponsored(post)) {
                         hideReason = KeyWords.SPONSORED[VARS.language];
+                    }
+                    if (hideReason === '' && VARS.Options.VF_LIVE) {
+                        hideReason = vf_isVideoLive(post);
                     }
                     if (hideReason === '' && VARS.Options.VF_BLOCKED_ENABLED) {
                         hideReason = vf_isBlockedText(post, queryBlocks);
@@ -4456,7 +5398,7 @@
                     VARS.echoCount++;
                     if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
-                        hidePost(post, hideReason)
+                        gvf_hidePost(post, hideReason);
                     }
                 }
                 else {
@@ -4472,6 +5414,8 @@
                     if (VARS.hideAnInfoBox) {
                         scrubInfoBoxes(post);
                     }
+                    // -- nb: videos do not have a number of shares box
+
                     // -- hide sponsored blocks (appears between video & comments)
                     vf_scrubSponsoredBlock(post);
                 }
@@ -4501,7 +5445,7 @@
                     VARS.echoCount++;
                     if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
-                        hidePost(post, hideReason)
+                        gvf_hidePost(post, hideReason);
                     }
                 }
                 else {
@@ -4514,10 +5458,10 @@
     }
 
     function mp_hideBox(box, reason) {
-        box.classList.add(VARS.cssHideEl);
-        box.setAttribute(postAtt, reason);
+        box.setAttribute(VARS.cssHideEl, '');
+        box.setAttribute(postAtt, sanitizeReason(reason));
         if (VARS.Options.VERBOSITY_DEBUG) {
-            box.classList.add(VARS.cssShow);
+            box.setAttribute(VARS.cssShow, '');
         }
     }
 
@@ -4526,7 +5470,7 @@
         const collectionOfLinks = document.querySelectorAll('a[href*="/?ref="]');
         for (const trackingLink of collectionOfLinks) {
             trackingLink.href = trackingLink.href.split('/?ref')[0];
-        };
+        }
     }
 
     function mopUpTheMarketplaceFeed() {
@@ -4534,23 +5478,36 @@
 
         mp_stopTrackingDirtIntoMyHouse();
 
+        // console.info(log + 'mopUpTheMarketplaceFeed(); mpType:', VARS.mpType);
+
         if (VARS.mpType === 'marketplace' || VARS.mpType === 'item') {
             // - standard marketplace page
             // - on the item page, there's listing of items to sell ... (similar structure to standard marketplace page)
             // -- "sponsored" is _not_ obfuscated;
             // -- nb: adguard base filter hides the label, but not the item/product ...
             const queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
-            const queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
             const headings = document.querySelectorAll(queryHeadings);
-            const items = document.querySelectorAll(queryItems);
-            if ((headings.length > 0) && (items.length > 0)) {
+
+            let queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
+            let items = document.querySelectorAll(queryItems);
+            if (items.length === 0) {
+                // -- structure changed in Nov 2023.
+                queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > div > a:not([href*="marketplace"])`;
+                items = document.querySelectorAll(queryItems);
+            }
+
+            // console.info(log+'marketplace(); headings:', headings);
+            // console.info(log+'marketplace(); items:', items);
+
+            if (VARS.Options.MP_SPONSORED && (headings.length > 0) && (items.length > 0)) {
                 for (const heading of headings) {
                     // heading = heading.parentElement;
                     mp_hideBox(heading.parentElement, KeyWords.SPONSORED[VARS.language]);
                 }
                 for (const item of items) {
-                    const parItem = climbUpTheTree(item, 3);
-                    mp_hideBox(parItem, KeyWords.SPONSORED[VARS.language]);
+                    // const parentItem = climbUpTheTree(item, 3);
+                    const parentItem = climbUpTheTree(item, 4);
+                    mp_hideBox(parentItem, KeyWords.SPONSORED[VARS.language]);
                 }
             }
             if (VARS.Options.MP_BLOCKED_ENABLED) {
@@ -4559,55 +5516,77 @@
         }
         if (VARS.mpType === 'item') {
             // -- viewing a marketplace item - a small sponsored box often shows up on the right.
-            const elDialog = document.querySelector('div[role="dialog"]');
-            if (elDialog) {
-                // -- viewing a mp item via mp feed (no new tab or reloaded page)
-                const queryPattern1 = 'a[href*="/ads/"]';
-                const element = elDialog.querySelector(queryPattern1);
-                if (element) {
-                    if (element.hasAttribute(postAtt)) {
-                        return;
-                    }
-                    // console.info(`${log}MPItem() - element:`, queryPattern1, element);
-                    if (element.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
-                        // -- found the sponsored box inside the mp item box.
-                        // -- mp item do not have a parent element having data-pagelet attribute.
-                        let elParent = element.parentElement.closest('h2');
-                        if (elParent) {
-                            elParent = elParent.closest('span');
-                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
-                            element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
-                        }
-                    }
-                }
-                else {
-                    const queryPattern2 = 'a[href*="//l.facebook.com/l.php?u="]';
-                    const element = elDialog.querySelector(queryPattern2);
+            if (VARS.Options.MP_SPONSORED) {
+                const elDialog = document.querySelector('div[role="dialog"]');
+                if (elDialog) {
+                    // -- viewing a mp item via mp feed (no new tab or reloaded page)
+                    let queryPattern = 'a[href*="/ads/"]';
+                    let element = elDialog.querySelector(queryPattern);
                     if (element) {
                         if (element.hasAttribute(postAtt)) {
                             return;
                         }
-                        if (element.href.length > 500) {
-                            const elParent = climbUpTheTree(element, 3);
-                            if (elParent.nodeName === 'SPAN') {
+                        // console.info(`${log}MPItem() - element:`, queryPattern1, element);
+                        if (element.closest('div[data-pagelet^="BrowseFeedUpsell"]') === null) {
+                            // -- found the sponsored box inside the mp item box.
+                            // -- mp item do not have a parent element having data-pagelet attribute.
+                            let elParent = element.parentElement.closest('h2');
+                            if (elParent) {
+                                elParent = elParent.closest('span');
                                 mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
                                 element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
                             }
                         }
                     }
+                    else {
+                        // -- structure change, Nov 2023
+                        // -- multiple sponsored items (slider style)
+                        queryPattern = 'a[href*="//l.facebook.com/l.php?u="]';
+                        const elements = elDialog.querySelectorAll(queryPattern);
+                        if (elements.length > 0) {
+                            element = elements[0];
+                            if (element.hasAttribute(postAttChildFlag)) {
+                                return;
+                            }
+                            if (element.href.length > 500) {
+                                const elParent = climbUpTheTree(element, 9);
+                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                                element.setAttribute(postAttChildFlag, KeyWords.SPONSORED[VARS.language]);
+                            }
+                        }
+                    }
                 }
-            }
-            else {
-                // -- viewing a mp item in a new tab / reloaded page.
-                const queryPattern1 = 'a[href*="/ads/"]';
-                const element = document.querySelector(queryPattern1);
-                if (element && !element.hasAttribute(postAtt)) {
-                    // -- found the sponsored box inside the mp item box.
-                    let elParent = element.parentElement.closest('h2');
-                    if (elParent) {
-                        elParent = elParent.closest('span');
-                        mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
-                        element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                else {
+                    // -- viewing a mp item in a new tab / reloaded page.
+                    let queryPattern = 'a[href*="/ads/"]';
+                    let element = document.querySelector(queryPattern);
+                    if (element) {
+                        if (!element.hasAttribute(postAtt)) {
+                            // -- found the sponsored box inside the mp item box.
+                            let elParent = element.parentElement.closest('h2');
+                            if (elParent) {
+                                elParent = elParent.closest('span');
+                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                                element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                            }
+                        }
+                    }
+                    else {
+                        // -- structure change, Nov 2023
+                        // -- multiple sponsored items (slider style)
+                        queryPattern = 'a[href*="//l.facebook.com/l.php?u="]';
+                        const elements = document.querySelectorAll(queryPattern);
+                        if (elements.length > 0) {
+                            element = elements[0];
+                            if (element.hasAttribute(postAttChildFlag)) {
+                                return;
+                            }
+                            if (element.href.length > 500) {
+                                const elParent = climbUpTheTree(element, 9);
+                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                                element.setAttribute(postAttChildFlag, KeyWords.SPONSORED[VARS.language]);
+                            }
+                        }
                     }
                 }
             }
@@ -4615,13 +5594,15 @@
         else if ((VARS.mpType === 'category') || (VARS.mpType === 'search')) {
             // - viewing a markplace category or marketplace search results
             // - (both have similar layout)
-            const query = `a[href*="/ads/"]:not([${postAtt}])`;
-            const elements = document.querySelectorAll(query);
-            for (const element of elements) {
-                // console.info(log + 'mp-clean:', element);
-                element.setAttribute(postAtt, element.innerHTML.length);
-                let itemBox = element.parentElement.closest('a').parentElement.parentElement.parentElement;
-                mp_hideBox(itemBox, KeyWords.SPONSORED[VARS.language]);
+            if (VARS.Options.MP_SPONSORED) {
+                const query = `a[href*="/ads/"]:not([${postAtt}])`;
+                const elements = document.querySelectorAll(query);
+                for (const element of elements) {
+                    // console.info(log + 'mp-clean:', element);
+                    element.setAttribute(postAtt, element.innerHTML.length);
+                    const itemBox = climbUpTheTree(element.parentElement.closest('a'), 3);
+                    mp_hideBox(itemBox, KeyWords.SPONSORED[VARS.language]);
+                }
             }
             if (VARS.Options.MP_BLOCKED_ENABLED) {
                 mp_doBlockingByBlockedText();
@@ -4649,22 +5630,20 @@
                     hideReason = 'hidden';
                 }
                 else {
-                    if (isSponsored(post)) {
+                    if (VARS.Options.NF_SPONSORED && isSponsored(post)) {
                         hideReason = KeyWords.SPONSORED[VARS.language];
                     }
-                    else {
-                        if (VARS.NF_BLOCKED_ENABLED) {
-                            hideReason = nf_isBlockedText(post);
-                        }
+                    if (hideReason === '' && VARS.NF_BLOCKED_ENABLED) {
+                        hideReason = nf_isBlockedText(post);
                     }
                 }
 
                 if (hideReason.length > 0) {
                     // -- increment hidden count
                     VARS.echoCount++;
-                    if (hideReason != 'hidden') {
+                    if (hideReason !== 'hidden') {
                         // -- post not yet hidden, hide it.
-                        hidePost(post, hideReason);
+                        nf_hidePost(post, hideReason);
                     }
                 }
                 else {
@@ -4683,6 +5662,69 @@
                 }
             }
         }
+    }
+
+    function mopUpTheReelFeed(caller) {
+        // -- display the reel's video controls
+
+        // -- bodyMutation will initially trigger this function to run, but sometimes misses out on a reel video ...
+        // -- so, we use setTimeout() to make it run regularly until no longer in Reels.
+
+        // -- saveUserOptions will also call this function ...
+
+        // -- nb: videos from the watch videos feed are also collected in the query ..
+        // -- .. but they do not have a container with [data-video-id] attribute
+        // -- .. and therefore skipped ...
+
+        // -- nb: setting VARS.isRF determines if this function is called or not.
+
+        if (!VARS.isRF) {
+            // -- no longer in Reels Feed
+            VARS.isRF_InTimeoutMode = false;
+            return;
+        }
+        if (caller !== 'self' && VARS.isRF_InTimeoutMode === true) {
+            // -- either bodyMutation or saveUserOptions is calling and TimeoutMode is currently active.
+            return;
+        }
+
+        const videoRules = 'video:not([controls])';
+        const videos = document.querySelectorAll(videoRules);
+        // console.info(log+'mopUpTheReelFeed(); videos:', caller, videos);
+        for (const video of videos) {
+            // -- get the video's container's child element
+            const elVideoId = video.closest('[data-video-id]');
+            if (elVideoId) {
+                // -- get the video's container
+                const videoContainer = elVideoId.parentElement;
+                if (videoContainer) {
+                    // -- get the video's description + audio track info container.
+                    const descriptionOverlay = videoContainer.nextElementSibling;
+                    if (descriptionOverlay) {
+                        // -- make room to display the controls by moving the description element up a bit ...
+                        const elDescriptionContainer = descriptionOverlay.children[0];
+                        elDescriptionContainer.setAttribute('style', 'margin-bottom:2.15rem;');
+                        // -- enable controls on the video
+                        video.setAttribute('controls', 'true');
+                        // -- hide the video's sibling (makes it easier to click on the video's controls)
+                        const sibling = video.nextElementSibling;
+                        if (sibling) {
+                            sibling.setAttribute('style', 'display:none;');
+                        }
+                    }
+                }
+            }
+            else {
+                // -- a video from the watch videos feed
+                // -- hidden underneath the reels feed overlay)
+            }
+        }
+
+        // -- call me again in a few ms ...
+        VARS.isRF_InTimeoutMode = true;
+        setTimeout(function () {
+            mopUpTheReelFeed('self')
+        }, 1000);
     }
 
 
@@ -4704,24 +5746,30 @@
                     //     console.info(log+'bodyMutating(); mutationsCount:', VARS.mutationsCount);
                     // }
                     if (VARS.mutationsCount > VARS.mutationsInitSkip) {
-                        if (['A', 'DIV', 'IMG', 'SPAN', '#text', 'svg'].indexOf(mnode.nodeName) > 0) {
+                        if (['A', 'DIV', 'IMG', 'SPAN', '#text', 'svg', 'VIDEO'].indexOf(mnode.nodeName) > 0) {
                             if ((mnode.nodeType === Node.ELEMENT_NODE) && ((mnode.innerHTML.length < 129) || (mnode.textContent.length === 0))) {
                                 // - skip these ...
                             }
-                            else if (VARS.isNF) {
-                                mopUpTheNewsFeed();
-                            }
-                            else if (VARS.isGF) {
-                                mopUpTheGroupsFeed();
-                            }
-                            else if (VARS.isVF) {
-                                mopUpTheWatchVideosFeed();
-                            }
-                            else if (VARS.isMF) {
-                                mopUpTheMarketplaceFeed();
-                            }
-                            else if (VARS.isSF) {
-                                mopUpTheSearchFeed();
+                            else {
+                                // console.info(log + 'bodyMutating();', VARS.isNF, VARS.isGF, VARS.isVF, VARS.isMF, VARS.isSF);
+                                if (VARS.isNF) {
+                                    mopUpTheNewsFeed();
+                                }
+                                else if (VARS.isGF) {
+                                    mopUpTheGroupsFeed();
+                                }
+                                else if (VARS.isVF) {
+                                    mopUpTheWatchVideosFeed();
+                                }
+                                else if (VARS.isMF) {
+                                    mopUpTheMarketplaceFeed();
+                                }
+                                else if (VARS.isSF) {
+                                    mopUpTheSearchFeed();
+                                }
+                                else if (VARS.isRF) {
+                                    mopUpTheReelFeed('mutations');
+                                }
                             }
                         }
                     }
@@ -4757,6 +5805,11 @@
                     subtree: true,
                     attributes: false
                 });
+
+                if (VARS.isRF) {
+                    // -- mutations might not call mopUpTheReelFeed() when the URL changes, so call it now.
+                    mopUpTheReelFeed('setFeedSettings');
+                }
             }
         }
         else {
