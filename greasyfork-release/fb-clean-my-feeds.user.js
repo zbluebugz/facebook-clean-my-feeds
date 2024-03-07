@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.29
+// @version      4.30
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://www.facebook.com/*
 // @match        https://web.facebook.com/*
@@ -23,6 +23,10 @@
         1) Install uBlock Origin (uBO) in your browser(s)
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
+
+    v4.30 :: March  2024
+        Hot fix
+        Updated Marketplace feed detection component
 
     v4.29 :: February 2024
         !!! Hot fix !!!
@@ -2191,7 +2195,6 @@
         // VARS.cssHide = 'cmfr-hide';
         // VARS.cssHideEl = 'cmfr-hide-element';
         // VARS.cssHideNumberOfShares = 'cmfr-hide-shares';
-
 
         // -- **** fix fb's bug in not "hiding" certain elements properly when scrolling
         addToSS('body > div[style*="position: absolute"], ' +
@@ -4581,8 +4584,24 @@
         // -- hide an item if the price is listed in the list of blocked text
         // -- hide an item if the descriptinis listed in the list of blocked description text
         // :: return <nothing>
-        const query = `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`;
-        const items = document.querySelectorAll(query);
+
+        // -- March 2024 (fb changed code - personalised and non-personalised)
+        const queries = [
+            // -- landing page listing
+            `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`,
+            `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/np/item/"]`,
+            // -- category page listing
+            `div[style]:not([${postAtt}]) > div > span > div > div > a[href*="/marketplace/item/"]`,
+            `div[style]:not([${postAtt}]) > div > span > div > div > a[href*="/marketplace/np/item/"]`
+        ];
+        let items = [];
+        for (const query of queries) {
+            items = document.querySelectorAll(query);
+            if (items.length > 0) {
+                break;
+            }
+        }
+
         for (const item of items) {
             // - item's container
             const box = item.closest('div[style]');
