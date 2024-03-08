@@ -134,7 +134,7 @@
 
     'use strict';
 
-    const SCRIPT_VERSION = 'v4.29'; // TM doesn't like spaces in version number ...
+    const SCRIPT_VERSION = 'v4.30'; // TM doesn't like spaces in version number ...
 
     // Due to a GreaseMonkey bug with @require, we've copied an external script into here.
     // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
