@@ -25,9 +25,12 @@
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
 
-    v4.31 :: June 2024
-        Hot fix for reels and videos (EN only)
+    v4.31 :: July 2024
+        News Feed - Reels and Videos - added extra detection rule (dictionary based)
+        News Feed - Suggestions - added extra detection rule (x2)
+        Survey - updated detection rule
         Reels - option to stop looping
+        Fix bug with showing/hiding the FB-CMF button
 
     v4.30 :: March  2024
         Hot fix
@@ -2096,6 +2099,8 @@ esversion: 8;
         // - blocked text separator
         SEP: '¦¦',
 
+        dictionaryReelsAndShortVideos: {},
+
         // - Feed toggles
         isNF: false, // news
         isGF: false, // groups
@@ -2165,6 +2170,12 @@ esversion: 8;
         else {
             setTimeout(setLanguageAndOptions, 5);
         }
+    }
+
+    function buildDictonaryForReelsAndShortVideos() {
+        VARS.dictionaryReelsAndShortVideos = Object.values(KeyWords.NF_REELS_SHORT_VIDEOS)
+            .filter(value => typeof value === 'string')
+            .map(value => value.toLocaleLowerCase());
     }
 
     function generateRandomString() {
@@ -2516,12 +2527,13 @@ esversion: 8;
         else if (cmfBtnLocation === '2') {
             // - disabled, use "Settings" in the user script menu.
             // - no css
-            styles = '';
+            styles = 'display: none;';
         }
         else {
             // - bottom left - has the buttons running down the side of the page (May 2022 ->).
             // - cmfBtnLocation === "0"
-            styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
+            // styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
+            styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none; z-index:999;';
         }
         if (styles.length > 0) {
             addToSS(
@@ -4375,6 +4387,14 @@ esversion: 8;
         // -- nb: "x people recently commented" posts have similar structure - suggested/recommended posts don't start with a number ...
 
         const queries = [
+            // -- June 2024
+            'div[aria-posinset] span> div[id] > span:nth-of-type(1):not([style]):not([class])',
+            'div[aria-describedby] span> div[id] > span:nth-of-type(1):not([style]):not([class])',
+
+            // -- github 30/06/2024 mr-pokemon
+            'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > span > div > span:nth-of-type(1)',
+            'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > span > div > span:nth-of-type(1)',
+
             // -- May 2023
             'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span',
             'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span',
@@ -4469,29 +4489,26 @@ esversion: 8;
         return (sponsoredPaidBy.length === 0) ? '' : KeyWords.NF_SPONSORED_PAID[VARS.language];
     }
 
-    function nf_isReelsAndShortVideos_old(post) {
-        // -- reels and short videos (multiple)
-        const queryRaSV = 'a[href="/reel/?s=ifu_see_more"]';
-        const elRaSV = post.querySelector(queryRaSV);
-        return (elRaSV === null) ? '' : KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
-    }
-
     function nf_isReelsAndShortVideos(post) {
-        const queryRaSV = 'a[href="/reel/?s=ifu_see_more"]';
-        const elRaSV = post.querySelector(queryRaSV);
-    
-        if (elRaSV === null) {
-            const buttonDiv = post.querySelector('div[role="button"] > i ~ div');
-            if (buttonDiv && buttonDiv.textContent && buttonDiv.textContent.trim().toLowerCase() === 'reels and short videos') {
-                return KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
-            } else {
-                return '';
-            }
-        } else {
+        // -- reels and short videos (multiple)
+        const queryReelsAndShortVideos = 'a[href="/reel/?s=ifu_see_more"]';
+        const elReelsAndShortVideos = post.querySelector(queryReelsAndShortVideos);
+
+        if (elReelsAndShortVideos !== null) {
             return KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
         }
+        // -- try again, but use dictionary based rule (for some reason the above rule has failed for certain users)
+        const buttonDiv = post.querySelector('div[role="button"] > i ~ div');
+        if (buttonDiv && buttonDiv.textContent) {
+            const buttonText = buttonDiv.textContent.trim().toLowerCase();
+            if (VARS.dictionaryReelsAndShortVideos.find(item => item === buttonText)) {
+                return KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
+            }
+        }
+
+        return '';
     }
-    
+
 
     function nf_isShortReelVideo(post) {
         // -- reel/short video post (single)
@@ -4531,14 +4548,11 @@ esversion: 8;
     }
 
     function findFirstMatch(longText, valuesToFind) {
-        // for (const value of valuesToFind) {
-        //     if (longText.includes(value)) {
-        //         return value;
-        //     }
-        // }
-        // return '';
-        const foundWord = valuesToFind.find(word => longText.includes(word));
-        return foundWord !== undefined ? foundWord : '';
+
+        return findFirstMatchRE(longText, valuesToFind);
+
+        // const foundWord = valuesToFind.find(word => longText.includes(word));
+        // return foundWord !== undefined ? foundWord : '';
     }
 
     function findFirstMatchRE(longText, patterns) {
@@ -4741,22 +4755,13 @@ esversion: 8;
         }
     }
 
-    function nf_scrubTheTabbiesAndOrSurvey(doScrubTheTabbies = false, doScrubTheSurvey = false) {
+    function nf_scrubTheTabbies() {
         // -- Tablist : stories | reels | rooms
         // -- Stories
         // -- both appear at top of NF
-        // -- FB Survey
-        // -- appears after Tablist / Stories
         const queryTabList = 'div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]';
         const elTabList = document.querySelector(queryTabList);
         if (elTabList) {
-            if (doScrubTheSurvey === true) {
-                const elParent = climbUpTheTree(elTabList, 4);
-                if (elParent !== null) {
-                    nf_scrubTheSurvey(elParent);
-                }
-            }
-            if (doScrubTheTabbies === true) {
                 if (elTabList.hasAttribute(postAttChildFlag)) {
                     return;
                 }
@@ -4767,7 +4772,6 @@ esversion: 8;
                     elTabList.setAttribute(postAttChildFlag, 'tablist');
                     return;
                 }
-            }
         }
         else {
             // - Stories only
@@ -4793,13 +4797,7 @@ esversion: 8;
             // const queryForCreateStory = 'a[href*="/stories/create"]'; - too loose, grabs the FB menu's entries as well ...
             const queryForCreateStory = 'div[role="main"] > div > div > div > div > div > div > div > div a[href*="/stories/create"]';
             const elCreateStory = document.querySelector(queryForCreateStory);
-            if (doScrubTheSurvey === true && elCreateStory) {
-                const elParent = getStoriesParent(elCreateStory);
-                if (elParent !== null) {
-                    nf_scrubTheSurvey(elParent);
-                }
-            }
-            if (doScrubTheTabbies && elCreateStory && !elCreateStory.hasAttribute(postAttChildFlag)) {
+            if (elCreateStory && !elCreateStory.hasAttribute(postAttChildFlag)) {
                 const elParent = getStoriesParent(elCreateStory);
                 if (elParent !== null) {
                     hideFeature(elParent, KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language], false);
@@ -5052,34 +5050,18 @@ esversion: 8;
         return nvalue;
     }
 
-
-    function nf_scrubTheSurvey(containerTablist) {
+    function nf_scrubTheSurvey() {
         // -- fb survey
-        // - located in the container next to Stories / Reels / Rooms tablist
-
-        const elParent = containerTablist.parentElement;
-        if (!elParent.nextElementSibling) {
-            return;
+        // -- appears on the home page ..
+        // document.querySelectorAll('a[href*="/survey/?session="] > div[role="none"]')[0].closest('[style*="border-radius"]').parentElement.parentElement.parentElement
+        let btnSurvey = document.querySelector(`a[href*="/survey/?session="] > div[role="none"]:not([${postAtt}])`);
+        if (btnSurvey) {
+            let elContainer = climbUpTheTree(btnSurvey.closest('[style*="border-radius"]'), 3);
+            if (elContainer) {
+                hideFeature(elContainer, 'Survey', false);
+                btnSurvey.setAttribute(postAttChildFlag, 'Survey');
+            }
         }
-
-        const elContainer = elParent.nextElementSibling.querySelector(':scope > div > div > div');
-
-        if (elContainer.hasAttribute(postAtt)) {
-            return;
-        }
-
-        const surveyLink = elContainer.querySelector('a[href^="https://www.facebook.com/survey/"]');
-
-        if (surveyLink) {
-            // const surveyContainer = climbUpTheTree(surveyLink, 8);
-            // const surveyContainer = climbUpTheTree(surveyLink, 7);
-            // if (surveyContainer) {
-            //     hideFeature(surveyContainer, 'Survey', false);
-            // }
-            hideFeature(elContainer, 'Survey', false);
-            // console.info('fbcmf - survey:', elContainer, surveyLink)
-        }
-        // <element>.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
     }
 
     function nf_getCollectionOfPosts() {
@@ -5131,10 +5113,13 @@ esversion: 8;
 
         // -- Tablist - not part of the general news feed stream
         // -- Includes Stories (standalone tab)
-        // -- Includes FB' survey
-        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS || VARS.Options.NF_SURVEY) {
-            nf_scrubTheTabbiesAndOrSurvey(VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS, VARS.Options.NF_SURVEY);
+        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS) {
+            nf_scrubTheTabbies();
         }
+        if (VARS.Options.NF_SURVEY) {
+            nf_scrubTheSurvey();
+        }
+
 
         // -- aside's sponsored
         nf_cleanTheConsoleTable('Sponsored');
@@ -5770,7 +5755,7 @@ esversion: 8;
         const videos = document.querySelectorAll(videoRules);
 
         // console.info(log+'mopUpTheReelFeed(); videos:', caller, videos);
-        
+
         for (const video of videos) {
             // -- get the video's container's child element
             const elVideoId = video.closest('[data-video-id]');
@@ -5884,6 +5869,8 @@ esversion: 8;
                 // -- for reels's controls - chromium browsers needs more spacing ...
                 // -- requires: @grant        unsafeWindow
                 VARS.isChromium = !!unsafeWindow.chrome && /Chrome|CriOS/.test(navigator.userAgent);
+                // -- for nf_isReelsAndShortVideos() - needs dictionary rule
+                buildDictonaryForReelsAndShortVideos();
                 firstRun = false;
             }
             if (setFeedSettings()) {
