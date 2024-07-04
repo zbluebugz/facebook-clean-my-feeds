@@ -3,7 +3,7 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.30
+// @version      4.31
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://www.facebook.com/*
 // @match        https://web.facebook.com/*
@@ -11,6 +11,7 @@
 // @noframes
 // @grant        GM.registerMenuCommand
 // @grant        GM.info
+// @grant        unsafeWindow
 // @license      MIT; https://opensource.org/licenses/MIT
 // @icon         data:image/png;base64,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
 // @icon64       data:image/png;base64,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
@@ -23,6 +24,13 @@
         1) Install uBlock Origin (uBO) in your browser(s)
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
+
+    v4.31 :: July 2024
+        News Feed - Reels and Videos - added extra detection rule (dictionary based)
+        News Feed - Suggestions - added extra detection rule (x2)
+        Survey - updated detection rule
+        Reels - option to stop looping
+        Fix bug with showing/hiding the FB-CMF button
 
     v4.30 :: March  2024
         Hot fix
@@ -130,11 +138,15 @@
     \\\ --- No need to amend any of the code below --- ///
 */
 
+// -- need version 8 for async/await
+esversion: 8;
+
 (async function () {
 
     'use strict';
 
-    const SCRIPT_VERSION = 'v4.30'; // TM doesn't like spaces in version number ...
+    // -- TM doesn't like spacesin version number, so convert to human-readable-format.
+    const SCRIPT_VERSION = 'v' + GM.info.script.version.replaceAll('-', ' ');
 
     // Due to a GreaseMonkey bug with @require, we've copied an external script into here.
     // @require      https://unpkg.com/idb-keyval@6.0.3/dist/umd.js
@@ -1110,6 +1122,32 @@
             'bg': 'Покажи контроли на видеото',
             'defaultEnabled': true
         },
+        REELS_DISABLE_LOOPING: {
+            'en': 'Disable looping',
+            'pt': 'Desativar repetição',
+            'de': 'Wiederholung deaktivieren',
+            'fr': 'Désactiver la boucle',
+            'es': 'Desactivar bucle',
+            'cs': 'Vypnout smyčení',
+            'vi': 'Tắt lặp lại',
+            'it': 'Disattiva ripetizione',
+            'lv': 'Atspējot cilpotošanu',
+            'pl': 'Wyłącz pętlę',
+            'nl': 'Herhalen uitschakelen',
+            'he': 'השבת לולאה',
+            'ar': 'تعطيل التكرار',
+            'id': 'Nonaktifkan pengulangan',
+            'zh-Hans': '禁用循环',
+            'zh-Hant': '停用循環',
+            'ja': 'ループの無効化',
+            'fi': 'Poista toisto',
+            'tr': 'Döngüyü devre dışı bırak',
+            'el': 'Απενεργοποίηση επανάληψης',
+            'ru': 'Отключить повторение',
+            'uk': 'Вимкнути повторення',
+            'bg': 'Изключване на повторението',
+            'defaultEnable': true
+        },
 
         // *** Dialog box ::
 
@@ -2037,6 +2075,8 @@
     const postAttTab = 'cmftsb'
     // - marketplace post - indicate already scanned
     const postAttMPSkip = 'cmfsmp';
+    // - reel video attribute
+    const rvAtt = 'cmfrv';
 
     // - Feed Details variables
     // -- nb: setFeedSettings() adjusts some of these settings.
@@ -2058,6 +2098,8 @@
         Filters: {},
         // - blocked text separator
         SEP: '¦¦',
+
+        dictionaryReelsAndShortVideos: {},
 
         // - Feed toggles
         isNF: false, // news
@@ -2106,7 +2148,9 @@
         // - script's logo
         logoHTML: '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32"><g id="Layer" fill="currentColor"><path id="Layer" fill-rule="evenodd" class="s0" d="m51 3.2c0.7 1.1 0.7 1-1.6 9.2-1.4 5-2.1 7.4-2.3 7.6-0.1 0.1-0.3 0.2-0.6 0.2-0.4 0-0.9-0.4-0.9-0.7 0-0.1 1-3.5 2-7.4 1.2-4 2-7.3 2-7.5 0-0.4-0.6-1-0.9-1-0.2 0-0.5 0.2-0.7 0.3-0.3 0.3-0.7 1.8-5.5 19.2l-5.3 18.9 0.9 0.5c0.5 0.3 0.9 0.5 0.9 0.5 0 0 1.3-4.4 2.8-9.8 1.5-5.3 2.8-10 2.8-10.3 0.2-0.5 0.3-0.7 0.6-0.9 0.3-0.1 0.4-0.1 0.8 0 0.2 0.2 0.4 0.3 0.4 0.5 0.1 0.2-0.4 2.2-1.5 6.1-0.9 3.2-1.6 5.8-1.6 5.9 0 0 0.5 0.1 1.3 0.1 1.9 0 2.7 0.4 3.2 1.5 0.3 0.6 0.3 2.7 0 3.4-0.3 0.9-1.2 1.4-2 1.4-0.3 0-0.5 0.1-0.5 0.1 0 0.2-2.3 20.2-2.3 20.4-0.2 0.8 0.7 0.7-14.1 0.7-15.3 0-14.3 0.1-15.3-1-0.8-0.8-1.1-1.5-1-2.9 0.2-3.6 2.7-6.7 6.3-7.8 0.4-0.2 0.9-0.3 1-0.3 0.6 0 0.6 0.1 0.1-4.5-0.3-2.4-0.5-4.4-0.5-4.5-0.1-0.1-0.3-0.1-0.7-0.2-0.6 0-1.1-0.3-1.6-1-0.3-0.4-0.3-0.5-0.4-1.8 0-1.7 0.1-2.1 0.6-2.7 0.7-0.6 1-0.7 2.5-0.8h1.3v-2.9c0-3.1 0-3.4 0.6-3.6 0.2-0.1 2.4-0.1 7.1-0.1 6.5 0.1 6.9 0.1 7.1 0.3 0.2 0.2 0.2 0.3 0.2 3.3v3h0.6l0.6-0.1 4.3-15.3c2.4-8.5 4.4-15.6 4.5-15.9 0.4-0.6 0.9-1 1.5-1.3 1.2-0.4 2.6 0.1 3.3 1.2zm-26.6 26.6h-0.7c-0.3 0-0.6 0-0.7 0 0 0.1-0.1 1.2-0.1 2.5v2.3h1.5zm3.4 0h-0.7c-0.5 0-0.9 0-0.9 0.1 0 0-0.1 1.1-0.1 2.4v2.3h1.8v-2.4zm3.4 0h-1.6v4.8h1.6zm3.2 0h-1.3v4.8h1.3zm-6.4 6.6c-7.9 0-9 0-9.2 0.2-0.3 0.2-0.3 0.3-0.3 1.3 0 0.7 0.1 1.1 0.2 1.2 0.1 0.1 2.3 0.1 7.3 0.1 6.9 0.1 7.2 0.1 7.5 0.3 0.3 0.3 0.3 1 0 1.3-0.2 0.2-0.8 0.2-6.3 0.2h-6l0.1 0.5c0 0.3 0.2 2.3 0.5 4.5l0.4 4h0.4c0.6 0 1.5-0.3 2-0.7 0.3-0.3 0.7-0.8 0.9-1.3 0.6-1.1 1.3-2 2.1-2.7 1.1-0.9 2.8-1.5 4-1.5h0.6l0.7-1.1c0.6-1 0.8-1.2 1.3-1.5 0.4-0.2 0.6-0.2 0.9-0.2 0.4 0.1 0.5 0.1 0.5-0.1 0.1-0.1 0.3-1.1 0.6-2.1 0.3-1.1 0.6-2.1 0.6-2.2 0.1-0.2-0.4-0.2-8.8-0.2zm16.2 0h-1.5l-0.4 1.3c-0.2 0.8-0.4 1.4-0.4 1.5 0 0 0.9 0 2 0 2.3 0 2.3 0.1 2.3-1.4 0-0.9-0.1-1-0.3-1.2-0.2-0.2-0.6-0.2-1.7-0.2zm-2.8 4.7c0 0.1-0.2 0.8-0.5 1.6-0.2 1-0.3 1.4-0.2 1.5 0 0 0.3 0.2 0.6 0.4 0.4 0.4 0.4 0.5 0.5 1.2 0 0.6 0 0.7-0.8 2-0.7 1.1-0.8 1.3-1.3 1.6l-0.5 0.2v1.8c0 1.3-0.1 2-0.2 2.5-0.1 0.4-0.2 0.8-0.2 0.8 0 0 0.7 0.1 1.5 0.1 1.2 0 1.6-0.1 1.6-0.2 0-0.1 0.4-3.1 0.8-6.8 0.4-3.6 0.7-6.7 0.7-6.7-0.1-0.2-1.9-0.1-2 0zm-6.3 1.8c-0.2-0.1-0.3 0-0.9 1-0.2 0.4-0.4 0.8-0.3 0.8 0 0.1 1.1 0.7 2.3 1.5 1.3 0.7 2.4 1.4 2.5 1.5 0.3 0.1 0.3 0.1 0.8-0.8 0.3-0.6 0.6-1 0.5-1 0 0-1.1-0.7-2.4-1.5-1.3-0.8-2.4-1.4-2.5-1.5zm-4.5 2.8c-1.6 0.5-2.7 1.5-3.5 3.1-0.6 1.2-1.3 2-2.4 2.5-0.9 0.4-0.9 0.4-2.9 0.5-2.8 0.1-3.9 0.6-5.4 2.1-0.8 0.8-1 1.1-1.4 1.9-1 2.2-0.9 4 0.2 4.4 0.7 0.3 0.8 0.3 1-0.5 0.8-2.4 2.7-4.5 5.1-5.5 1.1-0.4 1.6-0.5 3.2-0.6 2-0.2 2.8-0.7 3.4-2.2 0.3-0.5 0.6-1.2 0.8-1.6 0.8-1.3 2.4-2.5 3.8-2.9 0.4-0.1 0.8-0.2 0.8-0.2q0.2-0.1-0.3-0.4c-0.3-0.2-0.6-0.4-0.6-0.5-0.1-0.3-1.1-0.3-1.8-0.1zm3.2 2.7c-0.9 0.2-2 0.8-2.8 1.5-0.7 0.6-0.8 0.9-1.6 2.6-0.7 1.5-2.2 2.5-3.9 2.7-3.4 0.4-4.3 0.8-5.8 2.2-0.7 0.8-1 1.2-1.4 1.9l-0.5 1 0.9 0.1c0.9 0 0.9 0 1.2-0.4q2.7-3.2 7.3-3.2c2.2 0 2.9-0.5 3.9-2.3 0.3-0.5 0.7-1.2 0.9-1.5 1-1.2 3-2.3 4.6-2.4l0.8-0.1-0.1-0.5c-0.1-0.8-0.3-1.2-0.9-1.4-0.7-0.2-1.9-0.3-2.6-0.2zm3.6 3.9h-0.4c-0.5 0-1.6 0.3-2.3 0.7-0.7 0.5-1.6 1.5-2.2 2.6-1.1 2.1-2.5 2.9-5.2 2.9-0.6 0-1.6 0.1-2 0.2-1 0.2-2.3 0.8-2.9 1.3l-0.4 0.4h4.1c4.6-0.1 4.7-0.1 6.5-1 0.9-0.5 1.3-0.7 2.2-1.6 1.4-1.4 2.2-3 2.5-4.9zm4.3 4.2h-1.9-1.8l-0.5 0.8c-0.6 0.9-1.5 1.9-2.4 2.6l-0.6 0.5h3.4c2.6 0 3.4 0 3.4-0.1 0-0.1 0.1-1 0.2-2z"/></g></svg>',
         // - new window icon
-        iconNewWindow: '<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link"><title>Open post in a new window</title><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>'
+        iconNewWindow: '<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link"><title>Open post in a new window</title><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>',
+        // - for reels - chromium browsers needs more space for video controls...
+        isChromium: false,
     };
 
     // -- which language is the FB page in?
@@ -2126,6 +2170,12 @@
         else {
             setTimeout(setLanguageAndOptions, 5);
         }
+    }
+
+    function buildDictonaryForReelsAndShortVideos() {
+        VARS.dictionaryReelsAndShortVideos = Object.values(KeyWords.NF_REELS_SHORT_VIDEOS)
+            .filter(value => typeof value === 'string')
+            .map(value => value.toLocaleLowerCase());
     }
 
     function generateRandomString() {
@@ -2477,12 +2527,13 @@
         else if (cmfBtnLocation === '2') {
             // - disabled, use "Settings" in the user script menu.
             // - no css
-            styles = '';
+            styles = 'display: none;';
         }
         else {
             // - bottom left - has the buttons running down the side of the page (May 2022 ->).
             // - cmfBtnLocation === "0"
-            styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
+            // styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
+            styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none; z-index:999;';
         }
         if (styles.length > 0) {
             addToSS(
@@ -3235,6 +3286,8 @@
             l.textContent = KeyWords.REELS_TITLE[VARS.language];
             fs.appendChild(l);
             fs.appendChild(createSingleCB('REELS_CONTROLS'), false);
+            fs.appendChild(l);
+            fs.appendChild(createSingleCB('REELS_DISABLE_LOOPING'), false);
             cnt.appendChild(fs);
 
             // -- Verbosity
@@ -3747,7 +3800,7 @@
             else if (VARS.prevPathname.indexOf('/reel/') >= 0) {
                 // -- reel(s) page
                 // VARS.isRF = true;
-                VARS.isRF = (VARS.Options.REELS_CONTROLS === true);
+                VARS.isRF = (VARS.Options.REELS_CONTROLS === true) || (VARS.Options.REELS_DISABLE_LOOPING === true);
             }
 
             VARS.isAF = (VARS.isNF || VARS.isGF || VARS.isVF || VARS.isMF || VARS.isSF || VARS.isRF);
@@ -4334,6 +4387,14 @@
         // -- nb: "x people recently commented" posts have similar structure - suggested/recommended posts don't start with a number ...
 
         const queries = [
+            // -- June 2024
+            'div[aria-posinset] span> div[id] > span:nth-of-type(1):not([style]):not([class])',
+            'div[aria-describedby] span> div[id] > span:nth-of-type(1):not([style]):not([class])',
+
+            // -- github 30/06/2024 mr-pokemon
+            'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > span > div > span:nth-of-type(1)',
+            'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > span > div > span:nth-of-type(1)',
+
             // -- May 2023
             'div[aria-posinset] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span',
             'div[aria-describedby] > div > div > div > div > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > span',
@@ -4430,10 +4491,24 @@
 
     function nf_isReelsAndShortVideos(post) {
         // -- reels and short videos (multiple)
-        const queryRaSV = 'a[href="/reel/?s=ifu_see_more"]';
-        const elRaSV = post.querySelector(queryRaSV);
-        return (elRaSV === null) ? '' : KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
+        const queryReelsAndShortVideos = 'a[href="/reel/?s=ifu_see_more"]';
+        const elReelsAndShortVideos = post.querySelector(queryReelsAndShortVideos);
+
+        if (elReelsAndShortVideos !== null) {
+            return KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
+        }
+        // -- try again, but use dictionary based rule (for some reason the above rule has failed for certain users)
+        const buttonDiv = post.querySelector('div[role="button"] > i ~ div');
+        if (buttonDiv && buttonDiv.textContent) {
+            const buttonText = buttonDiv.textContent.trim().toLowerCase();
+            if (VARS.dictionaryReelsAndShortVideos.find(item => item === buttonText)) {
+                return KeyWords.NF_REELS_SHORT_VIDEOS[VARS.language];
+            }
+        }
+
+        return '';
     }
+
 
     function nf_isShortReelVideo(post) {
         // -- reel/short video post (single)
@@ -4473,14 +4548,11 @@
     }
 
     function findFirstMatch(longText, valuesToFind) {
-        // for (const value of valuesToFind) {
-        //     if (longText.includes(value)) {
-        //         return value;
-        //     }
-        // }
-        // return '';
-        const foundWord = valuesToFind.find(word => longText.includes(word));
-        return foundWord !== undefined ? foundWord : '';
+
+        return findFirstMatchRE(longText, valuesToFind);
+
+        // const foundWord = valuesToFind.find(word => longText.includes(word));
+        // return foundWord !== undefined ? foundWord : '';
     }
 
     function findFirstMatchRE(longText, patterns) {
@@ -4683,22 +4755,13 @@
         }
     }
 
-    function nf_scrubTheTabbiesAndOrSurvey(doScrubTheTabbies = false, doScrubTheSurvey = false) {
+    function nf_scrubTheTabbies() {
         // -- Tablist : stories | reels | rooms
         // -- Stories
         // -- both appear at top of NF
-        // -- FB Survey
-        // -- appears after Tablist / Stories
         const queryTabList = 'div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]';
         const elTabList = document.querySelector(queryTabList);
         if (elTabList) {
-            if (doScrubTheSurvey === true) {
-                const elParent = climbUpTheTree(elTabList, 4);
-                if (elParent !== null) {
-                    nf_scrubTheSurvey(elParent);
-                }
-            }
-            if (doScrubTheTabbies === true) {
                 if (elTabList.hasAttribute(postAttChildFlag)) {
                     return;
                 }
@@ -4709,7 +4772,6 @@
                     elTabList.setAttribute(postAttChildFlag, 'tablist');
                     return;
                 }
-            }
         }
         else {
             // - Stories only
@@ -4735,13 +4797,7 @@
             // const queryForCreateStory = 'a[href*="/stories/create"]'; - too loose, grabs the FB menu's entries as well ...
             const queryForCreateStory = 'div[role="main"] > div > div > div > div > div > div > div > div a[href*="/stories/create"]';
             const elCreateStory = document.querySelector(queryForCreateStory);
-            if (doScrubTheSurvey === true && elCreateStory) {
-                const elParent = getStoriesParent(elCreateStory);
-                if (elParent !== null) {
-                    nf_scrubTheSurvey(elParent);
-                }
-            }
-            if (doScrubTheTabbies && elCreateStory && !elCreateStory.hasAttribute(postAttChildFlag)) {
+            if (elCreateStory && !elCreateStory.hasAttribute(postAttChildFlag)) {
                 const elParent = getStoriesParent(elCreateStory);
                 if (elParent !== null) {
                     hideFeature(elParent, KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language], false);
@@ -4994,34 +5050,18 @@
         return nvalue;
     }
 
-
-    function nf_scrubTheSurvey(containerTablist) {
+    function nf_scrubTheSurvey() {
         // -- fb survey
-        // - located in the container next to Stories / Reels / Rooms tablist
-
-        const elParent = containerTablist.parentElement;
-        if (!elParent.nextElementSibling) {
-            return;
+        // -- appears on the home page ..
+        // document.querySelectorAll('a[href*="/survey/?session="] > div[role="none"]')[0].closest('[style*="border-radius"]').parentElement.parentElement.parentElement
+        let btnSurvey = document.querySelector(`a[href*="/survey/?session="] > div[role="none"]:not([${postAtt}])`);
+        if (btnSurvey) {
+            let elContainer = climbUpTheTree(btnSurvey.closest('[style*="border-radius"]'), 3);
+            if (elContainer) {
+                hideFeature(elContainer, 'Survey', false);
+                btnSurvey.setAttribute(postAttChildFlag, 'Survey');
+            }
         }
-
-        const elContainer = elParent.nextElementSibling.querySelector(':scope > div > div > div');
-
-        if (elContainer.hasAttribute(postAtt)) {
-            return;
-        }
-
-        const surveyLink = elContainer.querySelector('a[href^="https://www.facebook.com/survey/"]');
-
-        if (surveyLink) {
-            // const surveyContainer = climbUpTheTree(surveyLink, 8);
-            // const surveyContainer = climbUpTheTree(surveyLink, 7);
-            // if (surveyContainer) {
-            //     hideFeature(surveyContainer, 'Survey', false);
-            // }
-            hideFeature(elContainer, 'Survey', false);
-            // console.info('fbcmf - survey:', elContainer, surveyLink)
-        }
-        // <element>.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
     }
 
     function nf_getCollectionOfPosts() {
@@ -5073,10 +5113,13 @@
 
         // -- Tablist - not part of the general news feed stream
         // -- Includes Stories (standalone tab)
-        // -- Includes FB' survey
-        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS || VARS.Options.NF_SURVEY) {
-            nf_scrubTheTabbiesAndOrSurvey(VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS, VARS.Options.NF_SURVEY);
+        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS) {
+            nf_scrubTheTabbies();
         }
+        if (VARS.Options.NF_SURVEY) {
+            nf_scrubTheSurvey();
+        }
+
 
         // -- aside's sponsored
         nf_cleanTheConsoleTable('Sponsored');
@@ -5685,10 +5728,8 @@
     }
 
     function mopUpTheReelFeed(caller) {
-        // -- display the reel's video controls
 
-        // -- bodyMutation will initially trigger this function to run, but sometimes misses out on a reel video ...
-        // -- so, we use setTimeout() to make it run regularly until no longer in Reels.
+        // -- Reels ...
 
         // -- saveUserOptions will also call this function ...
 
@@ -5697,6 +5738,8 @@
         // -- .. and therefore skipped ...
 
         // -- nb: setting VARS.isRF determines if this function is called or not.
+
+        // console.info(log + 'mopUpTheReelFeed(); ', VARS.isRF, VARS.isRF_InTimeoutMode);
 
         if (!VARS.isRF) {
             // -- no longer in Reels Feed
@@ -5708,9 +5751,11 @@
             return;
         }
 
-        const videoRules = 'video:not([controls])';
+        const videoRules = `[data-video-id] video:not([${rvAtt}])`;
         const videos = document.querySelectorAll(videoRules);
+
         // console.info(log+'mopUpTheReelFeed(); videos:', caller, videos);
+
         for (const video of videos) {
             // -- get the video's container's child element
             const elVideoId = video.closest('[data-video-id]');
@@ -5718,28 +5763,36 @@
                 // -- get the video's container
                 const videoContainer = elVideoId.parentElement;
                 if (videoContainer) {
-                    // -- get the video's description + audio track info container.
-                    const descriptionOverlay = videoContainer.nextElementSibling;
-                    if (descriptionOverlay) {
-                        // -- make room to display the controls by moving the description element up a bit ...
-                        const elDescriptionContainer = descriptionOverlay.children[0];
-                        elDescriptionContainer.setAttribute('style', 'margin-bottom:2.15rem;');
-                        // -- enable controls on the video
-                        video.setAttribute('controls', 'true');
-                        // -- hide the video's sibling (makes it easier to click on the video's controls)
-                        const sibling = video.nextElementSibling;
-                        if (sibling) {
-                            sibling.setAttribute('style', 'display:none;');
+                    if (VARS.Options.REELS_CONTROLS === true) {
+                        // -- get the video's description + audio track info container.
+                        const descriptionOverlay = videoContainer.nextElementSibling;
+                        if (descriptionOverlay) {
+                            // -- make room to display the controls by moving the description element up a bit ...
+                            const elDescriptionContainer = descriptionOverlay.children[0];
+                            elDescriptionContainer.setAttribute('style', `margin-bottom:${VARS.isChromium ? '4.5' : '2.25'}rem;`);
+                            // -- enable controls on the video
+                            video.setAttribute('controls', 'true');
+                            // -- hide the video's sibling (makes it easier to click on the video's controls)
+                            const sibling = video.nextElementSibling;
+                            if (sibling) {
+                                sibling.setAttribute('style', 'display:none;');
+                            }
                         }
                     }
+                    if (VARS.Options.REELS_DISABLE_LOOPING === true) {
+                        // -- stop the video
+                        video.addEventListener('ended', function (ev) {
+                            ev.target.pause();
+                        });
+                    }
+                    video.setAttribute(rvAtt, '1');
+                }
+                else {
+                    // -- a video from the watch videos feed
+                    // -- hidden underneath the reels feed overlay)
                 }
             }
-            else {
-                // -- a video from the watch videos feed
-                // -- hidden underneath the reels feed overlay)
-            }
         }
-
         // -- call me again in a few ms ...
         VARS.isRF_InTimeoutMode = true;
         setTimeout(function () {
@@ -5813,6 +5866,11 @@
                 addCSS();
                 window.setTimeout(addExtraCSS, 150); // fb is sometimes laggy ...
                 buildMoppingDialog();
+                // -- for reels's controls - chromium browsers needs more spacing ...
+                // -- requires: @grant        unsafeWindow
+                VARS.isChromium = !!unsafeWindow.chrome && /Chrome|CriOS/.test(navigator.userAgent);
+                // -- for nf_isReelsAndShortVideos() - needs dictionary rule
+                buildDictonaryForReelsAndShortVideos();
                 firstRun = false;
             }
             if (setFeedSettings()) {
