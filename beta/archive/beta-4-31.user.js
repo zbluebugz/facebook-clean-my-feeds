@@ -31,6 +31,7 @@
         Survey - updated detection rule
         Reels - option to stop looping
         Fix bug with showing/hiding the FB-CMF button
+        Uses RegExp for text-filtering
 
     v4.30 :: March  2024
         Hot fix
