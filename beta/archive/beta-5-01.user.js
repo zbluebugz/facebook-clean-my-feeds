@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         FB - Clean my feeds (5.01b14)
+// @name         FB - Clean my feeds
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      5.01-beta-14
+// @version      5.01
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://www.facebook.com/*
 // @match        https://web.facebook.com/*
@@ -19,43 +19,6 @@
 // ==/UserScript==
 /*
 
-*** *** ***
-
-BETA VERSION
-
-Warning: Use at your own risk
-         Not much support given - unless there's a major bug ...
-
-*** *** ***
-
-
-::: TO DO :::
-
-isSponsored ... video's sponsored posts sometimes show up ...
-
-follow rule - add "/join" in description? or leave it as is?
-
-update : PP_BLOCKED_FEED; DLG_PP; DLG_PP;
-
-default value for : VERBOSITY_MESSAGE_COLOUR ?
-
-Reset button is not toggling the cmf's ui language; fixed; needs more testing;
-
-when saving, need to reset the container's attribute; hmmm, forgot what this is about ... lol
-
-dark mode - section header hover colour ...
-
-flashing issue ... can it be resolved?
-
-is it possible to detect those random posts having no follow/join/etc tags?  (NF)
-
-do more testing with the ad-infested account.
-
-can we block unwanted reels in the reels feed?
-- combine the two scanning engines?  (4.x & 5.x)
-
-~~~ ~~~~ ~~~~~
-
     :: Tip ::
         This userscript does not block video ads (begin-roll, mid-roll, end-roll), however there's a work-around:
         1) Install uBlock Origin (uBO) in your browser(s)
@@ -63,7 +26,7 @@ can we block unwanted reels in the reels feed?
         Note: I have not tested this in other content/ad-blockers.
 
 
-    v5.01 :: October 2024 :: WIP!
+    v5.01 :: October 2024
         Changed the detect-changes-engine component
         Updated dialog-box
         Users can change dialog-box's ui language
@@ -74,15 +37,16 @@ can we block unwanted reels in the reels feed?
         Added Instagram Video detection component (Watch Videos feed)
         Added code to remove "incomplete" Watch Video posts (posts with no content)
         Added icon to open a Watch Videos Feed post in a new window
+        Updated News Feed's detection rule
+        Updated Group Feed's dection rule
         Updated Marketplace detection rules
         Updated Search posts detection rule
-        Updated News Feed's Sponsored posts detection rule (had some false-positive hits)
+        Updated News Feed's Sponsored posts detection rule 
         Added option to Disable looping videos in Reels
         Fix bug with showing/hiding the FB-CMF button
         Updated nf_isSuggested filter rules
         Updated nf_isPeopleYouMayKnow filter rule
         Added RegExp option to text filters
-
         Code tweaks
 
     v4.31 :: June 2024
@@ -280,9 +244,9 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Enabled',
     MP_BLOCKED_ENABLED: 'Enabled',
     PP_BLOCKED_ENABLED: 'Enabled',
-    NF_BLOCKED_RE: 'Regular Expressions (RegExp)',	
-    GF_BLOCKED_RE: 'Regular Expressions (RegExp)',	
-    VF_BLOCKED_RE: 'Regular Expressions (RegExp)',	
+    NF_BLOCKED_RE: 'Regular Expressions (RegExp)',
+    GF_BLOCKED_RE: 'Regular Expressions (RegExp)',
+    VF_BLOCKED_RE: 'Regular Expressions (RegExp)',
     MP_BLOCKED_RE: 'Regular Expressions (RegExp)',
     PP_BLOCKED_RE: 'Regular Expressions (RegExp)',
     DLG_VERBOSITY: 'Options for Hidden Posts',
@@ -4831,7 +4795,9 @@ const masterKeyWords = {
         }
         if (isSponsoredPost === false) {
             const PARAM_FIND = '__cft__[0]=';
-            const PARAM_MIN_SIZE = VARS.isSF ? 250 : VARS.isVF ? 299 : 308;
+            // was 308 ... trying 309
+            const PARAM_MIN_SIZE = VARS.isSF ? 250 : VARS.isVF ? 299 : 309;
+
 
             let elLinks = [];
             if (VARS.isNF || VARS.isGF) {
@@ -4859,7 +4825,7 @@ const masterKeyWords = {
 
                 // test the first 3 links.
                 // -- fb sometimes changes the 4th & 5th links after playing video, which can trigger a false isSponsoredPost flag.
-                const elMax = Math.min(3, elLinks.length);
+                const elMax = Math.min(2, elLinks.length);
 
                 for (let i = 0; i < elMax; i++) {
                     let el = elLinks[i];
@@ -4869,8 +4835,8 @@ const masterKeyWords = {
                     if (pos >= 0) {
                         // console.info(log + "isSponsored(); testing: " + el.href.slice(pos).length, (el.href.slice(pos).length > PARAM_MIN_SIZE), post);
                         if (el.href.slice(pos).length >= PARAM_MIN_SIZE) {
-                            console.info(log + "isSponsored(); sliced: " + el.href.slice(pos).length, el.href, post);
-                            console.info(log + "isSponsored(); # links: " + elLinks.length, post);
+                            // console.info(log + "isSponsored(); sliced: " + el.href.slice(pos).length, el.href, post);
+                            // console.info(log + "isSponsored(); # links: " + elLinks.length, post);
                             isSponsoredPost = true;
                             break;
                         }
@@ -5380,8 +5346,17 @@ const masterKeyWords = {
         // -- hide an item if the descriptinis listed in the list of blocked description text
         // :: return <nothing>
 
-        // -- March 2024 (fb changed code - personalised and non-personalised)
+    
         const queries = [
+            // -- October 2024 (fb changed code - personalised and non-personalised)
+            // -- landing page listing
+            `div[style]:not([${postAtt}]) > div > div > span > div > div > div > div > a[href*="/marketplace/item/"]`,
+            `div[style]:not([${postAtt}]) > div > div > span > div > div > div > div > a[href*="/marketplace/np/item/"]`,
+            // -- category page listing
+            `div[style]:not([${postAtt}]) > div > span > div > div > a[href*="/marketplace/item/"]`,
+            `div[style]:not([${postAtt}]) > div > span > div > div > a[href*="/marketplace/np/item/"]`,
+   
+            // -- March 2024 (fb changed code - personalised and non-personalised)
             // -- landing page listing
             `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`,
             `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/np/item/"]`,
@@ -5509,14 +5484,14 @@ const masterKeyWords = {
 
     function nf_hasAnimatedGifContent(post) {
         // - scan the post's content for any animated gifs
-        // -- scan the post's content block only (ignore comments block)
+        // -- scan the post's content block (2nd block) only (ignore comments block)
         // -- the gif is usually either MP4 or GIPHY ... with an round dashed label "GIF" overlay
         // :: return <reason>
 
         const postBlocks = post.querySelectorAll(nf_getBlocksQuery(post));
 
         if (postBlocks.length >= 2) {
-            const contentBlock = postBlocks[2];
+            const contentBlock = postBlocks[1];
             const queryForAnimatedGIF = getMosquitosQuery();
             const animatedGIFs = contentBlock.querySelectorAll(queryForAnimatedGIF);
             const animatedGIFsText = (animatedGIFs.length > 0) ? KeyWords.GF_ANIMATED_GIFS_POSTS : '';
@@ -5535,7 +5510,7 @@ const masterKeyWords = {
         const postBlocks = post.querySelectorAll(gf_getBlocksQuery(post));
 
         if (postBlocks.length >= 2) {
-            const contentBlock = postBlocks[2];
+            const contentBlock = postBlocks[1];
             const queryForAnimatedGIF = getMosquitosQuery();
             const animatedGIFs = contentBlock.querySelectorAll(queryForAnimatedGIF);
             const animatedGIFsText = (animatedGIFs.length > 0) ? KeyWords.GF_ANIMATED_GIFS_POSTS : '';
@@ -5871,7 +5846,6 @@ const masterKeyWords = {
         }
     }
 
-
     function nf_getCollectionOfPosts() {
         // -- get a collection of posts
         // -- fb serves a mixture of html structures
@@ -5885,12 +5859,21 @@ const masterKeyWords = {
             // -- nb: <details> is injected in between some <div>s - effectively kicking it out of the collection.
 
             // -- mostly English users:
-            'h3[dir="auto"] ~ div:not([class]) > div.x1lliihq > div > div > div > div',
-            'h2[dir="auto"] ~ div:not([class]) > div.x1lliihq > div > div > div > div',
+            // -- FB's October 2024 update #2:
+            'h3[dir="auto"] ~ div:not([class]) > div > div > div > div > div',
+            'h2[dir="auto"] ~ div:not([class]) > div > div > div > div > div',
+
+            // 'h3[dir="auto"] ~ div:not([class]) > div.x1lliihq > div > div > div > div',
+            // 'h2[dir="auto"] ~ div:not([class]) > div.x1lliihq > div > div > div > div',
 
             // -- mostly non-English users:
             'div[role="feed"] > h3[dir="auto"] ~ div:not([class]) > div[data-pagelet*="FeedUnit_"] > div > div > div > div',
             'div[role="feed"] > h2[dir="auto"] ~ div:not([class]) > div[data-pagelet*="FeedUnit_"] > div > div > div > div',
+
+            // -- FB's October 2024 update #1:
+            // 'h3[dir="auto"] ~ div:not([class]) > div[class] > div > div > div > div',
+            // 'h2[dir="auto"] ~ div:not([class]) > div[class] > div > div > div > div',
+
         ];
 
         for (const query of queries) {
@@ -5915,7 +5898,7 @@ const masterKeyWords = {
     function isTheHouseDirty() {
         // -- check if the main column exists and has changed ...
         // -- check if dialog exists and has changed ...
-        // -- applies to news feed, groups feed, group feed ...
+        // -- applies to news feed, 
         // -- using a quick/crude method of testing if something changed - check size of innerHTML
         // -- (a more advanced, but slower method would be hashing)
         // :: return : array of two items
@@ -5951,6 +5934,64 @@ const masterKeyWords = {
         return arrReturn;
 
     }
+
+    function gf_isTheHouseDirty() {
+        // -- check if the main column exists and has changed ...
+        // -- check if dialog exists and has changed ...
+        // -- applies to groups feed, group feed ...
+        // -- using a quick/crude method of testing if something changed - check size of innerHTML
+        // -- (a more advanced, but slower method would be hashing)
+        // :: return : array of two items
+
+        const arrReturn = [null, null]; // -- null means no change.
+
+        // -- main column / content (feed)
+        const mainColumnQuery = 'div[role="navigation"] ~ div[role="main"]';
+        const mainColumn = document.querySelector(mainColumnQuery);
+        if (mainColumn) {
+            if (mainColumn.hasAttribute(mainColumnAtt) === false) {
+                // -- first timer ...
+                arrReturn[0] = mainColumn;
+            }
+            else if (hasSizeChanged(mainColumn.getAttribute(mainColumnAtt), mainColumn.innerHTML.length)) {
+                // -- change detected ...
+                arrReturn[0] = mainColumn;
+            }
+        }
+        else {
+            // -- inside a group profile ...
+            const mainColumnQueryGP = 'div[role="main"] div[role="feed"]' ;
+            const mainColumnGP = document.querySelector(mainColumnQueryGP);
+            if (mainColumnGP) {
+                if (mainColumnGP.hasAttribute(mainColumnAtt) === false) {
+                    // -- first timer ...
+                    arrReturn[0] = mainColumnGP;
+                }
+                else if (hasSizeChanged(mainColumnGP.getAttribute(mainColumnAtt), mainColumnGP.innerHTML.length)) {
+                    // -- change detected ...
+                    arrReturn[0] = mainColumnGP;
+                }
+            }
+        }
+
+
+        // -- dialog (article popup)
+        const elDialog = document.querySelector('div[role="dialog"]');
+        if (elDialog) {
+            if (elDialog.hasAttribute(mainColumnAtt) === false) {
+                arrReturn[1] = elDialog;
+            }
+            else if (hasSizeChanged(elDialog.getAttribute(mainColumnAtt), elDialog.innerHTML.length)) {
+                arrReturn[1] = elDialog;
+            }
+        }
+
+       
+        VARS.noChangeCounter++;
+        return arrReturn;
+
+    }
+
     function mp_isTheHouseDirty() {
         // -- check if the main column size has changed ...
         // -- if yes, do scanning.
@@ -6138,7 +6179,9 @@ const masterKeyWords = {
             }
 
             // -- aside's sponsored
-            nf_cleanTheConsoleTable('Sponsored');
+            if (VARS.Options.NF_SPONSORED) {
+                nf_cleanTheConsoleTable('Sponsored');
+            }
 
             // -- aside's suggestions
             if (VARS.Options.NF_SUGGESTIONS) {
@@ -6148,7 +6191,7 @@ const masterKeyWords = {
             // -- news feed stream ...
             const posts = nf_getCollectionOfPosts();
 
-            // console.info(log + 'mopUpTheNewsFeed(); posts:', posts);
+            // console.info(log + 'mopUpTheNewsFeed(); number of posts:', posts.length);
 
             for (const post of posts) {
 
@@ -6263,7 +6306,7 @@ const masterKeyWords = {
 
         // console.info(log+'mopUpTheGroupsFeed(), gfType:', VARS.gfType, '; hide an info box:', VARS.hideAnInfoBox);
 
-        const [mainColumn, elDialog] = isTheHouseDirty();
+        const [mainColumn, elDialog] = gf_isTheHouseDirty();
         if (mainColumn === null && elDialog === null) {
             return;
         }
@@ -6675,7 +6718,7 @@ const masterKeyWords = {
                 // -- sponsored items in "categories"
                 // -- two parts - heading + item
                 // -- nb: adguard base filter hides the heading, but not the item
-                const queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
+                const queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"], div:not([${postAtt}]) > object > a[href="/ads/about/?entry_product=ad_preferences"]`;
                 const headings = document.querySelectorAll(queryHeadings);
 
                 let queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
