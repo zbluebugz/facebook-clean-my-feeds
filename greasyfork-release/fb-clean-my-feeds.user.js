@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         FB - Clean my feeds
+// @name         FB - Clean my feeds (5.02)
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      5.01
+// @version      5.02
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://www.facebook.com/*
 // @match        https://web.facebook.com/*
@@ -26,6 +26,9 @@
         Note: I have not tested this in other content/ad-blockers.
 
 
+    v5.02 :: November 2024
+        Updated News Feed Sponsored detection rules
+
     v5.01 :: October 2024
         Changed the detect-changes-engine component
         Updated dialog-box
@@ -41,7 +44,7 @@
         Updated Group Feed's dection rule
         Updated Marketplace detection rules
         Updated Search posts detection rule
-        Updated News Feed's Sponsored posts detection rule 
+        Updated News Feed's Sponsored posts detection rule
         Added option to Disable looping videos in Reels
         Fix bug with showing/hiding the FB-CMF button
         Updated nf_isSuggested filter rules
@@ -327,10 +330,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'تمكين',
     MP_BLOCKED_ENABLED: 'تمكين',
     PP_BLOCKED_ENABLED: 'تمكين',
-    NF_BLOCKED_RE: 'التعبيرات العادية (RegExp)',	
-    GF_BLOCKED_RE: 'التعبيرات العادية (RegExp)',	
-    VF_BLOCKED_RE: 'التعبيرات العادية (RegExp)',	
-    MP_BLOCKED_RE: 'التعبيرات العادية (RegExp)',	
+    NF_BLOCKED_RE: 'التعبيرات العادية (RegExp)',
+    GF_BLOCKED_RE: 'التعبيرات العادية (RegExp)',
+    VF_BLOCKED_RE: 'التعبيرات العادية (RegExp)',
+    MP_BLOCKED_RE: 'التعبيرات العادية (RegExp)',
     PP_BLOCKED_RE: 'التعبيرات العادية (RegExp)',
     DLG_VERBOSITY: 'خيارات المشاركات المخفية',
     DLG_VERBOSITY_CAPTION: 'إظهار إشعار بعرض المقالات المخفية',
@@ -410,11 +413,11 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Активирано',
     MP_BLOCKED_ENABLED: 'Активирано',
     PP_BLOCKED_ENABLED: 'Активирано',
-    NF_BLOCKED_RE: 'Регулярни изрази (RegExp)',	
-    GF_BLOCKED_RE: 'Регулярни изрази (RegExp)',	
-    VF_BLOCKED_RE: 'Регулярни изрази (RegExp)',	
-    MP_BLOCKED_RE: 'Регулярни изрази (RegExp)',	
-    PP_BLOCKED_RE: 'Регулярни изрази (RegExp)',    
+    NF_BLOCKED_RE: 'Регулярни изрази (RegExp)',
+    GF_BLOCKED_RE: 'Регулярни изрази (RegExp)',
+    VF_BLOCKED_RE: 'Регулярни изрази (RegExp)',
+    MP_BLOCKED_RE: 'Регулярни изрази (RegExp)',
+    PP_BLOCKED_RE: 'Регулярни изрази (RegExp)',
     DLG_VERBOSITY: 'Опции за скрити публикации',
     DLG_VERBOSITY_CAPTION: 'Показване на етикет, ако публикацията е скрита',
     VERBOSITY_MESSAGE: ['няма етикет', 'Скрита публикация. Правило: ', ' скрити публикации', '7 скрити публикации ~ (само за Груповия поток)'],
@@ -493,10 +496,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Zapnuto',
     MP_BLOCKED_ENABLED: 'Zapnuto',
     PP_BLOCKED_ENABLED: 'Zapnuto',
-    NF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',	
-    GF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',	
-    VF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',	
-    MP_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',	
+    NF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
+    GF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
+    VF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
+    MP_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
     PP_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
     DLG_VERBOSITY: 'Možnosti skrytých příspěvků',
     DLG_VERBOSITY_CAPTION: 'Zobrazit popisek, pokud je příspěvek skrytý',
@@ -523,6 +526,7 @@ const masterKeyWords = {
     de: {
     LANGUAGE_DIRECTION: 'ltr',
     SPONSORED: 'Gesponsert',
+    SPONSORED_EXTRA: 'Anzeige',
     NF_TABLIST_STORIES_REELS_ROOMS: 'Listenfeld der Registerkarte "Stories | Reels | Rooms"',
     NF_STORIES: 'Stories',
     NF_SURVEY: 'Umfrage',
@@ -576,10 +580,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Ermöglichte',
     MP_BLOCKED_ENABLED: 'Ermöglichte',
     PP_BLOCKED_ENABLED: 'Ermöglichte',
-    NF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',	
-    GF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',	
-    VF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',	
-    MP_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',	
+    NF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
+    GF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
+    VF_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
+    MP_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
     PP_BLOCKED_RE: 'Reguläre Ausdrücke (RegExp)',
     DLG_VERBOSITY: 'Optionen für ausgeblendete Beiträge',
     DLG_VERBOSITY_CAPTION: 'Ein Label anzeigen, wenn ein Beitrag ausgeblendet ist',
@@ -659,10 +663,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Ενεργοποιημένο',
     MP_BLOCKED_ENABLED: 'Ενεργοποιημένο',
     PP_BLOCKED_ENABLED: 'Ενεργοποιημένο',
-    NF_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',	
-    GF_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',	
-    VF_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',	
-    MP_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',	
+    NF_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',
+    GF_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',
+    VF_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',
+    MP_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',
     PP_BLOCKED_RE: 'Κανονικές Εκφράσεις (RegExp)',
     DLG_VERBOSITY: 'Επιλογές για κρυφές αναρτήσεις',
     DLG_VERBOSITY_CAPTION: 'Εμφάνιση ετικέτας αν μια δημοσίευση είναι κρυμμένη',
@@ -742,10 +746,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Habilitadas',
     MP_BLOCKED_ENABLED: 'Habilitadas',
     PP_BLOCKED_ENABLED: 'Habilitadas',
-    NF_BLOCKED_RE: 'Expresiones regulares (RegExp)',	
-    GF_BLOCKED_RE: 'Expresiones regulares (RegExp)',	
-    VF_BLOCKED_RE: 'Expresiones regulares (RegExp)',	
-    MP_BLOCKED_RE: 'Expresiones regulares (RegExp)',	
+    NF_BLOCKED_RE: 'Expresiones regulares (RegExp)',
+    GF_BLOCKED_RE: 'Expresiones regulares (RegExp)',
+    VF_BLOCKED_RE: 'Expresiones regulares (RegExp)',
+    MP_BLOCKED_RE: 'Expresiones regulares (RegExp)',
     PP_BLOCKED_RE: 'Expresiones regulares (RegExp)',
     DLG_VERBOSITY: 'Opciones para publicaciones ocultas',
     DLG_VERBOSITY_CAPTION: 'Mostrar una etiqueta si una publicación está oculta',
@@ -825,10 +829,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Ota vaihtoehto käyttöön',
     MP_BLOCKED_ENABLED: 'Ota vaihtoehto käyttöön',
     PP_BLOCKED_ENABLED: 'Ota vaihtoehto käyttöön',
-    NF_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',	
-    GF_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',	
-    VF_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',	
-    MP_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',	
+    NF_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',
+    GF_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',
+    VF_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',
+    MP_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',
     PP_BLOCKED_RE: 'Säännölliset lausekkeet (RegExp)',
     DLG_VERBOSITY: 'Vaihtoehdot piilotetuille viesteille',
     DLG_VERBOSITY_CAPTION: 'Näytä merkki, jos artikkeli on piilotettu',
@@ -908,10 +912,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Activé',
     MP_BLOCKED_ENABLED: 'Activé',
     PP_BLOCKED_ENABLED: 'Activé',
-    NF_BLOCKED_RE: 'Expressions régulières (RegExp)',	
-    GF_BLOCKED_RE: 'Expressions régulières (RegExp)',	
+    NF_BLOCKED_RE: 'Expressions régulières (RegExp)',
+    GF_BLOCKED_RE: 'Expressions régulières (RegExp)',
     VF_BLOCKED_RE: 'Expressions régulières (RegExp)',
-    MP_BLOCKED_RE: 'Expressions régulières (RegExp)',	
+    MP_BLOCKED_RE: 'Expressions régulières (RegExp)',
     PP_BLOCKED_RE: 'Expressions régulières (RegExp)',
     DLG_VERBOSITY: 'Options pour les publications cachées',
     DLG_VERBOSITY_CAPTION: 'Afficher un libellé si une publication est masquée',
@@ -991,10 +995,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'מופעל',
     MP_BLOCKED_ENABLED: 'מופעל',
     PP_BLOCKED_ENABLED: 'מופעל',
-    NF_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',	
-    GF_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',	
-    VF_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',	
-    MP_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',	
+    NF_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',
+    GF_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',
+    VF_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',
+    MP_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',
     PP_BLOCKED_RE: 'ביטויים רגולריים (RegExp)',
     DLG_VERBOSITY: 'אפשרויות לפוסטים מוסתרים',
     DLG_VERBOSITY_CAPTION: 'הצג תוית אם מאמר מוסתר',
@@ -1074,10 +1078,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Diaktifkan',
     MP_BLOCKED_ENABLED: 'Diaktifkan',
     PP_BLOCKED_ENABLED: 'Diaktifkan',
-    NF_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',	
-    GF_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',	
-    VF_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',	
-    MP_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',	
+    NF_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',
+    GF_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',
+    VF_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',
+    MP_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',
     PP_BLOCKED_RE: 'Ekspresi Reguler (RegExp)',
     DLG_VERBOSITY: 'Opsi untuk Postingan Tersembunyi',
     DLG_VERBOSITY_CAPTION: 'Tampilkan label jika kiriman disembunyikan',
@@ -1157,10 +1161,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Abilita opzione',
     MP_BLOCKED_ENABLED: 'Abilita opzione',
     PP_BLOCKED_ENABLED: 'Abilita opzione',
-    NF_BLOCKED_RE: 'Espressioni regolari (RegExp)',	
-    GF_BLOCKED_RE: 'Espressioni regolari (RegExp)',	
-    VF_BLOCKED_RE: 'Espressioni regolari (RegExp)',	
-    MP_BLOCKED_RE: 'Espressioni regolari (RegExp)',	
+    NF_BLOCKED_RE: 'Espressioni regolari (RegExp)',
+    GF_BLOCKED_RE: 'Espressioni regolari (RegExp)',
+    VF_BLOCKED_RE: 'Espressioni regolari (RegExp)',
+    MP_BLOCKED_RE: 'Espressioni regolari (RegExp)',
     PP_BLOCKED_RE: 'Espressioni regolari (RegExp)',
     DLG_VERBOSITY: 'Opzioni per post nascosti',
     DLG_VERBOSITY_CAPTION: 'Mostrare un\'etichetta se un post è nascosto',
@@ -1240,11 +1244,11 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: '有効化',
     MP_BLOCKED_ENABLED: '有効化',
     PP_BLOCKED_ENABLED: '有効化',
-    NF_BLOCKED_RE: '正規表現 (RegExp)',	
-    GF_BLOCKED_RE: '正規表現 (RegExp)',	
-    VF_BLOCKED_RE: '正規表現 (RegExp)',	
-    MP_BLOCKED_RE: '正規表現 (RegExp)',	
-    PP_BLOCKED_RE: '正規表現 (RegExp)',    
+    NF_BLOCKED_RE: '正規表現 (RegExp)',
+    GF_BLOCKED_RE: '正規表現 (RegExp)',
+    VF_BLOCKED_RE: '正規表現 (RegExp)',
+    MP_BLOCKED_RE: '正規表現 (RegExp)',
+    PP_BLOCKED_RE: '正規表現 (RegExp)',
     DLG_VERBOSITY: '非表示投稿のオプション',
     DLG_VERBOSITY_CAPTION: '投稿が非表示の場合にラベルを表示する',
     VERBOSITY_MESSAGE: ['ラベルなし', '投稿を非表示にしました。 ルール： ', ' 件の投稿が非表示', '7件の投稿が非表示 ~ (グループフィードのみ)'],
@@ -1323,10 +1327,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Iespējots',
     MP_BLOCKED_ENABLED: 'Iespējots',
     PP_BLOCKED_ENABLED: 'Iespējots',
-    NF_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',	
-    GF_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',	
-    VF_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',	
-    MP_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',	
+    NF_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',
+    GF_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',
+    VF_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',
+    MP_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',
     PP_BLOCKED_RE: 'Regulārās izteiksmes (RegExp)',
     DLG_VERBOSITY: 'Slēpto ierakstu iespējas',
     DLG_VERBOSITY_CAPTION: 'Rādīt etiķeti, ja raksts ir paslēpts',
@@ -1406,10 +1410,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Ingeschakeld',
     MP_BLOCKED_ENABLED: 'Ingeschakeld',
     PP_BLOCKED_ENABLED: 'Ingeschakeld',
-    NF_BLOCKED_RE: 'Reguliere expressies (RegExp)',	
-    GF_BLOCKED_RE: 'Reguliere expressies (RegExp)',	
-    VF_BLOCKED_RE: 'Reguliere expressies (RegExp)',	
-    MP_BLOCKED_RE: 'Reguliere expressies (RegExp)',	
+    NF_BLOCKED_RE: 'Reguliere expressies (RegExp)',
+    GF_BLOCKED_RE: 'Reguliere expressies (RegExp)',
+    VF_BLOCKED_RE: 'Reguliere expressies (RegExp)',
+    MP_BLOCKED_RE: 'Reguliere expressies (RegExp)',
     PP_BLOCKED_RE: 'Reguliere expressies (RegExp)',
     DLG_VERBOSITY: 'Opties voor verborgen berichten',
     DLG_VERBOSITY_CAPTION: 'Toon een label als een artikel verborgen is',
@@ -1489,10 +1493,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Włączone',
     MP_BLOCKED_ENABLED: 'Włączone',
     PP_BLOCKED_ENABLED: 'Włączone',
-    NF_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',	
-    GF_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',	
-    VF_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',	
-    MP_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',	
+    NF_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',
+    GF_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',
+    VF_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',
+    MP_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',
     PP_BLOCKED_RE: 'Wyrażenia regularne (RegExp)',
     DLG_VERBOSITY: 'Opcje dla ukrytych postów',
     DLG_VERBOSITY_CAPTION: 'Pokaż etykietę, jeśli artykuł jest ukryty',
@@ -1572,10 +1576,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Habilidoso',
     MP_BLOCKED_ENABLED: 'Habilidoso',
     PP_BLOCKED_ENABLED: 'Habilidoso',
-    NF_BLOCKED_RE: 'Expressões regulares (RegExp)',	
-    GF_BLOCKED_RE: 'Expressões regulares (RegExp)',	
-    VF_BLOCKED_RE: 'Expressões regulares (RegExp)',	
-    MP_BLOCKED_RE: 'Expressões regulares (RegExp)',	
+    NF_BLOCKED_RE: 'Expressões regulares (RegExp)',
+    GF_BLOCKED_RE: 'Expressões regulares (RegExp)',
+    VF_BLOCKED_RE: 'Expressões regulares (RegExp)',
+    MP_BLOCKED_RE: 'Expressões regulares (RegExp)',
     PP_BLOCKED_RE: 'Expressões regulares (RegExp)',
     DLG_VERBOSITY: 'Opções para postagens ocultas',
     DLG_VERBOSITY_CAPTION: 'Mostrar um rótulo se uma postagem estiver oculta',
@@ -1655,10 +1659,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Включено',
     MP_BLOCKED_ENABLED: 'Включено',
     PP_BLOCKED_ENABLED: 'Включено',
-    NF_BLOCKED_RE: 'Регулярные выражения (RegExp)',	
-    GF_BLOCKED_RE: 'Регулярные выражения (RegExp)',	
-    VF_BLOCKED_RE: 'Регулярные выражения (RegExp)',	
-    MP_BLOCKED_RE: 'Регулярные выражения (RegExp)',	
+    NF_BLOCKED_RE: 'Регулярные выражения (RegExp)',
+    GF_BLOCKED_RE: 'Регулярные выражения (RegExp)',
+    VF_BLOCKED_RE: 'Регулярные выражения (RegExp)',
+    MP_BLOCKED_RE: 'Регулярные выражения (RegExp)',
     PP_BLOCKED_RE: 'Регулярные выражения (RegExp)',
     DLG_VERBOSITY: 'Настройки скрытых публикаций',
     DLG_VERBOSITY_CAPTION: 'Показать ярлык, если запись скрыта',
@@ -1737,10 +1741,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Etkinleştirildi',
     MP_BLOCKED_ENABLED: 'Etkinleştirildi',
     PP_BLOCKED_ENABLED: 'Etkinleştirildi',
-    NF_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',	
-    GF_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',	
-    VF_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',	
-    MP_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',	
+    NF_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',
+    GF_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',
+    VF_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',
+    MP_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',
     PP_BLOCKED_RE: 'Düzenli İfadeler (RegExp)',
     DLG_VERBOSITY: 'Gizli Gönderi Seçenekleri',
     DLG_VERBOSITY_CAPTION: 'Bir gönderi gizlenmişse bir etiket göster',
@@ -1820,10 +1824,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Увімкнено',
     MP_BLOCKED_ENABLED: 'Увімкнено',
     PP_BLOCKED_ENABLED: 'Увімкнено',
-    NF_BLOCKED_RE: 'Регулярні вирази (RegExp)',	
-    GF_BLOCKED_RE: 'Регулярні вирази (RegExp)',	
-    VF_BLOCKED_RE: 'Регулярні вирази (RegExp)',	
-    MP_BLOCKED_RE: 'Регулярні вирази (RegExp)',	
+    NF_BLOCKED_RE: 'Регулярні вирази (RegExp)',
+    GF_BLOCKED_RE: 'Регулярні вирази (RegExp)',
+    VF_BLOCKED_RE: 'Регулярні вирази (RegExp)',
+    MP_BLOCKED_RE: 'Регулярні вирази (RegExp)',
     PP_BLOCKED_RE: 'Регулярні вирази (RegExp)',
     DLG_VERBOSITY: 'Параметри прихованих дописів',
     DLG_VERBOSITY_CAPTION: 'Відображати мітку, якщо публікація прихована',
@@ -1903,10 +1907,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: 'Đã kích hoạt',
     MP_BLOCKED_ENABLED: 'Đã kích hoạt',
     PP_BLOCKED_ENABLED: 'Đã kích hoạt',
-    NF_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',	
-    GF_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',	
-    VF_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',	
-    MP_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',	
+    NF_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',
+    GF_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',
+    VF_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',
+    MP_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',
     PP_BLOCKED_RE: 'Biểu thức chính quy (RegExp)',
     DLG_VERBOSITY: 'Tùy chọn cho bài đăng ẩn',
     DLG_VERBOSITY_CAPTION: 'Hiển thị một nhãn nếu một bài đăng bị ẩn',
@@ -1986,10 +1990,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: '启用',
     MP_BLOCKED_ENABLED: '启用',
     PP_BLOCKED_ENABLED: '启用',
-    NF_BLOCKED_RE: '正则表达式 (RegExp)',	
-    GF_BLOCKED_RE: '正则表达式 (RegExp)',	
-    VF_BLOCKED_RE: '正则表达式 (RegExp)',	
-    MP_BLOCKED_RE: '正则表达式 (RegExp)',	
+    NF_BLOCKED_RE: '正则表达式 (RegExp)',
+    GF_BLOCKED_RE: '正则表达式 (RegExp)',
+    VF_BLOCKED_RE: '正则表达式 (RegExp)',
+    MP_BLOCKED_RE: '正则表达式 (RegExp)',
     PP_BLOCKED_RE: '正则表达式 (RegExp)',
     DLG_VERBOSITY: '隐藏帖子选项',
     DLG_VERBOSITY_CAPTION: '如果文章被隐藏，则显示标签',
@@ -2069,10 +2073,10 @@ const masterKeyWords = {
     VF_BLOCKED_ENABLED: '啟用',
     MP_BLOCKED_ENABLED: '啟用',
     PP_BLOCKED_ENABLED: '啟用',
-    NF_BLOCKED_RE: '正則表達式 (RegExp)',	
-    GF_BLOCKED_RE: '正則表達式 (RegExp)',	
-    VF_BLOCKED_RE: '正則表達式 (RegExp)',	
-    MP_BLOCKED_RE: '正則表達式 (RegExp)',	
+    NF_BLOCKED_RE: '正則表達式 (RegExp)',
+    GF_BLOCKED_RE: '正則表達式 (RegExp)',
+    VF_BLOCKED_RE: '正則表達式 (RegExp)',
+    MP_BLOCKED_RE: '正則表達式 (RegExp)',
     PP_BLOCKED_RE: '正則表達式 (RegExp)',
     DLG_VERBOSITY: '隱藏帖子選項',
     DLG_VERBOSITY_CAPTION: '如果文章被隱藏，則顯示標籤',
@@ -2341,6 +2345,12 @@ const masterKeyWords = {
     function buildDictionaries() {
         // -- Sponsored
         VARS.dictionarySponsored = Object.values(masterKeyWords.translations).map(translation => translation.SPONSORED);
+        VARS.dictionarySponsored = Object.values(masterKeyWords.translations).flatMap(translation => [
+            // -- the ?.toLowerCase() - optional chaining - used when there's a value.
+            translation.SPONSORED?.toLowerCase(),
+            translation.SPONSORED_EXTRA?.toLowerCase()
+        ]).filter(Boolean);
+
         // -- Reels and Short Videos
         VARS.dictionaryReelsAndShortVideos = Object.values(masterKeyWords.translations).map(translation => translation.NF_REELS_SHORT_VIDEOS);
     }
@@ -2420,10 +2430,10 @@ const masterKeyWords = {
 
 
         // -- **** fix fb's bug in not "hiding" certain elements properly when scrolling
-        // addToSS('body > div[style*="position: absolute"], ' +
-        //     'body > div[style*="position:absolute"]',
-        //     'top: -1000000px !important;'
-        // );
+        addToSS('body > div[style*="position: absolute"], ' +
+            'body > div[style*="position:absolute"]',
+            'top: -1000000px !important;'
+        );
 
         // -- hide the post
         // -- not using hidden post caption facility
@@ -4754,9 +4764,9 @@ const masterKeyWords = {
     }
 
 
-    function isSponsoredNF(post) {
-        // nb: this function has a low and late hit rate due to the span holding the sponsored text being loaded slowly.
-        //     but it is very accurate!
+    function nf_isSponsored_ShadowRoot1(post) {
+        // -- works for some languages - can be quite accurate.
+        // -- in the early start, this function may have a late hit rate - fb sometimes tad bit slow in loading <element> holding the sponsored text.
 
         // -- Find the canvas element within the specified hierarchy
         let hasSponsoredText = false;
@@ -4772,15 +4782,57 @@ const masterKeyWords = {
                 const elSpan = document.querySelector(`[id="${escapedId}"]`);
                 if (elSpan) {
                     // -- Check if the span's text content is 'Sponsored' (in user's language)
-                    //console.info(log + 'isSponsoredNF() : elSpan: ', elSpan.textContent, elSpan, elCanvas.parentElement, post);
-                    //hasSponsoredText = (elSpan.textContent.trim() === 'Sponsored');
-                    hasSponsoredText = (elSpan.textContent.trim() === VARS.Options.SPONSORED)
+                    let lcText = elSpan.textContent.trim().toLowerCase();
+                    hasSponsoredText = VARS.dictionarySponsored.includes(lcText);
+                    // console.info(log + 'nf_isSponsored_ShadowRoot1(); results : ' + hasSponsoredText + "; context: " + elSpan.textContent);
+                }
+            }
+        }
+        return hasSponsoredText;
+    }
+    function nf_isSponsored_ShadowRoot2(post) {
+        // -- works for some languages - can be quite accurate.
+        // -- in the early start, this function may have a late hit rate - fb sometimes tad bit slow in loading <element> holding the sponsored text.
+
+        // -- Find the use element within the specified hierarchy
+        let hasSponsoredText = false;
+        const elUse = post.querySelector('a > span > span[aria-labelledby] svg > use[*|href]');
+        if (elUse) {
+            // -- Get the "id" for find the element having the text we want to scan
+            const elementId = elUse.href.baseVal;
+            if (elementId !== "" && elementId.slice(0,1) === "#") {
+                // -- Find the text element having the elementId
+                const elText = document.querySelector(`${elementId}`);
+                if (elText) {
+                    // -- Check if the text's text content is 'Sponsored' (in user's language)
+                    let lcText = elText.textContent.trim().toLowerCase();
+                    hasSponsoredText = VARS.dictionarySponsored.includes(lcText);
+                    // console.info(log + 'nf_isSponsored_ShadowRoot2(); results : ' + hasSponsoredText + "; context: " + elText.textContent + "; lcText: " + lcText);
+                    // console.info(log + 'nf_isSponsored_ShadowRoot2(); dictionary : ' +VARS.dictionarySponsored );
                 }
             }
         }
         return hasSponsoredText;
     }
 
+    function nf_isSponsored_Plain(post) {
+        // -- works for some languages - more accurate than the other methods.
+        // -- simple structure.
+   
+        let hasSponsoredText = false;
+        const queryElement = 'div[id] > span > a[role="link"] > span';
+        const elSpans = post.querySelectorAll(queryElement);
+    
+        elSpans.forEach(elSpan => {
+            if (!elSpan.querySelector('svg')) {
+                const lcText = elSpan.textContent.trim().toLowerCase();
+                hasSponsoredText = VARS.dictionarySponsored.includes(lcText);
+                //console.info(log + 'nf_isSponsored_Plain(); results: ' + hasSponsoredText + "; context: " + elSpan.textContent);
+            }
+        });
+    
+        return hasSponsoredText;
+    }
 
     function isSponsored(post) {
         // Is it a sponsored post?
@@ -4790,14 +4842,24 @@ const masterKeyWords = {
         let isSponsoredPost = false;
 
         if (VARS.isNF) {
-            isSponsoredPost = isSponsoredNF(post);
+            // - try method #1 - content
+            isSponsoredPost = nf_isSponsored_Plain(post);
+            if (isSponsoredPost == false) {
+                // - try method #2 - shadow root
+                isSponsoredPost = nf_isSponsored_ShadowRoot1(post);
+                if (isSponsoredPost == false) {
+                    // - try method #3 - shadow root
+                    isSponsoredPost = nf_isSponsored_ShadowRoot2(post);
+                }
+            }
             // console.info(log + 'isSponsoredNF(); isSponsoredPost: ', isSponsoredPost, post);
         }
         if (isSponsoredPost === false) {
+            // - try method #4 - structure ... tricky to get the size right .. prone to some false-hits.
             const PARAM_FIND = '__cft__[0]=';
             // was 308 ... trying 309
-            const PARAM_MIN_SIZE = VARS.isSF ? 250 : VARS.isVF ? 299 : 309;
-
+            // const PARAM_MIN_SIZE = VARS.isSF ? 250 : VARS.isVF ? 299 : 309 ;
+            const PARAM_MIN_SIZE = VARS.isSF ? 250 : VARS.isVF ? 299 : 311 ; // 309? // 331?
 
             let elLinks = [];
             if (VARS.isNF || VARS.isGF) {
@@ -4835,7 +4897,7 @@ const masterKeyWords = {
                     if (pos >= 0) {
                         // console.info(log + "isSponsored(); testing: " + el.href.slice(pos).length, (el.href.slice(pos).length > PARAM_MIN_SIZE), post);
                         if (el.href.slice(pos).length >= PARAM_MIN_SIZE) {
-                            // console.info(log + "isSponsored(); sliced: " + el.href.slice(pos).length, el.href, post);
+                            // console.info(log + "isSponsored(); sliced: " + i + "; " + el.href.slice(pos).length, el.href, post);
                             // console.info(log + "isSponsored(); # links: " + elLinks.length, post);
                             isSponsoredPost = true;
                             break;
@@ -5346,7 +5408,7 @@ const masterKeyWords = {
         // -- hide an item if the descriptinis listed in the list of blocked description text
         // :: return <nothing>
 
-    
+
         const queries = [
             // -- October 2024 (fb changed code - personalised and non-personalised)
             // -- landing page listing
@@ -5355,7 +5417,7 @@ const masterKeyWords = {
             // -- category page listing
             `div[style]:not([${postAtt}]) > div > span > div > div > a[href*="/marketplace/item/"]`,
             `div[style]:not([${postAtt}]) > div > span > div > div > a[href*="/marketplace/np/item/"]`,
-   
+
             // -- March 2024 (fb changed code - personalised and non-personalised)
             // -- landing page listing
             `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`,
@@ -5898,7 +5960,7 @@ const masterKeyWords = {
     function isTheHouseDirty() {
         // -- check if the main column exists and has changed ...
         // -- check if dialog exists and has changed ...
-        // -- applies to news feed, 
+        // -- applies to news feed,
         // -- using a quick/crude method of testing if something changed - check size of innerHTML
         // -- (a more advanced, but slower method would be hashing)
         // :: return : array of two items
@@ -5986,7 +6048,7 @@ const masterKeyWords = {
             }
         }
 
-       
+
         VARS.noChangeCounter++;
         return arrReturn;
 
