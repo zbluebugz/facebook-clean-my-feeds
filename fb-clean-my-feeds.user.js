@@ -7232,10 +7232,21 @@ const masterKeyWords = {
     });
 
     // -- Start observing the target node for configured mutations
-    observer.observe(document.documentElement, {
-        attributes: true, // Observe changes to attributes
-        attributeFilter: ['class'] // Only observe changes to the 'class' attribute
-    });
+    function startObserving() {
+        observer.observe(document.documentElement, {
+            attributes: true, // Observe changes to attributes
+            attributeFilter: ['class'] // Only observe changes to the 'class' attribute
+        });
+    }
+
+    if (document.documentElement) {
+        startObserving();
+    } else {
+        var obs = new MutationObserver(function () {
+            if (document.documentElement) { obs.disconnect(); startObserving(); }
+        });
+        obs.observe(document, {childList: true});
+    }
 
     // setTimeout(startUp, 50);
     startUp();
