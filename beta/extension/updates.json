@@ -1,9 +1,0 @@
-{
-  "addons": {
-    "fb-clean-my-feeds@richardcivil.net": {
-      "updates": [
-       { "version": "4.12-beta" }
-      ]
-    }
-  }
-}
