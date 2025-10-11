@@ -2104,16 +2104,16 @@ const masterKeyWords = {
     SPONSORED: true,
     NF_TABLIST_STORIES_REELS_ROOMS: false,
     NF_STORIES: false,
-    NF_SURVEY: false,
+    NF_SURVEY: true,
     NF_PEOPLE_YOU_MAY_KNOW: false,
     NF_PAID_PARTNERSHIP: true,
     NF_SPONSORED_PAID: true,
-    NF_SUGGESTIONS: false,
-    NF_FOLLOW: false,
-    NF_PARTICIPATE: false,
+    NF_SUGGESTIONS: true,
+    NF_FOLLOW: true,
+    NF_PARTICIPATE: true,
     NF_REELS_SHORT_VIDEOS: false,
     NF_SHORT_REEL_VIDEO: false,
-    NF_EVENTS_YOU_MAY_LIKE: false,
+    NF_EVENTS_YOU_MAY_LIKE: true,
     NF_ANIMATED_GIFS_POSTS: false,
     NF_ANIMATED_GIFS_PAUSE: false,
     NF_SHARES: false,
@@ -2150,7 +2150,7 @@ const masterKeyWords = {
     VF_BLOCKED_RE: false,
     MP_BLOCKED_RE: false,
     PP_BLOCKED_RE: false,
-    DLG_VERBOSITY: '1',
+    DLG_VERBOSITY: '0',
     VERBOSITY_DEBUG: false,
     VERBOSITY_MESSAGE_BG_COLOUR: 'LightGrey',
     CMF_BTN_OPTION: '0',
@@ -2350,6 +2350,20 @@ const masterKeyWords = {
             translation.SPONSORED?.toLowerCase(),
             translation.SPONSORED_EXTRA?.toLowerCase()
         ]).filter(Boolean);
+
+        // -- Follow
+        VARS.dictionaryFollow = Array.from(new Set(
+            Object.values(masterKeyWords.translations)
+                .map(translation => translation.NF_FOLLOW)
+                .filter(keyword => typeof keyword === 'string' && keyword.trim() !== '')
+                .map(keyword => {
+                    try {
+                        return keyword.normalize('NFKC').toLowerCase();
+                    } catch (err) {
+                        return keyword.toLowerCase();
+                    }
+                })
+        ));
 
         // -- Reels and Short Videos
         VARS.dictionaryReelsAndShortVideos = Object.values(masterKeyWords.translations).map(translation => translation.NF_REELS_SHORT_VIDEOS);
@@ -5100,8 +5114,44 @@ const masterKeyWords = {
         //const queryFollow = ':scope h4[id] > span > div > span, :scope h4[id] > span > span > div > span, :scope h4[id] > div > span > span[class] > div[class] > span[class]';
         const queryFollow = [':scope h4[id] > span > div > span', ':scope h4[id] > span > span > div > span', ':scope h4[id] > div > span > span[class] > div[class] > span[class]'];
         const elementsFollow = querySelectorAllNoChildren(post, queryFollow, 0, false);
-        // if (elementsFollow.length > 0) console.info(log + "nf_isFollow(post); elementsFollow:", elementsFollow, post);
-        return (elementsFollow.length !== 1) ? '' : KeyWords.NF_FOLLOW;
+        if (elementsFollow.length === 1) {
+            return KeyWords.NF_FOLLOW;
+        }
+
+        if (Array.isArray(VARS.dictionaryFollow) && VARS.dictionaryFollow.length > 0) {
+            const normaliseToLower = (value) => {
+                if (!value || typeof value !== 'string') {
+                    return '';
+                }
+                try {
+                    return value.normalize('NFKC').toLowerCase();
+                }
+                catch (err) {
+                    return value.toLowerCase();
+                }
+            };
+
+            const hasFollowKeyword = (value) => {
+                const normalised = normaliseToLower(value);
+                return normalised !== '' && VARS.dictionaryFollow.some(keyword => normalised.includes(keyword));
+            };
+
+            const followButton = Array.from(post.querySelectorAll('a[role="button"], div[role="button"], span[role="button"]'))
+                .find(btn => hasFollowKeyword(btn?.getAttribute?.('aria-label')) || hasFollowKeyword(btn?.textContent));
+            if (followButton) {
+                return KeyWords.NF_FOLLOW;
+            }
+
+            const blocks = post.querySelectorAll(nf_getBlocksQuery(post));
+            if (blocks.length > 0) {
+                const headerText = normaliseToLower(scanTreeForText(blocks[0]).join(' '));
+                if (headerText !== '' && VARS.dictionaryFollow.some(keyword => headerText.includes(keyword))) {
+                    return KeyWords.NF_FOLLOW;
+                }
+            }
+        }
+
+        return '';
     }
 
     function nf_isParticipate(post) {
@@ -5920,19 +5970,24 @@ const masterKeyWords = {
             // -- grab child div in each post having a class.
             // -- nb: <details> is injected in between some <div>s - effectively kicking it out of the collection.
 
-            // -- mostly English users:
-            // -- FB's October 2024 update #2:
+            // -- current feed structure (October 2025):
+            'h3[dir="auto"] ~ div div[aria-posinset]',
+            'h2[dir="auto"] ~ div div[aria-posinset]',
+            'h3[dir="auto"] ~ div div[role="article"]',
+            'h2[dir="auto"] ~ div div[role="article"]',
+            'div[role="main"] div[aria-posinset]',
+            'div[role="main"] div[role="article"]',
+            'div[role="main"] div[data-virtualized] div[role="article"]',
+
+            // -- legacy fallbacks:
             'h3[dir="auto"] ~ div:not([class]) > div > div > div > div > div',
             'h2[dir="auto"] ~ div:not([class]) > div > div > div > div > div',
+            'div[role="feed"] > h3[dir="auto"] ~ div:not([class]) > div[data-pagelet*="FeedUnit_"] > div > div > div > div',
+            'div[role="feed"] > h2[dir="auto"] ~ div:not([class]) > div[data-pagelet*="FeedUnit_"] > div > div > div > div',
 
             // 'h3[dir="auto"] ~ div:not([class]) > div.x1lliihq > div > div > div > div',
             // 'h2[dir="auto"] ~ div:not([class]) > div.x1lliihq > div > div > div > div',
 
-            // -- mostly non-English users:
-            'div[role="feed"] > h3[dir="auto"] ~ div:not([class]) > div[data-pagelet*="FeedUnit_"] > div > div > div > div',
-            'div[role="feed"] > h2[dir="auto"] ~ div:not([class]) > div[data-pagelet*="FeedUnit_"] > div > div > div > div',
-
-            // -- FB's October 2024 update #1:
             // 'h3[dir="auto"] ~ div:not([class]) > div[class] > div > div > div > div',
             // 'h2[dir="auto"] ~ div:not([class]) > div[class] > div > div > div > div',
 
