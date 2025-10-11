@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         FB - Clean my feeds (5.02)
+// @name         FB - Clean my feeds (5.03)
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      5.02
-// @author       zbluebugz (https://github.com/zbluebugz/)
+// @version      5.03
+// @author       Founder - zbluebugz (https://github.com/zbluebugz/)
+// @author       UI polish - Quoc Viet Trinh (https://github.com/trinhquocviet/)
+// @author       Filters maintenance - Artificial Sweetener (https://github.com/Artificial-Sweetener/)
 // @match        https://www.facebook.com/*
 // @match        https://web.facebook.com/*
 // @match        https://facebook.com/*
@@ -12,7 +14,7 @@
 // @grant        GM.registerMenuCommand
 // @grant        GM.info
 // @grant        unsafeWindow
-// @license      MIT; https://opensource.org/licenses/MIT
+// @license      GPL-3.0-only; https://www.gnu.org/licenses/gpl-3.0.html
 // @icon         data:image/png;base64,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
 // @icon64       data:image/png;base64,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
 // @run-at       document-start
@@ -25,6 +27,11 @@
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
 
+
+    v5.03 :: October 2025
+        Improved follow filtering defaults and detection
+        Updated default hide options and feed selectors
+        Updated metadata (authors, license)
 
     v5.02 :: November 2024
         Updated News Feed Sponsored detection rules
@@ -2279,6 +2286,8 @@ const masterKeyWords = {
 
         // toggle dialog button (visible if is a Feed page)
         btnToggleEl: null,
+        // - icon close / times
+        iconClose: '<svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M15.543 3.043a1 1 0 1 1 1.414 1.414L11.414 10l5.543 5.542a1 1 0 0 1-1.414 1.415L10 11.414l-5.543 5.543a1 1 0 0 1-1.414-1.415L8.586 10 3.043 4.457a1 1 0 1 1 1.414-1.414L10 8.586z"/></svg>',
         // - script's logo
         logoHTML: '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32"><g id="Layer" fill="currentColor"><path id="Layer" fill-rule="evenodd" class="s0" d="m51 3.2c0.7 1.1 0.7 1-1.6 9.2-1.4 5-2.1 7.4-2.3 7.6-0.1 0.1-0.3 0.2-0.6 0.2-0.4 0-0.9-0.4-0.9-0.7 0-0.1 1-3.5 2-7.4 1.2-4 2-7.3 2-7.5 0-0.4-0.6-1-0.9-1-0.2 0-0.5 0.2-0.7 0.3-0.3 0.3-0.7 1.8-5.5 19.2l-5.3 18.9 0.9 0.5c0.5 0.3 0.9 0.5 0.9 0.5 0 0 1.3-4.4 2.8-9.8 1.5-5.3 2.8-10 2.8-10.3 0.2-0.5 0.3-0.7 0.6-0.9 0.3-0.1 0.4-0.1 0.8 0 0.2 0.2 0.4 0.3 0.4 0.5 0.1 0.2-0.4 2.2-1.5 6.1-0.9 3.2-1.6 5.8-1.6 5.9 0 0 0.5 0.1 1.3 0.1 1.9 0 2.7 0.4 3.2 1.5 0.3 0.6 0.3 2.7 0 3.4-0.3 0.9-1.2 1.4-2 1.4-0.3 0-0.5 0.1-0.5 0.1 0 0.2-2.3 20.2-2.3 20.4-0.2 0.8 0.7 0.7-14.1 0.7-15.3 0-14.3 0.1-15.3-1-0.8-0.8-1.1-1.5-1-2.9 0.2-3.6 2.7-6.7 6.3-7.8 0.4-0.2 0.9-0.3 1-0.3 0.6 0 0.6 0.1 0.1-4.5-0.3-2.4-0.5-4.4-0.5-4.5-0.1-0.1-0.3-0.1-0.7-0.2-0.6 0-1.1-0.3-1.6-1-0.3-0.4-0.3-0.5-0.4-1.8 0-1.7 0.1-2.1 0.6-2.7 0.7-0.6 1-0.7 2.5-0.8h1.3v-2.9c0-3.1 0-3.4 0.6-3.6 0.2-0.1 2.4-0.1 7.1-0.1 6.5 0.1 6.9 0.1 7.1 0.3 0.2 0.2 0.2 0.3 0.2 3.3v3h0.6l0.6-0.1 4.3-15.3c2.4-8.5 4.4-15.6 4.5-15.9 0.4-0.6 0.9-1 1.5-1.3 1.2-0.4 2.6 0.1 3.3 1.2zm-26.6 26.6h-0.7c-0.3 0-0.6 0-0.7 0 0 0.1-0.1 1.2-0.1 2.5v2.3h1.5zm3.4 0h-0.7c-0.5 0-0.9 0-0.9 0.1 0 0-0.1 1.1-0.1 2.4v2.3h1.8v-2.4zm3.4 0h-1.6v4.8h1.6zm3.2 0h-1.3v4.8h1.3zm-6.4 6.6c-7.9 0-9 0-9.2 0.2-0.3 0.2-0.3 0.3-0.3 1.3 0 0.7 0.1 1.1 0.2 1.2 0.1 0.1 2.3 0.1 7.3 0.1 6.9 0.1 7.2 0.1 7.5 0.3 0.3 0.3 0.3 1 0 1.3-0.2 0.2-0.8 0.2-6.3 0.2h-6l0.1 0.5c0 0.3 0.2 2.3 0.5 4.5l0.4 4h0.4c0.6 0 1.5-0.3 2-0.7 0.3-0.3 0.7-0.8 0.9-1.3 0.6-1.1 1.3-2 2.1-2.7 1.1-0.9 2.8-1.5 4-1.5h0.6l0.7-1.1c0.6-1 0.8-1.2 1.3-1.5 0.4-0.2 0.6-0.2 0.9-0.2 0.4 0.1 0.5 0.1 0.5-0.1 0.1-0.1 0.3-1.1 0.6-2.1 0.3-1.1 0.6-2.1 0.6-2.2 0.1-0.2-0.4-0.2-8.8-0.2zm16.2 0h-1.5l-0.4 1.3c-0.2 0.8-0.4 1.4-0.4 1.5 0 0 0.9 0 2 0 2.3 0 2.3 0.1 2.3-1.4 0-0.9-0.1-1-0.3-1.2-0.2-0.2-0.6-0.2-1.7-0.2zm-2.8 4.7c0 0.1-0.2 0.8-0.5 1.6-0.2 1-0.3 1.4-0.2 1.5 0 0 0.3 0.2 0.6 0.4 0.4 0.4 0.4 0.5 0.5 1.2 0 0.6 0 0.7-0.8 2-0.7 1.1-0.8 1.3-1.3 1.6l-0.5 0.2v1.8c0 1.3-0.1 2-0.2 2.5-0.1 0.4-0.2 0.8-0.2 0.8 0 0 0.7 0.1 1.5 0.1 1.2 0 1.6-0.1 1.6-0.2 0-0.1 0.4-3.1 0.8-6.8 0.4-3.6 0.7-6.7 0.7-6.7-0.1-0.2-1.9-0.1-2 0zm-6.3 1.8c-0.2-0.1-0.3 0-0.9 1-0.2 0.4-0.4 0.8-0.3 0.8 0 0.1 1.1 0.7 2.3 1.5 1.3 0.7 2.4 1.4 2.5 1.5 0.3 0.1 0.3 0.1 0.8-0.8 0.3-0.6 0.6-1 0.5-1 0 0-1.1-0.7-2.4-1.5-1.3-0.8-2.4-1.4-2.5-1.5zm-4.5 2.8c-1.6 0.5-2.7 1.5-3.5 3.1-0.6 1.2-1.3 2-2.4 2.5-0.9 0.4-0.9 0.4-2.9 0.5-2.8 0.1-3.9 0.6-5.4 2.1-0.8 0.8-1 1.1-1.4 1.9-1 2.2-0.9 4 0.2 4.4 0.7 0.3 0.8 0.3 1-0.5 0.8-2.4 2.7-4.5 5.1-5.5 1.1-0.4 1.6-0.5 3.2-0.6 2-0.2 2.8-0.7 3.4-2.2 0.3-0.5 0.6-1.2 0.8-1.6 0.8-1.3 2.4-2.5 3.8-2.9 0.4-0.1 0.8-0.2 0.8-0.2q0.2-0.1-0.3-0.4c-0.3-0.2-0.6-0.4-0.6-0.5-0.1-0.3-1.1-0.3-1.8-0.1zm3.2 2.7c-0.9 0.2-2 0.8-2.8 1.5-0.7 0.6-0.8 0.9-1.6 2.6-0.7 1.5-2.2 2.5-3.9 2.7-3.4 0.4-4.3 0.8-5.8 2.2-0.7 0.8-1 1.2-1.4 1.9l-0.5 1 0.9 0.1c0.9 0 0.9 0 1.2-0.4q2.7-3.2 7.3-3.2c2.2 0 2.9-0.5 3.9-2.3 0.3-0.5 0.7-1.2 0.9-1.5 1-1.2 3-2.3 4.6-2.4l0.8-0.1-0.1-0.5c-0.1-0.8-0.3-1.2-0.9-1.4-0.7-0.2-1.9-0.3-2.6-0.2zm3.6 3.9h-0.4c-0.5 0-1.6 0.3-2.3 0.7-0.7 0.5-1.6 1.5-2.2 2.6-1.1 2.1-2.5 2.9-5.2 2.9-0.6 0-1.6 0.1-2 0.2-1 0.2-2.3 0.8-2.9 1.3l-0.4 0.4h4.1c4.6-0.1 4.7-0.1 6.5-1 0.9-0.5 1.3-0.7 2.2-1.6 1.4-1.4 2.2-3 2.5-4.9zm4.3 4.2h-1.9-1.8l-0.5 0.8c-0.6 0.9-1.5 1.9-2.4 2.6l-0.6 0.5h3.4c2.6 0 3.4 0 3.4-0.1 0-0.1 0.1-1 0.2-2z"/></g></svg>',
         // - new window icon
@@ -2539,26 +2548,18 @@ const masterKeyWords = {
 
         // - dailog box CSS
         // --- dialog box; position + flex
-        let bColour = (VARS.Options.CMF_BORDER_COLOUR === '') ? masterKeyWords.defaults.CMF_BORDER_COLOUR : VARS.Options.CMF_BORDER_COLOUR;
-        let tColour = 'var(--primary-text)';
+        const userBorderColour = VARS.Options.CMF_BORDER_COLOUR || '';
+        const defaultBorderColour = masterKeyWords.defaults.CMF_BORDER_COLOUR || '';
+        const dialogBorderColour = (userBorderColour && userBorderColour !== defaultBorderColour) ? userBorderColour : 'var(--divider)';
+        const tColour = 'var(--primary-text)';
         // - left / right done in fn addExtraCSS()
         addToSS(
             '.fb-cmf ',
             'position:fixed; top:0.15rem; bottom:0.15rem; display:flex; flex-direction:column; width: 100%; max-width:30rem; padding:0 1rem; z-index:5;' +
-            `border:2px solid ${bColour}; border-radius:1rem; opacity:0; visibility:hidden; color:${tColour};`
+            'box-shadow: 0 12px 28px 0 var(--shadow-2), 0 2px 4px 0 var(--shadow-1), inset 0 0 0 1px var(--shadow-inset);' +
+            'border:1px solid ' + dialogBorderColour + '; border-radius:0.5rem; opacity:0; visibility:hidden; color:' + tColour + ';'
         );
-        // - dialog's background color
-        if (VARS.isDarkMode) {
-            addToSS('.fb-cmf', 'background-color:var(--web-wash);');
-        }
-        else {
-            addToSS('.fb-cmf', 'background-color:#fefefa;');
-        }
-
-        // addToSS('.__fb-light-mode .fb-cmf', 'background-color:#fefefa;');
-        // addToSS('.__fb-dark-mode .fb-cmf', 'background-color:var(--web-wash);');
-        // addToSS('.fb-cmf', 'background-color:floralwhite;'); // -- fall back colour.
-        // addToSS('.fb-cmf', 'background-color:var(--web-wash);'); // -- fall back colour.
+        addToSS('.fb-cmf', 'background-color: var(--card-background);');
 
         addToSS(
             '.fb-cmf header',
@@ -2602,13 +2603,21 @@ const masterKeyWords = {
         );
         addToSS(
             '.fb-cmf header .fb-cmf-close button',
-            'width:1.75rem; height:1.5rem; font-family: monospace;'
+            'width: 2.25rem; height: 2.25rem; ' +
+            'transition-property: color, fill, stroke; transition-timing-function: var(--fds-soft); transition-duration: var(--fds-fast);' +
+            'cursor: pointer; background-color: transparent;' +
+            'border-radius: 50%; border: none;' +
+            'color: var(--secondary-icon);'
+        );
+        addToSS(
+            '.fb-cmf header .fb-cmf-close button:hover',
+            'background-color: var(--hover-overlay);'
         );
 
         // -- content
         addToSS(
             '.fb-cmf div.content',
-            `flex:1; overflow: hidden scroll; border:2px double ${bColour}; border-radius:0.5rem; color: var(--primary-text);`
+            'flex:1; overflow: hidden auto; border:1px solid ' + dialogBorderColour + '; border-radius:0.5rem; color: var(--primary-text);'
         );
         addToSS(
             '.fb-cmf fieldset',
@@ -2636,7 +2645,7 @@ const masterKeyWords = {
         addToSS(
             '.fb-cmf fieldset.visible,' +
             '.fb-cmf fieldset.visible legend ',
-            `border-color: ${bColour};`
+            'border-color: ' + dialogBorderColour + ';'
         );
         addToSS(
             '.fb-cmf fieldset.hidden,' +
@@ -2788,7 +2797,7 @@ const masterKeyWords = {
             );
             // - btn - basic styling.
             addToSS('.fb-cmf-toggle', 'border-radius:0.3rem;');
-            addToSS('.fb-cmf-toggle svg', 'height:32px; width:32px;');
+            addToSS('.fb-cmf-toggle svg', 'height: 95%; aspect-ratio : 1 / 1;');
             addToSS('.fb-cmf-toggle:hover', 'cursor:pointer;');
             // - dialog box's display
             addToSS(`.fb-cmf-toggle[${VARS.showAtt}]`, 'display:block;');
@@ -2806,6 +2815,22 @@ const masterKeyWords = {
             '.fb-cmf',
             styles +
             'transition:transform .45s ease, opacity .25s ease, visibility 1s ease;'
+        );
+        addToSS(
+            'div#fbcmf footer > button',
+            'font-family: inherit; cursor: pointer;' +
+            'height: var(--button-height-medium); padding: 0 var(--button-padding-horizontal-medium);' +
+            'border: none; border-radius: var(--button-corner-radius);' +
+            'background-color: var(--secondary-button-background);' +
+            '-webkit-transition: background-color 0.2s linear; transition: background-color 0.2s linear;' +
+            'font-size: .9375rem; font-weight: 600;' +
+            'color: var(--secondary-button-text);'
+        );
+        addToSS(
+            '#fbcmf footer > button:hover',
+            'font-family: inherit;' +
+            'background-color: var(--primary-button-background);' +
+            'color: var(--primary-button-text);'
         );
         if (VARS.tempStyleSheetCode.length > 0) {
             elStylesheet.appendChild(document.createTextNode(VARS.tempStyleSheetCode));
@@ -3424,7 +3449,11 @@ const masterKeyWords = {
                 hdr3 = document.createElement('div');
                 hdr3.className = 'fb-cmf-close';
                 btn = document.createElement('button');
-                btn.textContent = 'X';
+                btn.type = 'button';
+                btn.innerHTML = VARS.iconClose;
+                const closeLabel = Array.isArray(KeyWords.DLG_BUTTONS) ? KeyWords.DLG_BUTTONS[1] : 'Close';
+                btn.setAttribute('aria-label', closeLabel);
+                btn.title = closeLabel;
                 btn.addEventListener('click', toggleDialog, false);
                 hdr3.appendChild(btn);
 
@@ -3758,40 +3787,35 @@ const masterKeyWords = {
 
                 // -- Actions (buttons) + status
                 footer = document.createElement('footer');
-                // footer.classList.add('buttons');
-                btn = document.createElement('button');
-                btn.textContent = KeyWords.DLG_BUTTONS[0]; // save
-                btn.setAttribute('id', 'BTNSave');
-                btn.addEventListener('click', saveUserOptions, false);
-                footer.appendChild(btn);
-                btn = document.createElement('button');
-                btn.textContent = KeyWords.DLG_BUTTONS[1]; // close
-                btn.setAttribute('id', 'BTNClose');
-                btn.addEventListener('click', toggleDialog, false);
-                footer.appendChild(btn);
-                btn = document.createElement('button');
-                btn.textContent = KeyWords.DLG_BUTTONS[2]; // export
-                btn.setAttribute('id', 'BTNExport');
-                btn.addEventListener('click', exportUserOptions, false);
-                footer.appendChild(btn);
-                btn = document.createElement('button');
-                btn.textContent = KeyWords.DLG_BUTTONS[3]; // import
-                btn.setAttribute('id', 'BTNImport');
-                footer.appendChild(btn);
-                btn = document.createElement('button');
-                btn.textContent = KeyWords.DLG_BUTTONS[4]; // reset
-                btn.setAttribute('id', 'BTNReset');
-                btn.addEventListener('click', resetUserOptions, false);
-                footer.appendChild(btn);
+
+                const buttonDefinitions = [
+                    { id: 'BTNSave', text: KeyWords.DLG_BUTTONS[0], handler: saveUserOptions },
+                    { id: 'BTNExport', text: KeyWords.DLG_BUTTONS[2], handler: exportUserOptions },
+                    { id: 'BTNImport', text: KeyWords.DLG_BUTTONS[3], handler: null },
+                    { id: 'BTNReset', text: KeyWords.DLG_BUTTONS[4], handler: resetUserOptions }
+                ];
+
+                buttonDefinitions.forEach(def => {
+                    const buttonEl = document.createElement('button');
+                    buttonEl.type = 'button';
+                    buttonEl.setAttribute('id', def.id);
+                    buttonEl.textContent = def.text;
+                    if (typeof def.handler === 'function') {
+                        buttonEl.addEventListener('click', def.handler, false);
+                    }
+                    footer.appendChild(buttonEl);
+                });
+
                 // -- file input field is hidden, but triggered by the Import button.
-                let fileImport = document.createElement('input');
+                const fileImport = document.createElement('input');
                 fileImport.setAttribute('type', 'file');
-                fileImport.setAttribute('id', `FI${postAtt}`);
+                fileImport.setAttribute('id', 'FI' + postAtt);
                 fileImport.classList.add('fileInput');
                 footer.appendChild(fileImport);
                 // -- save/export/import/reset status/results
                 div = document.createElement('div');
                 div.classList.add('fileResults');
+                div.innerHTML = '&nbsp;';
                 footer.appendChild(div);
 
                 dlg.appendChild(footer);
@@ -3799,11 +3823,10 @@ const masterKeyWords = {
                 document.body.appendChild(dlg);
 
                 // -- add event listeners to the import button and file input field
-                let fileInput = document.getElementById(`FI${postAtt}`);
+                const fileInput = document.getElementById('FI' + postAtt);
                 fileInput.addEventListener('change', importUserOptions, false);
-                // -- make the btn Import trigger file input ...
-                let btnImport = document.getElementById('BTNImport');
-                btnImport.addEventListener('click', function () {
+                const btnImport = document.getElementById('BTNImport');
+                btnImport.addEventListener('click', () => {
                     fileInput.click();
                 }, false);
             }
@@ -3812,8 +3835,6 @@ const masterKeyWords = {
                 const footer = dlg.querySelector('footer');
                 let btn = footer.querySelector('#BTNSave');
                 btn.textContent = KeyWords.DLG_BUTTONS[0];
-                btn = footer.querySelector('#BTNClose');
-                btn.textContent = KeyWords.DLG_BUTTONS[1];
                 btn = footer.querySelector('#BTNExport');
                 btn.textContent = KeyWords.DLG_BUTTONS[2];
                 btn = footer.querySelector('#BTNImport');
