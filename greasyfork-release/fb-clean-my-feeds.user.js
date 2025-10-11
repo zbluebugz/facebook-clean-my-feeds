@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         FB - Clean my feeds (5.03)
+// @name         FB - Clean my feeds (5.04)
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      5.03
+// @version      5.04
 // @author       Founder - zbluebugz (https://github.com/zbluebugz/)
 // @author       UI polish - Quoc Viet Trinh (https://github.com/trinhquocviet/)
 // @author       Filters maintenance - Artificial Sweetener (https://github.com/Artificial-Sweetener/)
@@ -27,6 +27,9 @@
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
 
+
+    v5.04 :: October 2025
+        Fixed hidden post gaps by fully collapsing hidden containers
 
     v5.03 :: October 2025
         Improved follow filtering defaults and detection
@@ -2462,7 +2465,7 @@ const masterKeyWords = {
         // -- not using hidden post caption facility
         addToSS(
             `div[${VARS.hideAtt}]`,
-            'max-height: 0; overflow: hidden; margin-bottom:0 !important;'
+            'display:none !important; max-height: 0 !important; height: 0 !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; overflow: hidden !important; opacity: 0 !important; pointer-events: none !important;'
         );
 
         // -- reveal the post
@@ -2473,7 +2476,7 @@ const masterKeyWords = {
             `details[${postAtt}][open] > div, ` +
             `details[${postAtt}][open] > span > div, ` + // -- usually aside components
             `div[${VARS.showAtt}]:not([id="fbcmf"])`,
-            'max-height: 10000px; overflow: auto; margin-bottom:1rem !important; ' +
+            'display:block !important; height: auto !important; min-height: auto !important; max-height: 10000px; overflow: auto; margin-bottom:1rem !important; opacity: 1 !important; pointer-events: auto !important; ' +
             `border:3px dotted ${VARS.Options.CMF_BORDER_COLOUR} !important; border-radius:8px; padding:0.2rem 0.1rem 0.1rem 0.1rem;` // 4px
         );
 
