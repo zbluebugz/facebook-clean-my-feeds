@@ -30,11 +30,13 @@
 
     v5.04 :: October 2025
         Fixed hidden post gaps by fully collapsing hidden containers
+        Updated toggle button styling to match Simplified UI branch
 
     v5.03 :: October 2025
         Improved follow filtering defaults and detection
         Updated default hide options and feed selectors
         Updated metadata (authors, license)
+		Pulled in menu styling from Simplified UI branch
 
     v5.02 :: November 2024
         Updated News Feed Sponsored detection rules
@@ -2791,7 +2793,9 @@ const masterKeyWords = {
             // - cmfBtnLocation === "0" : bottom left
             // - has the buttons running down the side of the page (May 2022 ->).
             // styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none;';
-            styles = 'position:fixed; bottom:4.25rem; left:1.1rem; display:none; z-index: 999;';
+            styles = 'position: fixed; bottom: 1rem; left: 1rem; display:none; z-index: 999;'; // position
+            styles += 'background: var(--secondary-button-background-floating); padding: 0.5rem; width: 3rem; height: 3rem; border: 0; border-radius: 1.5rem;'; // styles
+            styles += 'box-shadow: 0 2px 4px var(--shadow-1), 0 12px 28px var(--shadow-2);'; // drop shadow
         }
         if (styles.length > 0) {
             addToSS(
@@ -2799,7 +2803,7 @@ const masterKeyWords = {
                 styles
             );
             // - btn - basic styling.
-            addToSS('.fb-cmf-toggle', 'border-radius:0.3rem;');
+            // addToSS('.fb-cmf-toggle', 'border-radius:0.3rem;');
             addToSS('.fb-cmf-toggle svg', 'height: 95%; aspect-ratio : 1 / 1;');
             addToSS('.fb-cmf-toggle:hover', 'cursor:pointer;');
             // - dialog box's display
