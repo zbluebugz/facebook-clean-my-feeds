@@ -7,6 +7,14 @@ Originally built by **[zbluebugz](https://github.com/zbluebugz)** and battle-tes
 
 Thank you to **[trinhquocviet](https://github.com/trinhquocviet)** for their [simplified_ui branch](https://github.com/trinhquocviet/facebook-clean-my-feeds/tree/simplified_ui), which has been merged here.
 
+## Installation
+
+1. Install a userscript manager such as **[Violentmonkey](https://violentmonkey.github.io/)**, **[Tampermonkey](https://www.tampermonkey.net/)**, or **[FireMonkey](https://addons.mozilla.org/en-US/firefox/addon/firemonkey/)**.
+2. Add the script:
+   - From this repo: open [`fb-clean-my-feeds.user.js`](https://raw.githubusercontent.com/Artificial-Sweetener/facebook-clean-my-feeds/main/fb-clean-my-feeds.user.js) and let your userscript manager import it.
+   - Todo: Publish to GreasyFork
+3. Reload Facebook. The mop icon appears bottom-left by default. You can set it to appear in the top-right or hide it completely.
+
 ## What it does
 
 ### Kill the Sponsored Sludge
@@ -28,14 +36,6 @@ Thank you to **[trinhquocviet](https://github.com/trinhquocviet)** for their [si
 ### Polished Controls
 - A floating toggle button with the simplified-ui styling updates from trinhquocviet's branch.
 - Dialog rewritten for clarity, with translated labels and dark-mode friendly theming. All configuration happens in one place, no menu maze.
-
-## Installation
-
-1. Install a userscript manager such as **[Violentmonkey](https://violentmonkey.github.io/)**, **[Tampermonkey](https://www.tampermonkey.net/)**, or **[FireMonkey](https://addons.mozilla.org/en-US/firefox/addon/firemonkey/)**.
-2. Add the script:
-   - From this repo: open [`fb-clean-my-feeds.user.js`](https://raw.githubusercontent.com/Artificial-Sweetener/facebook-clean-my-feeds/main/fb-clean-my-feeds.user.js) and let your userscript manager import it.
-   - Todo: Publish to GreasyFork
-3. Reload Facebook. The mop icon appears bottom-left by default. You can set it to appear in the top-right or hide it completely.
 
 ## Using the Control Panel
 
