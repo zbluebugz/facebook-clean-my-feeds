@@ -1,13 +1,13 @@
 # FB - Clean My Feeds
 
 
-You should be in control of what you see online, but Facebook throws all kinds of garbage on top of updates from your friends and pages you care about. "FB - Clean My Feeds" is the mop bucket you roll in when you want control back.
+You should be in control of what you see online, but Facebook throws all kinds of garbage at you making it practically impossible to see updates from your friends and pages you care about. "FB - Clean My Feeds" is the mop bucket you roll in when you want control back.
 
-Originally built by **[zbluebugz](https://github.com/zbluebugz)** and battle-tested since 2021. I've decided to take on the mantle of maintainer.
+Originally built by **[zbluebugz](https://github.com/zbluebugz)** and battle-tested since 2021.
 
 Thank you to **[trinhquocviet](https://github.com/trinhquocviet)** for their [simplified_ui branch](https://github.com/trinhquocviet/facebook-clean-my-feeds/tree/simplified_ui), which has been merged here.
 
-## What it does (and does well)
+## What it does
 
 ### Kill the Sponsored Sludge
 - Nukes "Sponsored" posts across News, Groups, Watch, Marketplace, Search, and Reels.
@@ -237,18 +237,20 @@ If you spot gaps or mistranslations, open an issue. I'd love to make this even f
 - **Pull Requests:** Yes please. Keep them focused and describe what you touched.
 - **Translations:** If you can help keep the language dictionary sharp, I'm all ears.
 
+## To Do...
+- **This script is huge!** Let's plit it up and then creating a bundling pipeline so that the system is easier to build on, reason about, and maintain 
+- **Publish to GreaseyFork** in a way that automates updates for users and for me.
+
 ## License & Credits
 
 - **License:** GNU General Public License v3.0. You are free to share, tweak, and improve as long as you pass those freedoms on.
 - **Original Project:** [facebook-clean-my-feeds](https://github.com/zbluebugz/facebook-clean-my-feeds) by [zbluebugz](https://github.com/zbluebugz)
-- **Simplified UI & styling refresh:** [trinhquocviet](https://github.com/trinhquocviet)
-- **Filters maintenance & current stewardship:** me - **ArtificialSweetener**. My art, dev logs, and contact info live at [artificialsweetener.ai](https://artificialsweetener.ai/).
+- **Simplified UI & styling refresh:** [Simplified_UI branch](https://github.com/trinhquocviet/facebook-clean-my-feeds/tree/simplified_ui) by [trinhquocviet](https://github.com/trinhquocviet)
+- **Current Maintainer:** (https://github.com/Artificial-Sweetener)[Artificial Sweetener] - me!~
 
-Enjoy a feed that finally feels yours again.
+## From the Maintainer 💖
 
-## From the Maintainer
+I hope this script helps you reclaim your feed. I promise to be your ally in the fight against stuff you don't wanna see online.
 
-I hope this script helps you reclaim your feed.
-
-- **My website & socials:** [artificialsweetener.ai](https://artificialsweetener.ai/)
-- **If you like this project:** please star the repo so more people find it.
+- **My Website & Socials**: See my art, poetry, and other dev updates at [artificialsweetener.ai](https://artificialsweetener.ai).
+- **If you like this project**, it would mean a lot to me if you gave me a star here on Github!! ⭐
