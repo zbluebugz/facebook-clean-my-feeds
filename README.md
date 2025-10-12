@@ -238,7 +238,7 @@ If you spot gaps or mistranslations, open an issue. I'd love to make this even f
 - **Translations:** If you can help keep the language dictionary sharp, I'm all ears.
 
 ## To Do...
-- **This script is huge!** Let's plit it up and then creating a bundling pipeline so that the system is easier to build on, reason about, and maintain 
+- **This script is huge!** Let's split it up and then create a bundling pipeline so that the system is easier to build on, reason about, and maintain
 - **Publish to GreaseyFork** in a way that automates updates for users and for me.
 
 ## License & Credits
