@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         FB - Clean my feeds (5.05)
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
-// @namespace    https://greasyfork.org/users/812551
-// @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
+// @namespace    https://greasyfork.org/en/users/1357440
+// @supportURL   https://github.com/Artificial-Sweetener/facebook-clean-my-feeds/issues
 // @version      5.05
 // @author       Founder - zbluebugz (https://github.com/zbluebugz/)
 // @author       UI polish - Quoc Viet Trinh (https://github.com/trinhquocviet/)
@@ -4735,11 +4735,11 @@ const masterKeyWords = {
     function nf_isSponsored_Plain(post) {
         // -- works for some languages - more accurate than the other methods.
         // -- simple structure.
-   
+
         let hasSponsoredText = false;
         const queryElement = 'div[id] > span > a[role="link"] > span';
         const elSpans = post.querySelectorAll(queryElement);
-    
+
         elSpans.forEach(elSpan => {
             if (!elSpan.querySelector('svg')) {
                 const lcText = elSpan.textContent.trim().toLowerCase();
@@ -4747,7 +4747,7 @@ const masterKeyWords = {
                 //console.info(log + 'nf_isSponsored_Plain(); results: ' + hasSponsoredText + "; context: " + elSpan.textContent);
             }
         });
-    
+
         return hasSponsoredText;
     }
 

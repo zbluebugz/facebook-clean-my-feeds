@@ -10,9 +10,9 @@ Thank you to **[trinhquocviet](https://github.com/trinhquocviet)** for their [si
 ## Installation
 
 1. Install a userscript manager such as **[Violentmonkey](https://violentmonkey.github.io/)**, **[Tampermonkey](https://www.tampermonkey.net/)**, or **[FireMonkey](https://addons.mozilla.org/en-US/firefox/addon/firemonkey/)**.
-2. Add the script:
+2. Add the script (your preference of method):
    - From this repo: open [`fb-clean-my-feeds.user.js`](https://raw.githubusercontent.com/Artificial-Sweetener/facebook-clean-my-feeds/main/fb-clean-my-feeds.user.js) and let your userscript manager import it.
-   - Todo: Publish to GreasyFork
+   - Visit the [GreasyFork release page](https://greasyfork.org/en/scripts/552339-fb-clean-my-feeds-5-05) and click **install this script**.
 3. Reload Facebook. The mop icon appears bottom-left by default. You can set it to appear in the top-right or hide it completely.
 
 ## What it does
@@ -85,6 +85,8 @@ If you spot gaps or mistranslations, open an issue. I'd love to make this even f
 - Promoted the userscript to the repo root and removed legacy beta/uBO folders
 - Rewrote the README with new install docs, credits, and language toggle
 - Bumped metadata to keep versioning honest
+- New GreasyFork release
+- Fixed support link in script
 
 ### v5.04 - October 2025
 - Fixed hidden post gaps by fully collapsing hidden containers
