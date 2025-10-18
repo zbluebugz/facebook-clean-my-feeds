@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         FB - Clean my feeds (5.05)
+// @name         FB - Clean my feeds (5.06)
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/en/users/1357440
 // @supportURL   https://github.com/Artificial-Sweetener/facebook-clean-my-feeds/issues
-// @version      5.05
+// @version      5.06
 // @author       Founder - zbluebugz (https://github.com/zbluebugz/)
 // @author       UI polish - Quoc Viet Trinh (https://github.com/trinhquocviet/)
 // @author       Filters maintenance - Artificial Sweetener (https://github.com/Artificial-Sweetener/)
@@ -92,6 +92,7 @@ const masterKeyWords = {
     NF_PARTICIPATE: 'Participate',
     NF_REELS_SHORT_VIDEOS: 'Reels and short videos',
     NF_SHORT_REEL_VIDEO: 'Reel/short video',
+    NF_META_AI: 'Try Meta AI',
     NF_EVENTS_YOU_MAY_LIKE: 'Events you may like',
     NF_ANIMATED_GIFS_POSTS: 'Animated GIFs',
     NF_ANIMATED_GIFS_PAUSE: 'Pause animated GIFs',
@@ -2000,6 +2001,7 @@ const masterKeyWords = {
     NF_PARTICIPATE: true,
     NF_REELS_SHORT_VIDEOS: false,
     NF_SHORT_REEL_VIDEO: false,
+    NF_META_AI: true,
     NF_EVENTS_YOU_MAY_LIKE: true,
     NF_ANIMATED_GIFS_POSTS: false,
     NF_ANIMATED_GIFS_PAUSE: false,
@@ -2180,11 +2182,12 @@ const masterKeyWords = {
     // -- user's language portion of the masterKeywords
     let KeyWords = {};
     function cloneKeywords() {
-        if (VARS.language && VARS.language !== '') {
-            KeyWords = { ...masterKeyWords.translations[VARS.language] };
+        const baseKeywords = { ...masterKeyWords.translations['en'] };
+        if (VARS.language && VARS.language !== '' && masterKeyWords.translations[VARS.language]) {
+            KeyWords = { ...baseKeywords, ...masterKeyWords.translations[VARS.language] };
         }
         else {
-            KeyWords = { ...masterKeyWords.translations['en'] };
+            KeyWords = baseKeywords;
         }
     }
 
@@ -5064,6 +5067,24 @@ const masterKeyWords = {
         return (elementsParticipate.length !== 1) ? '' : KeyWords.NF_PARTICIPATE;
     }
 
+    function nf_isMetaAICard(post) {
+        const selectors = [
+            'a[aria-label="Visit Meta AI"]',
+            'a[aria-label="Meta AI branding"]',
+            'a[href*="meta.ai"]'
+        ];
+        if (selectors.some(selector => post.querySelector(selector))) {
+            return KeyWords.NF_META_AI;
+        }
+
+        const postTexts = extractTextContent(post, nf_getBlocksQuery(post), 3).join(' ').toLowerCase();
+        if (postTexts.includes('try meta ai') || postTexts.includes('free ai creation tools')) {
+            return KeyWords.NF_META_AI;
+        }
+
+        return '';
+    }
+
     function findFirstMatch(postFullText, textValuesToFind) {
         const foundText = textValuesToFind.find(text => postFullText.includes(text));
         return foundText !== undefined ? foundText : '';
@@ -6239,6 +6260,9 @@ const masterKeyWords = {
                         }
                         if (hideReason === '' && VARS.Options.NF_SHORT_REEL_VIDEO) {
                             hideReason = nf_isShortReelVideo(post);
+                        }
+                        if (hideReason === '' && VARS.Options.NF_META_AI) {
+                            hideReason = nf_isMetaAICard(post);
                         }
                         if (hideReason === '' && VARS.Options.NF_PAID_PARTNERSHIP) {
                             hideReason = nf_isPaidPartnership(post);

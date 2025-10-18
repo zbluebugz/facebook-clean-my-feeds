@@ -81,6 +81,10 @@ If you spot gaps or mistranslations, open an issue. I'd love to make this even f
 
 ## Changelog
 
+### v5.06 - October 2025
+- Added an optional "Try Meta AI" News Feed filter to hide Meta AI promo cards.
+- Merged language fallbacks so new options automatically inherit English copy.
+
 ### v5.05 - October 2025
 - Promoted the userscript to the repo root and removed legacy beta/uBO folders
 - Rewrote the README with new install docs, credits, and language toggle
@@ -241,14 +245,13 @@ If you spot gaps or mistranslations, open an issue. I'd love to make this even f
 
 ## To Do...
 - **This script is huge!** Let's split it up and then create a bundling pipeline so that the system is easier to build on, reason about, and maintain
-- **Publish to GreaseyFork** in a way that automates updates for users and for me.
 
 ## License & Credits
 
 - **License:** GNU General Public License v3.0. You are free to share, tweak, and improve as long as you pass those freedoms on.
 - **Original Project:** [facebook-clean-my-feeds](https://github.com/zbluebugz/facebook-clean-my-feeds) by [zbluebugz](https://github.com/zbluebugz)
 - **Simplified UI & styling refresh:** [Simplified_UI branch](https://github.com/trinhquocviet/facebook-clean-my-feeds/tree/simplified_ui) by [trinhquocviet](https://github.com/trinhquocviet)
-- **Current Maintainer:** (https://github.com/Artificial-Sweetener)[Artificial Sweetener] - me!~
+- **Current Maintainer:** [Artificial Sweetener](https://github.com/Artificial-Sweetener) - me!~
 
 ## From the Maintainer 💖
 
