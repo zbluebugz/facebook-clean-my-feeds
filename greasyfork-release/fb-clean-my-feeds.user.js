@@ -5098,7 +5098,13 @@ const masterKeyWords = {
         // const queryFollow = ':scope h4[id] > span > div > span';
         // - 09/2024 - added the extra query
         //const queryFollow = ':scope h4[id] > span > div > span, :scope h4[id] > span > span > div > span, :scope h4[id] > div > span > span[class] > div[class] > span[class]';
-        const queryFollow = [':scope h4[id] > span > div > span', ':scope h4[id] > span > span > div > span', ':scope h4[id] > div > span > span[class] > div[class] > span[class]'];
+        const queryFollow = [
+          ":scope h4[id] > span > div > span",
+          ":scope h4[id] > span > span > div > span",
+          ":scope h4[id] > div > span > span[class] > div[class] > span[class]",
+          ":scope h4[id] > span > span:nth-child(3) > span:nth-child(2) > div > span",
+          ":scope h4[id] > span > span:nth-child(2) > span:nth-child(2) > div > span",
+        ];
         const elementsFollow = querySelectorAllNoChildren(post, queryFollow, 0, false);
         // if (elementsFollow.length > 0) console.info(log + "nf_isFollow(post); elementsFollow:", elementsFollow, post);
         return (elementsFollow.length !== 1) ? '' : KeyWords.NF_FOLLOW;
